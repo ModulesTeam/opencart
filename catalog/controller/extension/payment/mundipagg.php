@@ -651,7 +651,7 @@ class ControllerExtensionPaymentMundipagg extends Controller
             ;
         }
 
-        $installments = $post['payment-details-' . $formId];
+        $installments = $post['new-creditcard-installments-' . $formId];
         $card['paymentDetails'] = explode('|', $installments);
         if (isset($post['amount-' . $formId])) {
             $card['amount'] = $post['amount-' . $formId];
