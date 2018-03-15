@@ -25,6 +25,7 @@ class ModelExtensionPaymentMundipaggBoletoLink extends Model
         } catch (Exception $e) {
             Log::create()
                 ->error(LogMessages::CANNOT_CREATE_SAVE_BOLETO_LINK, __METHOD__)
+                ->withException($e)
                 ->withOrderId($orderId)
                 ->withLineNumber(__LINE__)
                 ->withQuery($sql);

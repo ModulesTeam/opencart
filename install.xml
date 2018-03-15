@@ -1,7 +1,7 @@
 <modification>
     <name>MundiPagg OpenCart Module</name>
     <code>MundiPagg</code>
-    <version>1.2.9</version>
+    <version>1.2.10</version>
     <author>Mundipagg</author>
     <file path="admin/controller/common/column_left.php">
         <operation>
