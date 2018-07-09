@@ -84,10 +84,13 @@
         <div class="form-group required">
             <div class="col-sm-10">
                 <select name="" id="select-subscription" class="form-control">
+                    {% if plans | length > 0 %}
                     <optgroup label="Configurações pré definidas" id="pre-defined">
-                        <option value="" title="Paga em 6 meses à vista"> Assinatura 6 meses </option>
-                        <option value="" title="Paga em 12 meses parcelado"> Assinatura 12 meses </option>
+                        {% for plan in plans %}
+                        <option value="{{ plan.id }}" title="{{ plan.template.description }}">{{ plan.template.name }}</option>
+                        {% endfor %}
                     </optgroup>
+                    {% endif %}
                     <optgroup label="Configurações por plano" id="new">
                         <option value="" title="Paga em 12 meses parcelado"> Criar configuração específica para este plano </option>
                     </optgroup>

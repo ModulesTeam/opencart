@@ -4,6 +4,8 @@ namespace Mundipagg\Controller;
 use Mundipagg\Model\Order;
 use Mundipagg\Helper\AdminMenu as MundipaggHelperAdminMenu;
 use Mundipagg\Helper\ProductPageChanges as MundipaggHelperProductPageChanges;
+use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\TemplateRepository;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
@@ -131,6 +133,12 @@ class Events
        $planform['formPlan'] = $path . 'templates/form_plan.twig';
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';
+
+       $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+       $plans = $templateRepository->listEntities(0, false);
+       $planform['plans'] = array_filter($plans, function($templateRoot){
+           return !$templateRoot->getTemplate()->isSingle();
+       });
 
        $productFormTabContentTemplate = $this->openCart->load->view(
            $path . 'plans/productFormTabContent',

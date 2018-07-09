@@ -3,14 +3,20 @@
 namespace Mundipagg\Repositories;
 
 use Mundipagg\Aggregates\IAggregateRoot;
+use Mundipagg\Repositories\Bridges\AbstractDatabaseBridge;
 
 abstract class AbstractRep
 {
-    protected $openCart;
+    /** @var AbstractDatabaseBridge */
+    protected $db;
 
-    public function __construct($openCart)
+    /**
+     * AbstractRep constructor.
+     * @param AbstractDatabaseBridge $db
+     */
+    public function __construct(AbstractDatabaseBridge $db)
     {
-        $this->openCart = $openCart;
+        $this->db = $db;
     }
 
     public function save(IAggregateRoot &$object){

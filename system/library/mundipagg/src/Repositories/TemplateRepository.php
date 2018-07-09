@@ -14,11 +14,8 @@ class TemplateRepository extends AbstractRep
      */
     protected function create(IAggregateRoot &$templateRoot)
     {
-        /** @var \DB $db */
-        $db = $this->openCart->db;
-
         $query = "
-            INSERT INTO `" . DB_PREFIX . "mundipagg_template` (
+            INSERT INTO `" . $this->db->getTable('TEMPLATE_TABLE') . "` (
                 `is_disabled`,
                 `is_single`,
                 `name`,
@@ -43,8 +40,8 @@ class TemplateRepository extends AbstractRep
             )
         ";
 
-        $db->query($query);
-        $templateRoot->getTemplate()->setId($db->getLastId());
+        $this->db->query($query);
+        $templateRoot->getTemplate()->setId($this->db->getLastId());
 
         $this->createTemplateRepetitions($templateRoot);
 
@@ -56,11 +53,8 @@ class TemplateRepository extends AbstractRep
      */
     protected function update(IAggregateRoot &$templateRoot)
     {
-        /** @var \DB $db */
-        $db = $this->openCart->db;
-
         $query = "
-            UPDATE `" . DB_PREFIX . "mundipagg_template` SET
+            UPDATE `" . $this->db->getTable('TEMPLATE_TABLE') . "` SET
                 `is_disabled` = " . ($templateRoot->isDisabled()?1:0) . ",
                 `is_single` = " . ($templateRoot->getTemplate()->isSingle()?1:0) . ",
                 `name` = '" . $templateRoot->getTemplate()->getName() . "',
@@ -74,7 +68,7 @@ class TemplateRepository extends AbstractRep
             WHERE `id` = " . $templateRoot->getId() . "
         ";
 
-        $db->query($query);
+        $this->db->query($query);
 
         $this->deleteTemplateRepetitions($templateRoot);
         $this->createTemplateRepetitions($templateRoot);
@@ -83,11 +77,11 @@ class TemplateRepository extends AbstractRep
     public function delete(IAggregateRoot $templateRoot)
     {
         $query = "
-            UPDATE `" . DB_PREFIX . "mundipagg_template` SET
+            UPDATE `" . $this->db->getTable('TEMPLATE_TABLE') . "` SET
                 `is_disabled` = true
              WHERE `id` = " . $templateRoot->getId() . "                         
         ";
-        $this->openCart->db->query($query);
+        $this->db->query($query);
 
         return true;
     }
@@ -102,14 +96,14 @@ class TemplateRepository extends AbstractRep
               GROUP_CONCAT(r.discount_type) AS discount_type, 
               GROUP_CONCAT(r.discount_value) AS discount_value,      
               GROUP_CONCAT(r.cycles) AS cycles      
-            FROM `" . DB_PREFIX . "mundipagg_template` AS t 
-            INNER JOIN `" . DB_PREFIX . "mundipagg_template_repetition` AS r
+            FROM `" . $this->db->getTable('TEMPLATE_TABLE') . "` AS t 
+            INNER JOIN `" . $this->db->getTable('TEMPLATE_REPETITION_TABLE') . "` AS r
               ON t.id = r.template_id
             WHERE t.id = " . intval($templateId) . "  
             GROUP BY t.id  
         ";
 
-        $result = $this->openCart->db->query($query . ";");
+        $result = $this->db->query($query . ";");
         if ($result->num_rows < 1 ) {
            return null;
         }
@@ -128,8 +122,8 @@ class TemplateRepository extends AbstractRep
               GROUP_CONCAT(r.discount_type) AS discount_type, 
               GROUP_CONCAT(r.discount_value) AS discount_value,      
               GROUP_CONCAT(r.cycles) AS cycles      
-            FROM `" . DB_PREFIX . "mundipagg_template` AS t 
-            INNER JOIN `" . DB_PREFIX . "mundipagg_template_repetition` AS r
+            FROM `" . $this->db->getTable('TEMPLATE_TABLE') . "` AS t 
+            INNER JOIN `" . $this->db->getTable('TEMPLATE_REPETITION_TABLE') . "` AS r
               ON t.id = r.template_id             
         ";
 
@@ -144,7 +138,7 @@ class TemplateRepository extends AbstractRep
             $query .= " LIMIT $limit";
         }
 
-        $result = $this->openCart->db->query($query . ";");
+        $result = $this->db->query($query . ";");
 
         $templateRootFactory = new TemplateRootFactory();
         $templateRoots = [];
@@ -160,7 +154,7 @@ class TemplateRepository extends AbstractRep
     protected function createTemplateRepetitions($templateRoot)
     {
         $query = "
-            INSERT INTO `" . DB_PREFIX . "mundipagg_template_repetition` (
+            INSERT INTO `" . $this->db->getTable('TEMPLATE_REPETITION_TABLE') . "` (
                 `template_id`,
                 `cycles`,
                 `frequency`,
@@ -183,13 +177,13 @@ class TemplateRepository extends AbstractRep
         }
         $query = rtrim($query,',') . ';';
 
-        $this->openCart->db->query($query);
+        $this->db->query($query);
     }
 
     protected function deleteTemplateRepetitions($templateRoot)
     {
-        $this->openCart->db->query("
-            DELETE FROM `" . DB_PREFIX . "mundipagg_template_repetition` WHERE
+        $this->db->query("
+            DELETE FROM `" . $this->db->getTable('TEMPLATE_REPETITION_TABLE') . "` WHERE
                 `template_id` = " . $templateRoot->getTemplate()->getId() . "
         ");
     }

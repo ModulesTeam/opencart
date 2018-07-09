@@ -5,6 +5,7 @@ namespace Mundipagg\Controller\Recurrence;
 use Mundipagg\Aggregates\Template\DueValueObject;
 use Mundipagg\Aggregates\Template\RepetitionValueObject;
 use Mundipagg\Factories\TemplateRootFactory;
+use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
 use Mundipagg\Repositories\TemplateRepository;
 
 class Templates extends Recurrence
@@ -20,7 +21,7 @@ class Templates extends Recurrence
 
     public function index()
     {
-        $templateRepository = new TemplateRepository($this->openCart);
+        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
 
         $templateRoots = $templateRepository->listEntities(0, false);
         $this->data['templateRoots'] = $templateRoots;
@@ -74,7 +75,7 @@ class Templates extends Recurrence
             return $this->create();
         }
 
-        $templateRepository = new TemplateRepository($this->openCart);
+        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
         $templateRoot = $templateRepository->find($getData['templateId']);
         if ($templateRoot === null) {
             return $this->create();
@@ -90,7 +91,7 @@ class Templates extends Recurrence
     {
         $getData = $this->openCart->request->get;
         if (isset($getData['templateId'])) {
-            $templateRepository = new TemplateRepository($this->openCart);
+            $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
             $templateRoot = $templateRepository->find($getData['templateId']);
             if ($templateRoot !== null) {
                 $templateRepository->delete($templateRoot);
@@ -117,7 +118,7 @@ class Templates extends Recurrence
         try {
             $templateRoot = $templateRootFactory->createFromPostData($postData);
 
-            $templateRepository = new TemplateRepository($this->openCart);
+            $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
 
             if (isset($postData['template-id'])) {
                 $templateRoot->getTemplate()->setId($postData['template-id']);
