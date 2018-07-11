@@ -29,12 +29,14 @@ function showHidePartialAmountInput(){
 function getModalContent() {
     $(".callActionModal").on("click", function(){
         chargeId = $(this).val();
+        orderId = $(this).attr("order-id")
         url = $("#chargeModalInformationUrl").val();
 
         $.post(
             url,
             {
-                charge_id: chargeId
+                charge_id: chargeId,
+                order_id: orderId
             }
         ).done(function(data) {
             console.log(data);

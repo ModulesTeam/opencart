@@ -38,6 +38,7 @@ class Charges
             'user_token=' . $this->openCart->session->data['user_token'],
             true);
 
+        $data['order_id'] = $order_id;
         $data['text_order'] = sprintf('Order (#%s)', $order_id);
         $data['column_product'] = 'Product';
         $data['column_model'] = 'Model';
@@ -81,8 +82,11 @@ class Charges
         return $data;
     }
 
-    public function getChargeInformation($chargeId)
+    public function getChargeInformation($orderId, $chargeId)
     {
+        $mundipaggOrder = new MundipaggOrder($this->openCart);
+        $mundipaggOrder->getCharge($orderId, $chargeId);
+
         return 1;
     }
 }
