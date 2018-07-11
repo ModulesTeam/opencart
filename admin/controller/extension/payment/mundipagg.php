@@ -734,4 +734,9 @@ class ControllerExtensionPaymentMundipagg extends Controller
             );
         }
     }
+
+    public function getChargeModalInformation()
+    {
+        $a = 1;
+    }
 }

@@ -26,3 +26,29 @@
     border: 1px solid #ddd;
     border-radius: 8px;
 }
+
+.loader {
+    margin: 75% 50%;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.emd-mundi-loader path {
+    stroke-dasharray: 173 23;
+    stroke-dashoffset: 136px;
+    animation: dash 1.5s linear infinite;
+    stroke:#00b7b4 ;
+
+}
+
+@keyframes dash {
+    from {
+        stroke-dashoffset: 136px;
+    }
+    to {
+        stroke-dashoffset: 332px;
+    }
+}
