@@ -308,11 +308,7 @@ class ControllerExtensionPaymentMundipagg extends Controller
         if ($this->session->data['payment_method']['code'] !== 'mundipagg') {
             return false;
         }
-        
-        if (!$this->customer->isLogged()) {
-            return false;
-        }
-        
+
         if ($this->request->server['REQUEST_METHOD'] !== 'POST') {
             return false;
         }
@@ -389,10 +385,6 @@ class ControllerExtensionPaymentMundipagg extends Controller
      */
     public function generateBoleto()
     {
-        if (!$this->customer->isLogged()) {
-            $this->response->redirect($this->url->link('checkout/failure', '', true));
-        }
-
         $this->load();
         $multiBuyer = new MultiBuyer($this->request, [self::INDEX_BOLETO]);
         $multiBuyerCustomer = $multiBuyer->createCustomers();
