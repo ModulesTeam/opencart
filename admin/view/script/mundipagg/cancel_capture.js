@@ -28,16 +28,29 @@ function showHidePartialAmountInput(){
 
 function getModalContent() {
     $(".callActionModal").on("click", function(){
+        chargeId = $(this).val();
+        url = $("#chargeModalInformationUrl").val();
 
-        $.get($("#chargeModalInformationUrl").val(), function() {
+        $.post(
+            url,
+            {
+                charge_id: chargeId
+            }
+        ).done(function(data) {
+            console.log(data);
+            if(data){
+                $(".modal-content").show();
+                $(".loader").hide();
+                return;
+            }else{
+                alert('Não foi possível carregar as informações dessa cobrança');
+                $('#orderActionsModal').modal('hide');
+            }
 
-        })
-        .done(function() {
-            $(".loader").hide();
 
-        })
-        .fail(function() {
+        }).fail(function() {
             alert('Não foi possível carregar as informações dessa cobrança');
+            $('#orderActionsModal').modal('hide');
         });
     });
 }

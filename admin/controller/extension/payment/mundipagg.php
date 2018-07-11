@@ -737,6 +737,15 @@ class ControllerExtensionPaymentMundipagg extends Controller
 
     public function getChargeModalInformation()
     {
-        $a = 1;
+        if (!empty($this->request->post['charge_id'])) {
+            $chargeId = $this->request->post['charge_id'];
+
+            $charges = new MundipaggCharges($this);
+            $chargeInformation = $charges->getChargeInformation($chargeId);
+
+            echo $chargeInformation;
+        }
+
+        return false;
     }
 }

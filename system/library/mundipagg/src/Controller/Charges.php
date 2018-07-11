@@ -80,4 +80,9 @@ class Charges
 
         return $data;
     }
+
+    public function getChargeInformation($chargeId)
+    {
+        return 1;
+    }
 }
