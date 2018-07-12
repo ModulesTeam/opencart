@@ -742,14 +742,39 @@ class ControllerExtensionPaymentMundipagg extends Controller
             $orderId = $this->request->post['order_id'];
 
             $charges = new MundipaggCharges($this);
-            $chargeInformation = $charges->getChargeInformation(
+            $result = $charges->getChargeInformation(
                 $orderId,
                 $chargeId
             );
 
-            echo $chargeInformation;
+            echo $result;
+            return;
         }
 
         return false;
     }
+
+    public function performChargeAction()
+    {
+        if (!empty($this->request->post['charge_id'])) {
+            $chargeId = $this->request->post['charge_id'];
+            $orderId = $this->request->post['order_id'];
+            $action = $this->request->post['action'];
+            $selectedAmount = $this->request->post['postData'];
+
+            $charges = new MundipaggCharges($this);
+            $result = $charges->performChargeAction(
+                $chargeId,
+                $orderId,
+                $action,
+                $selectedAmount
+            );
+
+            echo $result;
+            return;
+        }
+
+        return false;
+    }
+
 }

@@ -41,6 +41,11 @@ class Charges
             'user_token=' . $this->openCart->session->data['user_token'],
             true);
 
+        $data['performChargeActionUrl'] = $this->openCart->url->link(
+            'extension/payment/mundipagg/performChargeAction',
+            'user_token=' . $this->openCart->session->data['user_token'],
+            true);
+
         $data['cancel_capture_modal_template'] =
             'extension/payment/mundipagg/cancel_capture_modal.twig';
 
@@ -102,8 +107,19 @@ class Charges
             $charge['currency_symbol'] = $order['symbol_left'];
             $charge['text'] = $text;
 
-            echo json_encode($charge);
+            return json_encode($charge);
         }
+    }
 
+    public function performChargeAction(
+        $chargeId,
+        $orderId,
+        $action,
+        $selectedAmount
+    )
+    {
+
+        $result['charge_id'] = 1;
+        return json_encode($result);
     }
 }

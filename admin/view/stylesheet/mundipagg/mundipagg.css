@@ -28,7 +28,8 @@
 }
 
 .loader {
-    margin: 75% 50%;
+    margin: 80% 50% 0 50%;
+    position: absolute;
 }
 
 @keyframes spin {
