@@ -162,4 +162,29 @@ class Order
                 ->withQuery($sql);
         }
     }
+
+    public function getOrder($orderId)
+    {
+        $sql = "
+            SELECT A.order_id,
+               A.store_url,
+               A.customer_id,
+               A.firstname,
+               A.lastname,
+               A.email,
+               A.total,
+               A.order_status_id,
+               A.currency_id,
+               B.symbol_left,
+               B.symbol_right,
+               A.date_added,
+               A.date_modified
+            FROM " . DB_PREFIX . ".`order` as A
+            LEFT JOIN " . DB_PREFIX . ".currency as B
+                   ON B.currency_id = A.currency_id
+            WHERE A.order_id = " . $orderId;
+
+        $query = $this->openCart->db->query($sql);
+        return $query->row;
+    }
 }

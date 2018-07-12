@@ -13,6 +13,7 @@ class Charges
     public function __construct($openCart)
     {
         $this->openCart = $openCart;
+        $this->openCart->load->language('extension/payment/mundipagg');
     }
 
     /**
@@ -25,6 +26,8 @@ class Charges
         }
 
         $this->openCart->load->model('sale/order');
+
+
         $order_id = $this->openCart->request->get['order_id'];
         $order_info = $this->openCart->model_sale_order->getOrder($order_id);
 
@@ -38,13 +41,14 @@ class Charges
             'user_token=' . $this->openCart->session->data['user_token'],
             true);
 
+        $data['cancel_capture_modal_template'] =
+            'extension/payment/mundipagg/cancel_capture_modal.twig';
+
+        $data['mundipagg_loader'] = 'extension/payment/mundipagg/loader.twig';
+
+        $data['text'] = $this->openCart->language->get('charge_screen');
+
         $data['order_id'] = $order_id;
-        $data['text_order'] = sprintf('Order (#%s)', $order_id);
-        $data['column_product'] = 'Product';
-        $data['column_model'] = 'Model';
-        $data['column_quantity'] = 'Quantity';
-        $data['column_price'] = 'Unit Price';
-        $data['column_total'] = 'Total';
         $data['charges'] = $this->openCart->getChargesData($order_info, $status);
         $data['products'] = $this->openCart->getDataProducts($order_info);
         $data['vouchers'] = $this->openCart->getVoucherData($order_info);
@@ -53,9 +57,6 @@ class Charges
         $data['column_left'] = $this->openCart->load->controller('common/column_left');
         $data['footer'] = $this->openCart->load->controller('common/footer');
         $data['heading_title'] = "Preview $status charge";
-        $data['cancel_capture_modal_template'] =
-            'extension/payment/mundipagg/cancel_capture_modal.twig';
-        $data['mundipagg_loader'] = 'extension/payment/mundipagg/loader.twig';
 
         return $this->openCart->load->view(
             'extension/payment/mundipagg_previewChangeCharge',
@@ -85,8 +86,24 @@ class Charges
     public function getChargeInformation($orderId, $chargeId)
     {
         $mundipaggOrder = new MundipaggOrder($this->openCart);
-        $mundipaggOrder->getCharge($orderId, $chargeId);
+        $order = $mundipaggOrder->getOrder($orderId);
+        $charge = $mundipaggOrder->getCharge($orderId, $chargeId)->row;
+        $text = $this->openCart->language->get('charge_screen');
 
-        return 1;
+        if ($charge) {
+            $formatted_amount =
+                number_format(
+                    $charge['amount'] /100,
+                    '2',
+                    '.',
+                    ''
+                );
+            $charge['formatted_amount'] = $formatted_amount;
+            $charge['currency_symbol'] = $order['symbol_left'];
+            $charge['text'] = $text;
+
+            echo json_encode($charge);
+        }
+
     }
 }
