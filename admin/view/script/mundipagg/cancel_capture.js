@@ -14,6 +14,8 @@ function showHidePartialAmountInput(){
         }else{
             $(".chargeAmount").hide();
         }
+
+        $("#actionButton").removeAttr("disabled");
     })
 }
 
@@ -22,7 +24,6 @@ function getModalContent() {
         $(".modal-content").hide();
         $(".loader").show();
         $(".info").html("").val("");
-        $("#actionButton").attr("disabled");
 
         var chargeId = $(this).val();
         var orderId = $(this).attr("order-id")
@@ -51,7 +52,6 @@ function sendData(chargeId, action, orderId, url, callback, postData) {
             callback(action, data);
             $(".loader").hide();
             $(".modal-content").show();
-            $("#actionButton").removeAttr("disabled");
             return;
         }else{
             alert('Não foi possível carregar as informações dessa cobrança');
@@ -101,35 +101,42 @@ function fillModalInformation(action, chargeData) {
 }
 
 function fillModalMessage(action, data) {
-    $(".loader").hide();
     alert(data.msg);
+    $(".loader").hide();
+    $("#actionButton").removeAttr("disabled");
     //$("#msg").text(data.msg);
     location.reload();
 }
 
 function chargeActionSubmit() {
    $("#actionButton").on("click", function () {
+       $("#actionButton").attr("disabled", "disabled");
        $(".loader").show();
        var chargeId = $("#chargeId").text();
        var orderId = $("#orderId").val();
        var url = $("#performChargeActionUrl").val();
        var selectedAmount = $("#selectedAmount").val();
        var action = "";
+       var checked = false;
 
        $(".actionInputs").each(function () {
            if($(this).is(':checked')){
             action = $(this).val();
+            checked = true;
            }
        })
-       var result = sendData(
-           chargeId,
-           action,
-           orderId,
-           url,
-           fillModalMessage,
-           selectedAmount
-       )
-       ;
+
+       if(checked){
+           var result = sendData(
+               chargeId,
+               action,
+               orderId,
+               url,
+               fillModalMessage,
+               selectedAmount
+           )
+           ;
+       }
    })
 }
 

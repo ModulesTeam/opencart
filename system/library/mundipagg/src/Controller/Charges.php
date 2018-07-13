@@ -11,8 +11,8 @@ use Mundipagg\Controller\Charge as MundipaggCharge;
 class Charges
 {
     private $openCart;
-    private $possibleActions = ['capture', 'cancel'];
     private $charge;
+    private $actions = ['capture', 'cancel'];
 
     public function __construct($openCart)
     {
@@ -91,7 +91,8 @@ class Charges
                 $helper->currencyFormat($charge['paid_amount'] / 100, $order_info);
 
             $data[$key] = $charge;
-            $data[$key]['actions'] = $this->possibleActions;
+
+            $data[$key]['actions'] = $this->getPossibleActions($charge);
         }
 
         return $data;
@@ -118,6 +119,19 @@ class Charges
 
             return json_encode($charge);
         }
+    }
+
+    private function getPossibleActions($charge)
+    {
+        if ($charge['status'] == 'canceled') {
+            return null;
+        }
+
+        if($charge['payment_method'] == 'boleto') {
+            return 'cancel';
+        }
+
+        return $this->actions;
     }
 
     public function performChargeAction(

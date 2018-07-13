@@ -32,6 +32,11 @@ class Charge
         $chargeRequest->amount = $chargeData['selectedAmount'];
 
         //LOG REQUEST
+        Log::create()
+            ->info(LogMessages::REQUEST_INFO, __METHOD__)
+            ->withChargeId($chargeData['charge_id'])
+            ->withChargeStatus($action)
+            ->withRequest(json_encode($chargeRequest, JSON_PRETTY_PRINT));
 
         try {
             $response =
@@ -42,17 +47,21 @@ class Charge
                     )
             ;
 
-            //LOG RESPONSE
+            Log::create()
+                ->info(LogMessages::UPDATE_CHARGE_MUNDIPAGG_RESPONSE, __METHOD__)
+                ->withChargeId($chargeData['charge_id'])
+                ->withResponse(json_encode($response, JSON_PRETTY_PRINT));
 
             $this->saveChargeUpdate($response, $action);
-            //$this->updateOrderStatus($response, $action);
 
             $text = $this->openCart->language->get('charge_screen');
 
             return $text['charge_action_success'];
 
         } catch (\Exception $e) {
-            //LOG
+            Log::create()
+                ->error($e->getMessage(), __METHOD__)
+                ->withChargeId($chargeData['charge_id']);
             return $e->getMessage();
         }
     }
@@ -85,6 +94,7 @@ class Charge
         if ($action === 'cancel') {
             $field = 'canceled_amount';
         }
+
         $amount = $response->lastTransaction->amount;
 
         $order->updateAmount(
