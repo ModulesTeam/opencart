@@ -4,14 +4,21 @@ namespace Mundipagg\Controller;
 
 use Mundipagg\Model\Order as MundipaggOrder;
 use Mundipagg\Helper\Common as CommonHelper;
+use MundiAPILib\Models\CreateCancelChargeRequest;
+use MundiAPILib\Models\CreateCaptureChargeRequest;
+use Mundipagg\Controller\Charge as MundipaggCharge;
 
 class Charges
 {
     private $openCart;
+    private $charge;
+    private $actions = ['capture', 'cancel'];
 
     public function __construct($openCart)
     {
         $this->openCart = $openCart;
+        $this->openCart->load->language('extension/payment/mundipagg');
+        $this->charge = new MundipaggCharge($openCart);
     }
 
     /**
@@ -24,6 +31,7 @@ class Charges
         }
 
         $this->openCart->load->model('sale/order');
+
         $order_id = $this->openCart->request->get['order_id'];
         $order_info = $this->openCart->model_sale_order->getOrder($order_id);
 
@@ -32,18 +40,24 @@ class Charges
             $status = $this->openCart->request->get['status'];
         }
 
-        $data['cancel'] = $this->openCart->url->link(
-            'sale/order',
-            'user_token=' . $this->openCart->session->data['user_token'] .
-            '&route=sale/order',
+        $data['chargeModalInformationUrl'] = $this->openCart->url->link(
+            'extension/payment/mundipagg/getChargeModalInformation',
+            'user_token=' . $this->openCart->session->data['user_token'],
             true);
 
-        $data['text_order'] = sprintf('Order (#%s)', $order_id);
-        $data['column_product'] = 'Product';
-        $data['column_model'] = 'Model';
-        $data['column_quantity'] = 'Quantity';
-        $data['column_price'] = 'Unit Price';
-        $data['column_total'] = 'Total';
+        $data['performChargeActionUrl'] = $this->openCart->url->link(
+            'extension/payment/mundipagg/performChargeAction',
+            'user_token=' . $this->openCart->session->data['user_token'],
+            true);
+
+        $data['cancel_capture_modal_template'] =
+            'extension/payment/mundipagg/cancel_capture_modal.twig';
+
+        $data['mundipagg_loader'] = 'extension/payment/mundipagg/loader.twig';
+
+        $data['text'] = $this->openCart->language->get('charge_screen');
+
+        $data['order_id'] = $order_id;
         $data['charges'] = $this->openCart->getChargesData($order_info, $status);
         $data['products'] = $this->openCart->getDataProducts($order_info);
         $data['vouchers'] = $this->openCart->getVoucherData($order_info);
@@ -70,35 +84,109 @@ class Charges
         foreach ($charges->rows as $key => $charge) {
             $charge['amount'] =
                 $helper->currencyFormat($charge['amount'] / 100, $order_info);
+            $charge['canceled_amount'] =
+                $helper->currencyFormat($charge['canceled_amount'] / 100, $order_info);
+            $charge['paid_amount'] =
+                $helper->currencyFormat($charge['paid_amount'] / 100, $order_info);
 
             $data[$key] = $charge;
-            $data[$key]['actions'][] = $this->getAction(
-                $charge,
-                $status,
-                $orderId
-            );
+
+            $data[$key]['actions'] = $this->getPossibleActions($charge);
         }
 
         return $data;
     }
 
-    private function getAction($charge, $status, $orderId)
+    public function getChargeInformation($orderId, $chargeId)
     {
-        if (isset($charge['can_' . $status]) && $charge['can_' . $status]) {
+        $mundipaggOrder = new MundipaggOrder($this->openCart);
+        $order = $mundipaggOrder->getOrder($orderId);
+        $charge = $mundipaggOrder->getCharge($orderId, $chargeId)->row;
+        $text = $this->openCart->language->get('charge_screen');
 
-            $link = $this->openCart->url->link(
-                'extension/payment/mundipagg/confirmUpdateCharge',
-                'user_token=' . $this->openCart->session->data['user_token'] .
-                '&order_id='. $orderId .
-                '&charge=' . $charge['charge_id'] .
-                '&status='. $status,
-                true
-            );
+        if ($charge) {
+            $formatted_amount =
+                number_format(
+                    $charge['amount'] /100,
+                    '2',
+                    '.',
+                    ''
+                );
+            $charge['formatted_amount'] = $formatted_amount;
+            $charge['currency_symbol'] = $order['symbol_left'];
+            $charge['text'] = $text;
 
-            return [
-                'name' => ucfirst($status),
-                'url'  => $link
-            ];
+            return json_encode($charge);
         }
+    }
+
+    private function getPossibleActions($charge)
+    {
+        if ($charge['status'] == 'canceled') {
+            return null;
+        }
+
+        if($charge['payment_method'] == 'boleto') {
+            return 'cancel';
+        }
+
+        return $this->actions;
+    }
+
+    public function performChargeAction(
+        $chargeId,
+        $orderId,
+        $action,
+        $selectedAmount
+    )
+    {
+        $helper = new CommonHelper($this->openCart);
+        $method = $helper->fromSnakeToCamel($action);
+
+        if(method_exists($this, $method)) {
+            $mundipaggOrder = new MundipaggOrder($this->openCart);
+            $charge = $mundipaggOrder->getCharge($orderId, $chargeId)->row;
+
+            $result['msg'] = $this->$method($charge, $selectedAmount * 100);
+        }
+        $result['charge_id'] = $chargeId;
+
+        return json_encode($result);
+    }
+
+    public function partialCapture($chargeData, $selectedAmount) {
+        $chargeData['selectedAmount'] = $selectedAmount;
+
+        return
+            $this
+            ->charge
+            ->updateCharge($chargeData, new CreateCaptureChargeRequest());
+    }
+
+    public function partialCancel($chargeData, $selectedAmount) {
+        $chargeData['selectedAmount'] = $selectedAmount;
+
+        return
+            $this
+            ->charge
+            ->updateCharge($chargeData, new CreateCancelChargeRequest());
+    }
+
+    public function totalCapture($chargeData) {
+        $chargeData['selectedAmount'] = null;
+
+        return
+            $this
+            ->charge
+            ->updateCharge($chargeData, new CreateCaptureChargeRequest());
+    }
+
+    public function totalCancel($chargeData) {
+        $chargeData['selectedAmount'] = null;
+
+        return
+            $this
+            ->charge
+            ->updateCharge($chargeData, new CreateCancelChargeRequest());
     }
 }

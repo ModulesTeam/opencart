@@ -82,6 +82,7 @@ class Order
      * @param int $cardId
      * @param null $multiBuyer
      * @return object
+     * @throws \Exception
      */
     public function create(
         $orderData,

@@ -124,3 +124,35 @@ $_['recurrence'] = [
     'checkoutConflictMessage_title' => 'Checkout Conflict Message',
 ];
 // -----------------------------------------------------------------
+
+// Charge screen
+$_['charge_screen'] = [
+    'charge' => 'Charge',
+    'charge_action' => 'Charge %s',
+    'heading_title' => 'Mundipagg Charge Actions',
+    'charge_information' => 'Charge information',
+    'order' => 'Order',
+    'product' => 'Product',
+    'model' => 'Model',
+    'quantity' => 'Quantity',
+    'unit_price' => 'Price',
+    'total' => 'Total',
+    'status' => 'Status',
+    'charge_id' => 'Charge id',
+    'payment_method' => 'Payment method',
+    'amount' => 'Amount',
+    'actions' => 'Actions',
+    'paid_amount' => 'Paid amount',
+    'canceled_amount' => 'Canceled amount',
+    'capture' => 'capture',
+    'cancel' => 'cancel',
+    'amount' => 'Amount',
+    'payment_method' => 'Payment method',
+    'how_do_you_want' => 'How do you want to %s this charge?',
+    'total_action' => 'Total %s',
+    'partial_action' => 'Partial %s',
+    'close' => 'Close',
+    'charge_capture' => 'Charge capture',
+    'charge_cancel' => 'Charge cancel',
+    'charge_action_success' => 'Charge updated successfully'
+];

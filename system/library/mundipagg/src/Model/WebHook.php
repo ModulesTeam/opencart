@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: felipe
- * Date: 8/8/17
- * Time: 12:16 PM
- */
 
 namespace Mundipagg\Model;
 

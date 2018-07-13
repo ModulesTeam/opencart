@@ -102,6 +102,19 @@ class Log
         return $this;
     }
 
+
+    /**
+     * Add Charge id to log
+     *
+     * @param Integer $chargeId
+     * @return $this
+     */
+    public function withChargeId($chargeId)
+    {
+        $this->logIt('- Charge #' . $chargeId . "\n");
+        return $this;
+    }
+
     /**
      * @param $mundiOrderId
      * @return $this

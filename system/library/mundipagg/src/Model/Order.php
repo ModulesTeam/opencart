@@ -41,36 +41,31 @@ class Order
 
     public function getCharge($opencart_id, $charge_id = null)
     {
-        $query =  "SELECT charge.charge_id as charge_id, \n".
-            "       charge.payment_method as payment_method, \n".
-            "       charge.status as status, \n".
-            "       charge.paid_amount as paid_amount, \n".
-            "       charge.amount as amount, \n".
-            "       boleto_info.link as boleto_link, \n".
-            "       boleto_info.line_code as boleto_line_code, \n".
-            "       boleto_info.due_at as boleto_due_at, \n".
-            "       creditcard_info.holder_name as creditcard_holder_name, \n".
-            "       creditcard_info.brand as creditcard_brand, \n".
-            "       creditcard_info.last_four_digits as creditcard_last_four_digits, \n".
-            "       creditcard_info.installments as creditcard_installments, \n".
-            "       charge.opencart_id AS order_id,\n".
-            '       CASE WHEN (charge.status != "canceled" OR charge.status = "paid")'."\n".
-            "            THEN 1\n".
-            "            ELSE 0\n".
-            '             END AS can_cancel,'."\n".
-            '       CASE WHEN charge.status != "canceled"'."\n".
-            '             AND charge.status != "paid"'."\n".
-            "            THEN 1\n".
-            "            ELSE 0\n".
-            '             END AS can_capture'."\n".
-            '  FROM `' . DB_PREFIX . "mundipagg_charge` as charge\n".
-            ' LEFT JOIN `' . DB_PREFIX . "mundipagg_order_boleto_info` as boleto_info\n" .
-            "ON charge.charge_id = boleto_info.charge_id\n" .
-            ' LEFT JOIN `' . DB_PREFIX . "mundipagg_order_creditcard_info` as creditcard_info\n" .
-            "ON charge.charge_id = creditcard_info.charge_id\n" .
+        $query =  "SELECT charge.charge_id as charge_id, ".
+            "       charge.payment_method as payment_method, ".
+            "       charge.status as status, ".
+            "       charge.paid_amount as paid_amount, ".
+            "       charge.canceled_amount as canceled_amount, " .
+            "       charge.paid_amount as paid_amount, ".
+            "       charge.amount as amount, ".
+            "       boleto_info.link as boleto_link, ".
+            "       boleto_info.line_code as boleto_line_code, ".
+            "       boleto_info.due_at as boleto_due_at, ".
+            "       creditcard_info.holder_name as creditcard_holder_name, ".
+            "       creditcard_info.brand as creditcard_brand, ".
+            "       creditcard_info.last_four_digits as creditcard_last_four_digits, ".
+            "       creditcard_info.installments as creditcard_installments, ".
+            "       charge.opencart_id AS order_id ".
+            '  FROM `' . DB_PREFIX . "mundipagg_charge` as charge ".
+            ' LEFT JOIN `' . DB_PREFIX . "mundipagg_order_boleto_info` as boleto_info " .
+            "ON charge.charge_id = boleto_info.charge_id " .
+            ' LEFT JOIN `' . DB_PREFIX . "mundipagg_order_creditcard_info` as creditcard_info " .
+            "ON charge.charge_id = creditcard_info.charge_id " .
             ' WHERE charge.opencart_id = ' . $opencart_id .
             ($charge_id ? ' AND charge.charge_id = "' . $charge_id . '"' : '');
+
         $charge = $this->openCart->db->query($query);
+
         return $charge;
     }
 
@@ -89,12 +84,12 @@ class Order
 
     private function insertCharge(array $data)
     {
-        $this->openCart->db->query(
-            'INSERT INTO `' . DB_PREFIX . 'mundipagg_charge` ' .
+        $sql = 'INSERT INTO `' . DB_PREFIX . 'mundipagg_charge` ' .
             '(' . implode(',', array_keys($data)) . ') ' .
             'VALUES ("' . implode('", "', $data) . '"'.
             ');'
-        );
+        ;
+        $this->openCart->db->query($sql);
     }
 
     public function updateOrderStatus($order_id, $order_status_id)
@@ -168,5 +163,30 @@ class Order
                 ->withLineNumber(__LINE__)
                 ->withQuery($sql);
         }
+    }
+
+    public function getOrder($orderId)
+    {
+        $sql = "
+            SELECT A.order_id,
+               A.store_url,
+               A.customer_id,
+               A.firstname,
+               A.lastname,
+               A.email,
+               A.total,
+               A.order_status_id,
+               A.currency_id,
+               B.symbol_left,
+               B.symbol_right,
+               A.date_added,
+               A.date_modified
+            FROM " . DB_PREFIX . ".`order` as A
+            LEFT JOIN " . DB_PREFIX . ".currency as B
+                   ON B.currency_id = A.currency_id
+            WHERE A.order_id = " . $orderId;
+
+        $query = $this->openCart->db->query($sql);
+        return $query->row;
     }
 }
