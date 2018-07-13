@@ -32,7 +32,6 @@ class Charges
 
         $this->openCart->load->model('sale/order');
 
-
         $order_id = $this->openCart->request->get['order_id'];
         $order_info = $this->openCart->model_sale_order->getOrder($order_id);
 
