@@ -143,6 +143,7 @@ $_['charge_screen'] = [
     'amount' => 'Amount',
     'action' => 'Action',
     'paid_amount' => 'Paid amount',
+    'canceled_amount' => 'Canceled amount',
     'capture' => 'capture',
     'cancel' => 'cancel',
     'amount' => 'Amount',
@@ -150,8 +151,8 @@ $_['charge_screen'] = [
     'how_do_you_want' => 'How do you want to %s this charge?',
     'total_action' => 'Total %s',
     'partial_action' => 'Partial %s',
-
     'close' => 'Close',
     'charge_capture' => 'Charge capture',
-    'charge_cancel' => 'Charge cancel'
+    'charge_cancel' => 'Charge cancel',
+    'charge_action_success' => 'Charge updated'
 ];

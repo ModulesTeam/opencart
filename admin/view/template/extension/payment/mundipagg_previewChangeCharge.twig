@@ -79,6 +79,7 @@
                       <td class="text-left">{{ text.payment_method }}</td>
                       <td class="text-center">{{ text.status }}</td>
                       <td class="text-right">{{ text.paid_amount }}</td>
+                      <td class="text-right">{{ text.canceled_amount }}</td>
                       <td class="text-right">{{ text.amount }}</td>
                       <td class="text-center">{{ text.action }}</td>
                     </tr>
@@ -90,6 +91,7 @@
                             <td class="text-left">{{ charge.payment_method }}</td>
                             <td class="text-center">{{ charge.status }}</td>
                             <td class="text-right">{{ charge.paid_amount }}</td>
+                            <td class="text-right">{{ charge.canceled_amount }}</td>
                             <td class="text-right">{{ charge.amount }}</td>
                             <td class="text-center">
                               {% if charge.actions %}

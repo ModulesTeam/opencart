@@ -58,6 +58,7 @@ function sendData(chargeId, action, orderId, url, callback, postData) {
             $('#orderActionsModal').modal('hide');
         }
     }).fail(function() {
+        console.log(data);
         alert('Não foi possível carregar as informações dessa cobrança');
         $('#orderActionsModal').modal('hide');
     });
@@ -99,8 +100,11 @@ function fillModalInformation(action, chargeData) {
         attr("max", chargeData.formatted_amount);
 }
 
-function fillModalMessage() {
-
+function fillModalMessage(action, data) {
+    $(".loader").hide();
+    alert(data.msg);
+    //$("#msg").text(data.msg);
+    location.reload();
 }
 
 function chargeActionSubmit() {
@@ -117,8 +121,15 @@ function chargeActionSubmit() {
             action = $(this).val();
            }
        })
-           console.log(action);
-       sendData(chargeId, action, orderId, url, fillModalMessage, selectedAmount);
+       var result = sendData(
+           chargeId,
+           action,
+           orderId,
+           url,
+           fillModalMessage,
+           selectedAmount
+       )
+       ;
    })
 }
 

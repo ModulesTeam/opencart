@@ -4,16 +4,21 @@ namespace Mundipagg\Controller;
 
 use Mundipagg\Model\Order as MundipaggOrder;
 use Mundipagg\Helper\Common as CommonHelper;
+use MundiAPILib\Models\CreateCancelChargeRequest;
+use MundiAPILib\Models\CreateCaptureChargeRequest;
+use Mundipagg\Controller\Charge as MundipaggCharge;
 
 class Charges
 {
     private $openCart;
     private $possibleActions = ['capture', 'cancel'];
+    private $charge;
 
     public function __construct($openCart)
     {
         $this->openCart = $openCart;
         $this->openCart->load->language('extension/payment/mundipagg');
+        $this->charge = new MundipaggCharge($openCart);
     }
 
     /**
@@ -80,6 +85,10 @@ class Charges
         foreach ($charges->rows as $key => $charge) {
             $charge['amount'] =
                 $helper->currencyFormat($charge['amount'] / 100, $order_info);
+            $charge['canceled_amount'] =
+                $helper->currencyFormat($charge['canceled_amount'] / 100, $order_info);
+            $charge['paid_amount'] =
+                $helper->currencyFormat($charge['paid_amount'] / 100, $order_info);
 
             $data[$key] = $charge;
             $data[$key]['actions'] = $this->possibleActions;
@@ -118,8 +127,53 @@ class Charges
         $selectedAmount
     )
     {
+        $helper = new CommonHelper($this->openCart);
+        $method = $helper->fromSnakeToCamel($action);
 
-        $result['charge_id'] = 1;
+        if(method_exists($this, $method)) {
+            $mundipaggOrder = new MundipaggOrder($this->openCart);
+            $charge = $mundipaggOrder->getCharge($orderId, $chargeId)->row;
+
+            $result['msg'] = $this->$method($charge, $selectedAmount * 100);
+        }
+        $result['charge_id'] = $chargeId;
+
         return json_encode($result);
+    }
+
+    public function partialCapture($chargeData, $selectedAmount) {
+        $chargeData['selectedAmount'] = $selectedAmount;
+
+        return
+            $this
+            ->charge
+            ->updateCharge($chargeData, new CreateCaptureChargeRequest());
+    }
+
+    public function partialCancel($chargeData, $selectedAmount) {
+        $chargeData['selectedAmount'] = $selectedAmount;
+
+        return
+            $this
+            ->charge
+            ->updateCharge($chargeData, new CreateCancelChargeRequest());
+    }
+
+    public function totalCapture($chargeData) {
+        $chargeData['selectedAmount'] = null;
+
+        return
+            $this
+            ->charge
+            ->updateCharge($chargeData, new CreateCaptureChargeRequest());
+    }
+
+    public function totalCancel($chargeData) {
+        $chargeData['selectedAmount'] = null;
+
+        return
+            $this
+            ->charge
+            ->updateCharge($chargeData, new CreateCancelChargeRequest());
     }
 }

@@ -353,55 +353,6 @@ class ControllerExtensionPaymentMundipagg extends Controller
         return $this->model_sale_order->getOrder($orderId);
     }
 
-    public function updateCharge()
-    {
-        try {
-            if (!$this->validateUpdateCharge()) {
-                throw new \Exception('Invalid data');
-            }
-            $this->load->model('sale/order');
-            $order_id = $this->request->get['order_id'];
-            $order_info = $this->model_sale_order->getOrder($order_id);
-            if (!$order_info) {
-                throw new \Exception('Order not found');
-            }
-            $status = $this->request->get['status'];
-            $order = new Mundipagg\Order($this);
-            $charges = $order->getCharge($order_id);
-            $charge_id = $this->request->get['charge'];
-            $chargeAmount = floatval(str_replace(',','.',$this->request->post['charge_amount']));
-            $chargeAmount *= 100;
-            foreach ($charges->rows as $charge) {
-                if ($charge['charge_id'] == $charge_id) {
-                    if ($charge['can_cancel']) {
-                        $charge = $order->updateCharge($charge_id, $status, $chargeAmount);
-                        $word = $status == 'cancel' ? 'canceled' : 'captured';
-                        $this->session->data['success'] = "Charge $word with sucess!";
-                    } else {
-                        $word = $status == 'cancel' ? 'cancel' : 'capture';
-                        $this->session->data['error_warning'] = "Charge don't available to $word";
-                    }
-                    break;
-                }
-            }
-            if (empty($this->session->data['success']) && !$this->session->data['error_warning']) {
-                $word = $status == 'cancel' ? 'cancel' : 'capture';
-                $this->session->data['error_warning'] = "Fail on $word charge";
-            } else {
-                $order->createOrUpdateCharge($order_info, $charge);
-                $this->load->model('extension/payment/mundipagg_order');
-                $this->model_extension_payment_mundipagg_order->addOrderHistory(
-                    $order_id,
-                    $order->translateStatusFromMP($charge),
-                    "Charge $word. Amount: " . $this->request->post['charge_amount']
-                );
-            }
-        } catch (\Exception $e) {
-            $this->session->data['error_warning'] = $e->getMessage();
-        }
-        $this->redirect('sale/order');
-    }
-
     /**
      * Deal with post requests, in other words, settings being changed
      *

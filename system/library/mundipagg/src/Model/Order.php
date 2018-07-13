@@ -45,6 +45,8 @@ class Order
             "       charge.payment_method as payment_method, ".
             "       charge.status as status, ".
             "       charge.paid_amount as paid_amount, ".
+            "       charge.canceled_amount as canceled_amount, " .
+            "       charge.paid_amount as paid_amount, ".
             "       charge.amount as amount, ".
             "       boleto_info.link as boleto_link, ".
             "       boleto_info.line_code as boleto_line_code, ".
