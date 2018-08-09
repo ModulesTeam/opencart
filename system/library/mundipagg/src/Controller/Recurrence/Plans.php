@@ -38,4 +38,10 @@ class Plans extends Recurrence
 
         $this->render('plans/base');
     }
+
+    public function save()
+    {
+        //extension/payment/mundipagg/plans
+        $a =1;
+    }
 }

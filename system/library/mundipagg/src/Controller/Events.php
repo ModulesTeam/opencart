@@ -145,12 +145,18 @@ class Events
            $planform
        );
 
+        $planCreationScript = $this->openCart->load->view(
+            $path . 'creationScripts',
+            $planform
+        );
+
        $helper = new MundipaggHelperProductPageChanges($this->openCart);
        $data['heading_title'] = 'Plano';
        $data['text_form'] = 'Criar plano';
 
        $data['tab_design'] = $data['tab_design'] . $productFormTemplate;
        $data['footer'] = $data['footer'] . $productFormTabContentTemplate;
+       $data['footer'] .= $planCreationScript;
 
        foreach ($data as $key => $value) {
            $this->template->set($key, $value);
