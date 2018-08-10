@@ -7,6 +7,17 @@ var PlansCreationController = function (formModelClass)
 PlansCreationController.prototype.init = function() {
     this.creationPageFormModel.init();
 };
+PlansCreationController.prototype.removeTemplateSnapShotDataFromForm = function() {
+    this.creationPageFormModel.getFormElement()
+        .find('#mundipagg-template-snapshot-data').remove();
+};
+PlansCreationController.prototype.addTemplateSnapShotDataToForm = function() {
+    var data = btoa(JSON.stringify(this.templateSnapshop));
+    this.creationPageFormModel.getFormElement()
+        .append('' +
+            '<input type="hidden" id="mundipagg-template-snapshot-data" ' +
+            'name="mundipagg-template-snapshot-data" value="'+data+'" />');
+};
 
 PlansCreationController.prototype.addTemplateFromSelect = function() {
     var templateInfoUrl = this.creationPageFormModel.getTemplateInfoUrl();
@@ -23,6 +34,8 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
     this.creationPageFormModel
         .getTemplateSelectElement()
         .prop( "disabled", true );
+
+    this.removeTemplateSnapShotDataFromForm();
 
     $.ajax({
         url: templateInfoUrl + "&template_id=" + selectedElementId,
@@ -43,6 +56,8 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
             this.creationPageFormModel
                 .getTemplateSelectEditPanelElement()
                 .hide();
+
+            this.addTemplateSnapShotDataToForm();
 
         }.bind(this),
         error: function(result) {
@@ -116,7 +131,7 @@ OpencartRecurrencyCreationFormModel.prototype
 };
 OpencartRecurrencyCreationFormModel.prototype
     .getTemplateSelectEditPanelElement = function() {
-    return $('#template-select-edit-panel');
+    return $('.template-select-edit-panel');
 };
 
 OpencartRecurrencyCreationFormModel.prototype
@@ -182,7 +197,9 @@ OpencartRecurrencyCreationFormModel.prototype
         }
         return '<span class="label label-default">Não</span>';
     })(templateSnapshotData));
-
 };
 
-
+OpencartRecurrencyCreationFormModel.prototype
+    .getFormElement = function(templateSnapshotData) {
+    return $('#form-product');
+};

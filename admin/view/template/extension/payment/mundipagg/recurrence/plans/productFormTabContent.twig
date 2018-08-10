@@ -79,8 +79,8 @@
 </div>
 
 <div class="tab-pane hidden tab-mundipagg-plan" id="tab-mundipagg-plan-subscriptions">
-    <label class="col-sm-12 form-group">Escolha uma assinatura</label>
-    <div class="col-sm-8" id="template-select-edit-panel">
+    <label class="col-sm-12 form-group template-select-edit-panel">Escolha um template de plano</label>
+    <div class="col-sm-8 template-select-edit-panel" id="template-select-edit-panel">
         <div class="form-group required">
             <div class="col-sm-10">
                 <select name="" id="select-subscription" class="form-control">
@@ -97,7 +97,6 @@
                 </select>
             </div>
             <div class="col-sm-2 actions-templates">
-                <button type="button" title="" class="btn btn-primary" data-original-title="Add"><i class="fa fa-pencil"></i></button>
                 <button
                         type="button"
                         title=""
@@ -114,21 +113,21 @@
         </div>
     </div>
 
-<script>
-$(document).ready(function() {
-    $("#select-subscription").change(function(){
-        var selected = $("option:selected", this);
-        if(selected.parent()[0].id == "new"){
-            $('#customized').css('display', 'block');
-            $('.actions-templates').css('display', 'none');
-        } else if(selected.parent()[0].id == "pre-defined"){
-            $('#customized').css('display', 'none');
-            $('.actions-templates').css('display', 'unset');
-        }
+    <script>
+    $(document).ready(function() {
+        $("#select-subscription").change(function(){
+            var selected = $("option:selected", this);
+            if(selected.parent()[0].id == "new"){
+                $('#customized').css('display', 'block');
+                $('.actions-templates').css('display', 'none');
+            } else if(selected.parent()[0].id == "pre-defined"){
+                $('#customized').css('display', 'none');
+                $('.actions-templates').css('display', 'unset');
+            }
+        });
     });
-});
+    </script>
 
-</script>
     <div class="col-sm-12" id="template-snapshot-detail-panel" style="display:none">
         <hr>
         <label><h3>Configuração de assinatura</h3><br></label>
@@ -145,27 +144,19 @@ $(document).ready(function() {
                 </tr>
                 <tbody>
                     <tr>
-                        <td>nome</td>
-                        <td>descrição</td>
-                        <td>
-                            <span class="label label-default">Cartão de crédito</span>
-                            <span class="label label-default">Boleto</span>
-                            <span class="label label-default">Boleto + cartão</span>
-                        </td>
-                        <td>
-                            <span class="label label-default">Todo dia 5</span>
-                        </td>
-                        <td>
-                            <span class="label label-default">6 repetições</span> /
-                            <span class="label label-default">Mensal</span>
-                        </td>
-                        <td>
-                            <span class="label label-default">Não</span>
-                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
-            <button type="button" title="" class="btn btn-danger" id="template-snapshot-remove"><i class="fa fa-minus-circle"></i></button>
+            <button type="button" title="" class="btn btn-danger" id="template-snapshot-remove">
+                <i class="fa fa-trash"></i>
+                Remover Configuração
+            </button>
         </div>
     </div>
 </div>

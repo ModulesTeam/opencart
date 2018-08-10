@@ -156,3 +156,57 @@ $_['charge_screen'] = [
     'charge_cancel' => 'Charge cancel',
     'charge_action_success' => 'Charge updated successfully'
 ];
+
+// Recurrence
+$_['mundipagg'] = [
+    'recurrence' => [
+        'template' => [
+            'due' => [
+                'type' => [
+                    \Mundipagg\Aggregates\Template\DueValueObject::TYPE_EXACT => [
+                        'label' => 'Every day %d',
+                        'name' => 'Exact day'
+                    ],
+                    \Mundipagg\Aggregates\Template\DueValueObject::TYPE_PREPAID => [
+                        'label' => 'Prepaid',
+                        'name' => 'Prepaid'
+                    ],
+                    \Mundipagg\Aggregates\Template\DueValueObject::TYPE_POSTPAID => [
+                        'label' => 'Postpaid',
+                        'name' => 'Postpaid'
+                    ]
+                ]
+            ],
+            'repetition' => [
+                'discount' => [
+                    'type' => [
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::DISCOUNT_TYPE_FIXED => [
+                            'label' => "%s%.2f",
+                            'symbol' => "$"
+                        ],
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::DISCOUNT_TYPE_PERCENT => [
+                            'label' => "%s%.2f%%",
+                            'symbol' => "%"
+                        ]
+                    ]
+                ],
+                'interval' => [
+                    'type' => [
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_WEEKLY => [
+                            'label' => ['week','weeks'],
+                            'name' => 'Weekly'
+                        ],
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_MONTHLY => [
+                            'label' => ['month','months'],
+                            'name' => 'Monthly'
+                        ],
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_YEARLY => [
+                            'label' => ['year','years'],
+                            'name' => 'Yearly'
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+];
