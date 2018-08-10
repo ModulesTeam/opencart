@@ -131,4 +131,25 @@ class Templates extends Recurrence
 
         $this->redirect($this->openCart->url->link('extension/payment/mundipagg/templates',''));
     }
+
+    protected function info()
+    {
+        header('Content-Type:application/json');
+        $getData = $this->openCart->request->get;
+        $templateId = isset($getData['template_id']) ? $getData['template_id'] : null;
+        if ($templateId) {
+            $templateId = filter_var($templateId, FILTER_SANITIZE_NUMBER_INT);
+            $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+            $template = $templateRepository->find($templateId);
+            if($template) {
+                $templateJson = json_encode($template);
+                http_response_code(200);
+                echo $templateJson;
+                die;
+            }
+        }
+        http_response_code(404);
+        echo '{"error":"Resource not found."}';
+        die;
+    }
 }

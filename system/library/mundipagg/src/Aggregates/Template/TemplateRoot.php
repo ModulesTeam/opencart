@@ -95,4 +95,44 @@ class TemplateRoot implements IAggregateRoot
         $this->isDisabled = boolval($isDisabled);
         return $this;
     }
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    public function jsonSerialize()
+    {
+        $repetitions = [];
+        foreach ($this->repetitions as $repetition) {
+            $repetitions[] = [
+                "cycles" => $repetition->getCycles(),
+                "discountType" => $repetition->getDiscountType(),
+                "discountValue" => $repetition->getDiscountValue(),
+                "frequency" => $repetition->getFrequency(),
+                "intervalType" => $repetition->getIntervalType()
+            ];
+        }
+        return [
+            "id" => $this->template->getId(),
+            "isDisabled" => $this->isDisabled,
+            "template" => [
+                "acceptBoleto" => $this->template->isAcceptBoleto(),
+                "isAcceptCreditCard" => $this->template->isAcceptCreditCard(),
+                "isAllowInstallments" => $this->template->isAllowInstallments(),
+                "description" => $this->template->getDescription(),
+                "id" => $this->template->getId(),
+                "isSingle" => $this->template->isSingle(),
+                "name" => $this->template->getName(),
+                "trial" => $this->template->getTrial()
+            ],
+            "dueAt" => [
+                "type" => $this->dueAt->getType(),
+                "value" => $this->dueAt->getValue()
+            ],
+            "repetitions" => $repetitions,
+        ];
+    }
 }
