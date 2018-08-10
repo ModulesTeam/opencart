@@ -120,8 +120,8 @@ class TemplateRoot implements IAggregateRoot
             "isDisabled" => $this->isDisabled,
             "template" => [
                 "acceptBoleto" => $this->template->isAcceptBoleto(),
-                "isAcceptCreditCard" => $this->template->isAcceptCreditCard(),
-                "isAllowInstallments" => $this->template->isAllowInstallments(),
+                "acceptCreditCard" => $this->template->isAcceptCreditCard(),
+                "allowInstallments" => $this->template->isAllowInstallments(),
                 "description" => $this->template->getDescription(),
                 "id" => $this->template->getId(),
                 "isSingle" => $this->template->isSingle(),

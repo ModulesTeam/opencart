@@ -20,10 +20,20 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
         .addClass('fa-cog fa-spin')
         .removeClass('fa-plus-circle');
 
+    this.creationPageFormModel
+        .getTemplateSelectElement()
+        .prop( "disabled", true );
+
     $.ajax({
         url: templateInfoUrl + "&template_id=" + selectedElementId,
         success: function(result) {
             this.templateSnapshop = result;
+
+            this.creationPageFormModel
+                .updateTemplateSnapshotDetailPanel(
+                  this.templateSnapshop
+                );
+
             this.creationPageFormModel
                 .getTemplateSnapshotDetailPanelElement()
                 .show();
@@ -33,6 +43,7 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
             this.creationPageFormModel
                 .getTemplateSelectEditPanelElement()
                 .hide();
+
         }.bind(this),
         error: function(result) {
             console.log("error",result.responseJSON);
@@ -43,7 +54,11 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
                 .prop( "disabled", false)
                 .find("i")
                 .addClass('fa-plus-circle')
-                .removeClass('fa-cog fa-spin')
+                .removeClass('fa-cog fa-spin');
+
+            this.creationPageFormModel
+                .getTemplateSelectElement()
+                .prop( "disabled", false );
         }.bind(this)
     });
 };
@@ -107,6 +122,67 @@ OpencartRecurrencyCreationFormModel.prototype
 OpencartRecurrencyCreationFormModel.prototype
     .getTemplateInfoUrl = function() {
     return this.templateInfoUrl;
+};
+
+OpencartRecurrencyCreationFormModel.prototype
+    .updateTemplateSnapshotDetailPanel = function(templateSnapshotData) {
+    var tds = this.getTemplateSnapshotDetailPanelElement()
+        .find('table#images tbody td');
+    $(tds[0]).html((function(templateSnapshotData){
+        var retn = templateSnapshotData.template.name;
+        retn += ' <span class="label label-primary">plan</span>';
+        if (templateSnapshotData.template.trial > 0) {
+            retn += ' <span class="label label-warning">' +
+                    templateSnapshotData.template.trial +
+                    ' day trial</span>';
+        }
+        return retn;
+    })(templateSnapshotData));
+    $(tds[1]).html(templateSnapshotData.template.description);
+    $(tds[2]).html((function(templateSnapshotData){
+        var retn = "";
+        if (templateSnapshotData.template.acceptBoleto) {
+            retn += "<span class='label label-default'>Boleto</span> ";
+        }
+        if (templateSnapshotData.template.acceptCreditCard) {
+            retn += "<span class='label label-default'>Cartão de Crédito</span> ";
+        }
+        return retn;
+    })(templateSnapshotData));
+    $(tds[3]).html((function(templateSnapshotData){
+        var retn = ''
+        switch (templateSnapshotData.dueAt.type) {
+            case 'X':
+                retn = 'Todo dia ' + templateSnapshotData.dueAt.value;
+                break;
+            case 'E':
+                retn = 'Pré-pago';
+                break;
+            case 'O':
+                retn = 'Pos-pago';
+                break;
+        }
+
+        return "<span class='label label-default'>" + retn + "</span>";
+
+    })(templateSnapshotData));
+    $(tds[4]).html((function(templateSnapshotData){
+        var retn = '<span class="label label-default">' +
+            templateSnapshotData.repetitions[0].cycles +
+            ' cycles</span> ';
+        retn += '<span class="label label-default">' +
+            templateSnapshotData.repetitions[0].frequency + ' ' +
+            templateSnapshotData.repetitions[0].intervalType +
+            '</span> '
+        return retn;
+    })(templateSnapshotData));
+    $(tds[5]).html((function(templateSnapshotData){
+        if (templateSnapshotData.template.allowInstallments) {
+            return '<span class="label label-info">Sim</span>';
+        }
+        return '<span class="label label-default">Não</span>';
+    })(templateSnapshotData));
+
 };
 
 
