@@ -1,5 +1,6 @@
-var PlansCreationController = function (formModelClass)
+var PlansCreationController = function (mundipaggRoot,formModelClass)
 {
+    this.mundipaggRoot = mundipaggRoot;
     this.creationPageFormModel = new formModelClass(this);
     this.templateSnapshop = null;
 };
@@ -164,33 +165,34 @@ OpencartRecurrencyCreationFormModel.prototype
         }
         return retn;
     })(templateSnapshotData));
-    $(tds[3]).html((function(templateSnapshotData){
-        var retn = ''
-        switch (templateSnapshotData.dueAt.type) {
-            case 'X':
-                retn = 'Todo dia ' + templateSnapshotData.dueAt.value;
-                break;
-            case 'E':
-                retn = 'Pré-pago';
-                break;
-            case 'O':
-                retn = 'Pos-pago';
-                break;
-        }
+    $(tds[3]).html((function(templateSnapshotData,mundipaggRoot){
+        var retn = mundipaggRoot.Location
+            .recurrence.template.due
+            .type[templateSnapshotData.dueAt.type].label;
+        retn = retn.replace('%d',templateSnapshotData.dueAt.value);
 
         return "<span class='label label-default'>" + retn + "</span>";
 
-    })(templateSnapshotData));
-    $(tds[4]).html((function(templateSnapshotData){
+    })(templateSnapshotData,this.formController.mundipaggRoot));
+
+    $(tds[4]).html((function(templateSnapshotData,mundipaggRoot){
+
+        var intervalLabel = mundipaggRoot.Location
+            .recurrence.template.repetition
+            .interval.type[templateSnapshotData.repetitions[0].intervalType].label;
+        intervalLabel = intervalLabel[
+            templateSnapshotData.repetitions[0].frequency > 1 ? 1 : 0
+        ];
+
         var retn = '<span class="label label-default">' +
             templateSnapshotData.repetitions[0].cycles +
             ' cycles</span> ';
         retn += '<span class="label label-default">' +
-            templateSnapshotData.repetitions[0].frequency + ' ' +
-            templateSnapshotData.repetitions[0].intervalType +
+            templateSnapshotData.repetitions[0].frequency + ' ' + intervalLabel +
             '</span> '
         return retn;
-    })(templateSnapshotData));
+    })(templateSnapshotData,this.formController.mundipaggRoot));
+
     $(tds[5]).html((function(templateSnapshotData){
         if (templateSnapshotData.template.allowInstallments) {
             return '<span class="label label-info">Sim</span>';

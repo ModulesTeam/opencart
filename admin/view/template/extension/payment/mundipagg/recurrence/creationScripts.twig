@@ -1,9 +1,17 @@
+<script type="text/javascript" src="view/script/mundipagg/MundipaggLoader.js"></script>
 <script type="text/javascript" src="view/script/mundipagg/recurrence/PlansCreationController.js"></script>
 <script>
-    var mundipaggPlansCreationController = new PlansCreationController(
-        OpencartRecurrencyCreationFormModel
-    );
 
-    mundipaggPlansCreationController.init();
+    var Mundipagg = new MundipaggLoader(OpencartMundipaggLoader,['Location']);
+
+    Mundipagg.load(function(){
+        var mundipaggPlansCreationController = new PlansCreationController(
+            Mundipagg,
+            OpencartRecurrencyCreationFormModel
+        );
+
+        mundipaggPlansCreationController.init();
+    });
+
 </script>
 
