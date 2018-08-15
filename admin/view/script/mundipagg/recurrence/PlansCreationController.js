@@ -90,7 +90,7 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     var baseUrl = splitData[0];
     splitData = splitData[1].split("&");
     splitData[0] = 'route=extension/payment/mundipagg/plans';
-    var finalUrl = baseUrl + '?' + splitData.join("&") + "&action=save";
+    var finalUrl = baseUrl + '?' + splitData.join("&") + "&action=save&mundipagg_plan";
     $('#form-product').attr('action',finalUrl);
 
     //defining templateInfoUrl

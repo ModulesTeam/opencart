@@ -61,4 +61,24 @@ class TemplateEntityFactory
         ;
         return $templateEntity;
     }
+
+    public function createFromJson($jsonData)
+    {
+        $data = json_decode($jsonData);
+        if (json_last_error() == JSON_ERROR_NONE) {
+            $templateEntity = new TemplateEntity();
+            $templateEntity
+                ->setId($data->id)
+                ->setName($data->name)
+                ->setDescription($data->name)
+                ->setIsSingle($data->isSingle)
+                ->setAcceptBoleto($data->acceptBoleto)
+                ->setAcceptCreditCard($data->acceptCreditCard)
+                ->setAllowInstallments($data->allowInstallments)
+                ->setTrial($data->trial)
+            ;
+            return $templateEntity;
+        }
+        throw new \Exception('Invalid json data!');
+    }
 }

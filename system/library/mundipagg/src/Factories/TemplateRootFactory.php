@@ -84,4 +84,43 @@ class TemplateRootFactory
 
         return $templateRoot;
     }
+
+    public function createFromJson($jsonData)
+    {
+        $data = json_decode($jsonData);
+        if (json_last_error() == JSON_ERROR_NONE) {
+            $templateEntityFactory = new TemplateEntityFactory();
+            $templateRoot = new TemplateRoot();
+
+            $dueAt = new DueValueObject();
+            $dueAt
+                ->setType($data->dueAt->type)
+                ->setValue($data->dueAt->value)
+            ;
+
+            foreach ($data->repetitions as $repetition) {
+                $_repetition = new RepetitionValueObject();
+                $_repetition
+                    ->setCycles($repetition->cycles)
+                    ->setFrequency($repetition->frequency)
+                    ->setIntervalType($repetition->intervalType);
+                if ($repetition->discountType) {
+                    $_repetition
+                        ->setDiscountType($repetition->discountType)
+                        ->setDiscountValue($repetition->discountValue);
+                }
+                $templateRoot->addRepetition($_repetition);
+            }
+
+            $templateRoot
+                ->setTemplate($templateEntityFactory->createFromJson(
+                    json_encode($data->template)
+                ))
+                ->setDueAt($dueAt);
+
+            return $templateRoot;
+
+        }
+        throw new \Exception('Invalid json data!');
+    }
 }
