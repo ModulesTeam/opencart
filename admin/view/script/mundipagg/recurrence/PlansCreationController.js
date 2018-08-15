@@ -7,6 +7,9 @@ var PlansCreationController = function (mundipaggRoot,formModelClass)
 
 PlansCreationController.prototype.init = function() {
     this.creationPageFormModel.init();
+    if (typeof MundipaggRecurrencyFormData !== "undefined") {
+        this.showConfigTable(MundipaggRecurrencyFormData);
+    }
 };
 PlansCreationController.prototype.removeTemplateSnapShotDataFromForm = function() {
     this.creationPageFormModel.getFormElement()
@@ -18,6 +21,27 @@ PlansCreationController.prototype.addTemplateSnapShotDataToForm = function() {
         .append('' +
             '<input type="hidden" id="mundipagg-template-snapshot-data" ' +
             'name="mundipagg-template-snapshot-data" value="'+data+'" />');
+};
+
+PlansCreationController.prototype.showConfigTable = function(templateSnapshop) {
+    this.templateSnapshop = templateSnapshop;
+
+    this.creationPageFormModel
+        .updateTemplateSnapshotDetailPanel(
+            this.templateSnapshop
+        );
+
+    this.creationPageFormModel
+        .getTemplateSnapshotDetailPanelElement()
+        .show();
+    this.creationPageFormModel
+        .getAddTemplateFromSelectButtonElement()
+        .hide();
+    this.creationPageFormModel
+        .getTemplateSelectEditPanelElement()
+        .hide();
+
+    this.addTemplateSnapShotDataToForm();
 };
 
 PlansCreationController.prototype.addTemplateFromSelect = function() {
@@ -40,27 +64,7 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
 
     $.ajax({
         url: templateInfoUrl + "&template_id=" + selectedElementId,
-        success: function(result) {
-            this.templateSnapshop = result;
-
-            this.creationPageFormModel
-                .updateTemplateSnapshotDetailPanel(
-                  this.templateSnapshop
-                );
-
-            this.creationPageFormModel
-                .getTemplateSnapshotDetailPanelElement()
-                .show();
-            this.creationPageFormModel
-                .getAddTemplateFromSelectButtonElement()
-                .hide();
-            this.creationPageFormModel
-                .getTemplateSelectEditPanelElement()
-                .hide();
-
-            this.addTemplateSnapShotDataToForm();
-
-        }.bind(this),
+        success: this.showConfigTable.bind(this),
         error: function(result) {
             console.log("error",result.responseJSON);
         },

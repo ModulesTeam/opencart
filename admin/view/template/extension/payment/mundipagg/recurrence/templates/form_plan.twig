@@ -1,5 +1,11 @@
 {% include formBase %}
 {% include panelPlanFrequency %}
+{% if RecurrencyFormData %}
+<script>
+    MundipaggRecurrencyFormData = JSON.parse(atob('{{ RecurrencyFormData }}'));
+    $('script').last().remove();
+</script>
+{% endif %}
 
 <div class="form-group required">
     <div class="col-sm-10">

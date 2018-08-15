@@ -46,6 +46,13 @@ class Plans extends Recurrence
     {
         //@todo fazer repo de produto
         if (!$this->validateForm()) {
+
+            if (isset($this->openCart->request->post['mundipagg-template-snapshot-data'])) {
+                $this->openCart->session->data['mp-recurrency-form-data'] =
+                    $this->openCart->request->post['mundipagg-template-snapshot-data']
+                ;
+            }
+
             $route = 'catalog/product/add';
             $action = new Action($route);
 
