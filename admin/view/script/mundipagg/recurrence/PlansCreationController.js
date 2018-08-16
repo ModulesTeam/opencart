@@ -120,6 +120,20 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
         }.bind(this)
     );
 
+    //add handler for template snapshop edit button
+    $('#template-snapshot-edit').on(
+        'click',
+        function() {
+            this.fillTemplateFormWithSnapshotData(this.formController.templateSnapshot);
+            this.formController.templateSnapshot = null;
+            this.getTemplateSelectElement().val('');
+            this.getTemplateSelectElement().change();
+            this.getTemplateSnapshotDetailPanelElement().hide();
+            this.getAddTemplateFromSelectButtonElement().show();
+            this.getTemplateSelectEditPanelElement().show();
+        }.bind(this)
+    );
+
     //prepare due type select
     var dueLocation = this.formController.mundipaggRoot.Location.recurrence.template.due.type;
     Object.keys(dueLocation).forEach(function(type){
@@ -156,9 +170,26 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
                 name: $('#mp-recurrency-name').val(),
                 trial: $('#mp-recurrency-trial').val()
             }
-        }
+        };
         this.formController.showConfigTable(templateSnapshot);
     }.bind(this));
+};
+
+OpencartRecurrencyCreationFormModel.prototype
+.fillTemplateFormWithSnapshotData = function(templateSnapshot) {
+     $('#expiry_type').val(templateSnapshot.dueAt.type);
+     $('#expiry_date').val(templateSnapshot.dueAt.value);
+
+    $('#mp-recurrency-cycles').val(templateSnapshot.repetitions[0].cycles);
+    $('#frequency').val(templateSnapshot.repetitions[0].frequency);
+    $('#interval').val(templateSnapshot.repetitions[0].intervalType);
+
+    $('#checkbox-boleto').prop( "checked", templateSnapshot.template.acceptBoleto);
+    $('#checkbox-creditcard').prop( "checked", templateSnapshot.template.acceptCreditCard);
+    $('#allow_installment').val(templateSnapshot.template.allowInstallments ? "1" : "0");
+    $('#mp-recurrency-description').val(templateSnapshot.template.description);
+    $('#mp-recurrency-name').val(templateSnapshot.template.name);
+    $('#mp-recurrency-trial').val(templateSnapshot.template.trial);
 };
 
 OpencartRecurrencyCreationFormModel.prototype
