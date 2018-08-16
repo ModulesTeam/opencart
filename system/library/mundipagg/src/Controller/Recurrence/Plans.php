@@ -97,6 +97,32 @@ class Plans extends Recurrence
         }
     }
 
+    public function productSearch()
+    {
+        $term = $this->openCart->request->get['term'];
+        $term = $this->openCart->db->escape($term);
+        $query = '
+            SELECT product.product_id as id,product_description.name as name 
+            FROM `'.DB_PREFIX.'product` as product 
+              INNER JOIN `'.DB_PREFIX.'product_description` as product_description
+                ON product.product_id = product_description.product_id
+            WHERE product_description.name like "%'. $term .'%"
+        ';
+        $queryResult = $this->openCart->db->query($query);
+        header('Content-Type: application/json');
+        header("HTTP/1.1 200 OK");
+        http_response_code(200);
+        $result = [];
+        foreach ($queryResult->rows as $row) {
+            $data = new \stdClass();
+            $data->label = $row['name'];
+            $data->value =  $row['id'];
+            $result[] = $data;
+        }
+        echo json_encode($result);
+        die;
+    }
+
     protected function validateForm() {
         $error = [];
         if (!$this->openCart->user->hasPermission('modify', 'catalog/product')) {

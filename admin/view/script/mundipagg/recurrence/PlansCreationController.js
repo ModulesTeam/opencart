@@ -173,6 +173,19 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
         };
         this.formController.showConfigTable(templateSnapshot);
     }.bind(this));
+
+    //prepare product search autocomplete
+    //defining templateInfoUrl
+    splitData[0] = 'route=extension/payment/mundipagg/plans';
+    this.productSearchUrl = baseUrl + '?' + splitData.join("&") + "&action=productSearch";
+    var productSearchUrl = this.productSearchUrl;
+    var autocompleteOptions = {
+        source: productSearchUrl,
+        response: function( event, ui ) {
+            console.log(event,ui);
+        }
+    };
+    $('#mp-recurrence-product-search').autocomplete(autocompleteOptions);
 };
 
 OpencartRecurrencyCreationFormModel.prototype
