@@ -100,23 +100,26 @@ class Plans extends Recurrence
     public function productSearch()
     {
         $term = $this->openCart->request->get['term'];
-        $term = $this->openCart->db->escape($term);
-        $query = '
-            SELECT product.product_id as id,product_description.name as name 
-            FROM `'.DB_PREFIX.'product` as product 
-              INNER JOIN `'.DB_PREFIX.'product_description` as product_description
-                ON product.product_id = product_description.product_id
-            WHERE product_description.name like "%'. $term .'%"
-        ';
-        $queryResult = $this->openCart->db->query($query);
+
+        $this->openCart->load->model('tool/image');
+        $this->openCart->load->model('catalog/product');
+
+        $products = $this->openCart->model_catalog_product->getProducts([
+            'filter_name' => $term
+        ]);
         header('Content-Type: application/json');
         header("HTTP/1.1 200 OK");
         http_response_code(200);
         $result = [];
-        foreach ($queryResult->rows as $row) {
+        foreach ($products as $product) {
             $data = new \stdClass();
-            $data->label = $row['name'];
-            $data->value =  $row['id'];
+            $data->label = $product['name'];
+            $data->value = $product['product_id'];
+            if (is_file(DIR_IMAGE . $product['image'])) {
+                $data->thumb  = $this->openCart->model_tool_image->resize($product['image'], 40, 40);
+            } else {
+                $data->thumb  = $this->openCart->model_tool_image->resize('no_image.png', 40, 40);
+            }
             $result[] = $data;
         }
         echo json_encode($result);

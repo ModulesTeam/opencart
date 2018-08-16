@@ -12,11 +12,9 @@
         <br>
     <div class="form-group required">
         <label class="col-sm-2 control-label" for="">Nome do produto</label>
-        <div class="col-sm-8">
+        <div class="col-sm-8 mp-search">
+            <span id='mp-recurrence-product-search-icon' class="fa fa-search"></span>
             <input type="text" name="filter_product" value="" placeholder="Digite o nome do produto" id="mp-recurrence-product-search" class="form-control">
-        </div>
-        <div class="col-sm-2">
-            <button type="submit" form="form-product" title="" class="btn btn-primary" data-original-title="Save"><i class="fa fa-plus-circle"></i></button>
         </div>
     </div>
     <hr>
@@ -25,58 +23,49 @@
             <thead>
             <tr>
                 <td class="text-left">Produto</td>
-                <td colspan="3" class="text-center">Ciclo</td>
-                <td colspan="2">Quantidade</td>
+                <td>Quantidade</td>
+                <td colspan="2" class="text-center">Ciclos</td>
+                <td></td>
             </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>Lâmina de barbear</td>
-                    <td>
-                        <input type="text" name="" placeholder="Quantidade" value="3" id="" class="form-control">
-                    <td>
-                        <button type="button" title="" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button>
-                        <button type="button" title="" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>
-                    </td>
-                    <td>
-                        <select name="" id="" class="form-control" title="Number">
-                            <option value=""> Mensal </option>
-                            <option value=""> Semanal </option>
-                        </select>
-                    </td>
-                    <td class="text-left">
-                        <input type="text" name="" placeholder="Quantidade" value="3" id="" class="form-control">
-                    </td>
-                    <td>
-                        <button type="button" title="" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button>
-                        <button type="button" title="" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Meia</td>
-                    <td>
-                        <input type="text" name="" placeholder="Quantidade" value="1" id="" class="form-control">
-                    <td>
-                        <button type="button" title="" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button>
-                        <button type="button" title="" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>
-                    </td>
-                    <td>
-                        <select name="" id="" class="form-control" title="Number">
-                            <option value=""> Mensal </option>
-                            <option value=""> Semanal </option>
-                        </select>
-                    </td>
-                    <td class="text-left">
-                        <input type="text" name="" placeholder="Quantidade" value="1" id="" class="form-control">
-                    </td>
-                    <td>
-                        <button type="button" title="" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button>
-                        <button type="button" title="" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button>
-                    </td>
-                </tr>
+            <tbody id="mp-recurrence-product-table-body"></tbody>
         </table>
     </div>
 </div>
+
+<script id="mp-recurrence-product-row-template" type="text/template">
+    <tr>
+        <td>
+            <img src="{product_thumb}" alt="{product_name" />
+            {product_name}<input type="hidden" id="mp-recurrence-products[id][]" name="mp-recurrence-products[id][]" value="{product_id}"/>
+        </td>
+
+        <td class="text-left">
+            <input type="number" min='1' placeholder="Quantidade de Produto" value="1" id="mp-recurrence-products[quantity][]" name="mp-recurrence-products[quantity][]" class="form-control">
+        </td>
+
+        <td>
+            <input type="number" min='1'  placeholder="Numero de Ciclos" value="1" id="mp-recurrence-products[cycles][]" name="mp-recurrence-products[cycles][]" class="form-control">
+        </td>
+        <td>
+            <select id="mp-recurrence-products[cycleType][]" name="mp-recurrence-products[cycleType][]" class="form-control" title="Cycle Type">
+                {product_select_options}
+            </select>
+        </td>
+        <td>
+            <button
+                    type="button"
+                    title=""
+                    class="btn btn-danger"
+                    data-original-title="remove product"
+                    onclick='(function(element){$(element).parent().parent().remove()})(this);'
+            >
+                <i class="fa fa-trash"></i>
+                Remover Produto
+            </button>
+        </td>
+    </tr>
+</script>
 
 <div class="tab-pane hidden tab-mundipagg-plan" id="tab-mundipagg-plan-subscriptions">
     <label class="col-sm-12 form-group template-select-edit-panel">Escolha um template de plano</label>

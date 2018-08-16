@@ -88,6 +88,7 @@ var OpencartRecurrencyCreationFormModel = function(formController) {
 };
 
 OpencartRecurrencyCreationFormModel.prototype.init = function() {
+    var _self = this;
     //replace form action
     var formAction = $('#form-product').attr('action');
     var splitData = formAction.split("?");
@@ -175,17 +176,56 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     }.bind(this));
 
     //prepare product search autocomplete
-    //defining templateInfoUrl
     splitData[0] = 'route=extension/payment/mundipagg/plans';
     this.productSearchUrl = baseUrl + '?' + splitData.join("&") + "&action=productSearch";
     var productSearchUrl = this.productSearchUrl;
     var autocompleteOptions = {
         source: productSearchUrl,
+        delay: 500,
+        minLength: 3,
         response: function( event, ui ) {
-            console.log(event,ui);
-        }
+            $('#mp-recurrence-product-search-icon')
+                .addClass('fa-search')
+                .removeClass('fa-cog fa-spin');
+        },
+        search: function() {
+            $(this).removeAttr('data-mp-item-id');
+            $('#mp-recurrence-product-search-icon')
+                .addClass('fa-cog fa-spin')
+                .removeClass('fa-search');
+        },
+        focus: function( event, ui ) {
+            event.preventDefault();
+            $('#mp-recurrence-product-search').val(ui.item.label);
+        },
+        select: function( event, ui ) {
+            event.preventDefault();
+            _self.addProductToPlan({
+                name: ui.item.label,
+                id: ui.item.value,
+                thumb: ui.item.thumb
+            });
+            $('#mp-recurrence-product-search').val('');
+        }.bind(_self)
     };
     $('#mp-recurrence-product-search').autocomplete(autocompleteOptions);
+};
+
+OpencartRecurrencyCreationFormModel.prototype
+    .addProductToPlan = function(productData) {
+    var html = $('#mp-recurrence-product-row-template').html();
+    html = html.replace(/\{product_id\}/g,productData.id);
+    html = html.replace(/\{product_name\}/g,productData.name);
+    html = html.replace(/\{product_thumb\}/g,productData.thumb);
+
+    var selectOptions = '';
+    var intervalLocation = this.formController.mundipaggRoot.Location.recurrence.template.repetition.interval.type;
+    Object.keys(intervalLocation).forEach(function(type){
+        selectOptions += '<option value="'+type+'">'+intervalLocation[type].label[1]+'</option>';
+    });
+    html = html.replace(/\{product_select_options\}/g,selectOptions);
+
+    $('#mp-recurrence-product-table-body').append(html);
 };
 
 OpencartRecurrencyCreationFormModel.prototype
