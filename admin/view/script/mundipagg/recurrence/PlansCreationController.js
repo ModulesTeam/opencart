@@ -2,7 +2,7 @@ var PlansCreationController = function (mundipaggRoot,formModelClass)
 {
     this.mundipaggRoot = mundipaggRoot;
     this.creationPageFormModel = new formModelClass(this);
-    this.templateSnapshop = null;
+    this.templateSnapshot = null;
 };
 
 PlansCreationController.prototype.init = function() {
@@ -16,19 +16,19 @@ PlansCreationController.prototype.removeTemplateSnapShotDataFromForm = function(
         .find('#mundipagg-template-snapshot-data').remove();
 };
 PlansCreationController.prototype.addTemplateSnapShotDataToForm = function() {
-    var data = btoa(JSON.stringify(this.templateSnapshop));
+    var data = btoa(JSON.stringify(this.templateSnapshot));
     this.creationPageFormModel.getFormElement()
         .append('' +
             '<input type="hidden" id="mundipagg-template-snapshot-data" ' +
             'name="mundipagg-template-snapshot-data" value="'+data+'" />');
 };
 
-PlansCreationController.prototype.showConfigTable = function(templateSnapshop) {
-    this.templateSnapshop = templateSnapshop;
+PlansCreationController.prototype.showConfigTable = function(templateSnapshot) {
+    this.templateSnapshot = templateSnapshot;
 
     this.creationPageFormModel
         .updateTemplateSnapshotDetailPanel(
-            this.templateSnapshop
+            this.templateSnapshot
         );
 
     this.creationPageFormModel
@@ -113,12 +113,52 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     $('#template-snapshot-remove').on(
         'click',
         function() {
-            this.formController.templateSnapshop = null;
+            this.formController.templateSnapshot = null;
             this.getTemplateSnapshotDetailPanelElement().hide();
             this.getAddTemplateFromSelectButtonElement().show();
             this.getTemplateSelectEditPanelElement().show();
         }.bind(this)
     );
+
+    //prepare due type select
+    var dueLocation = this.formController.mundipaggRoot.Location.recurrence.template.due.type;
+    Object.keys(dueLocation).forEach(function(type){
+        $('#expiry_type').append('<option value="'+type+'">'+dueLocation[type].name+'</option>');
+    });
+    //prepare interval type select
+    var intervalLocation = this.formController.mundipaggRoot.Location.recurrence.template.repetition.interval.type;
+    Object.keys(intervalLocation).forEach(function(type){
+        $('#interval').append('<option value="'+type+'">'+intervalLocation[type].name+'</option>');
+    });
+
+    //add handler for mp-add-plan-template-button click
+    $('#mp-add-plan-template-button').on('click',function(event){
+        var templateSnapshot = {
+            dueAt: {
+                type: $('#expiry_type').val(),
+                value: $('#expiry_date').val()
+            },
+            repetitions: [
+                {
+                    cycles: $('#mp-recurrency-cycles').val(),
+                    discountType: null,
+                    discountValue: null,
+                    frequency: $('#frequency').val(),
+                    intervalType: $('#interval').val()
+                }
+            ],
+            template: {
+                acceptBoleto: $('#checkbox-boleto').prop( "checked" ),
+                acceptCreditCard: $('#checkbox-creditcard').prop( "checked" ),
+                allowInstallments: $('#allow_installment').val() === '1' ? true : false,
+                description: $('#mp-recurrency-description').val(),
+                isSingle: false,
+                name: $('#mp-recurrency-name').val(),
+                trial: $('#mp-recurrency-trial').val()
+            }
+        }
+        this.formController.showConfigTable(templateSnapshot);
+    }.bind(this));
 };
 
 OpencartRecurrencyCreationFormModel.prototype

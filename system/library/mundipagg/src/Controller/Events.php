@@ -133,6 +133,7 @@ class Events
        $planform['formPlan'] = $path . 'templates/form_plan.twig';
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';
+       $planform['preventFormSubmit'] = true;
        if (isset($this->openCart->session->data['mp-recurrency-form-data'])) {
            $planform['RecurrencyFormData'] = $this->openCart->session->data['mp-recurrency-form-data'];
        }
@@ -180,6 +181,7 @@ class Events
        $planform['formPlan'] = $path . 'templates/form_plan.twig';
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';
+       $planform['productCreationForm'] = true;
 
        $productFormTabContentTemplate = $this->openCart->load->view(
            $path . 'plans/productFormTabContent',
