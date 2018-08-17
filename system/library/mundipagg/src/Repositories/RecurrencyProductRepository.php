@@ -1,10 +1,8 @@
 <?php
 
-use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
-
 namespace Mundipagg\Repositories;
 
-
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
 use Mundipagg\Aggregates\IAggregateRoot;
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 

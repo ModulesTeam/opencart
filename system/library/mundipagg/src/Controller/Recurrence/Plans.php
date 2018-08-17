@@ -108,6 +108,13 @@ class Plans extends Recurrence
 
             //@todo: commit database transaction only if mundipagg plan creation was successful.
 
+
+            //redirect to success.
+            $this->openCart->response->redirect(
+                $this->openCart->url->link(
+                    'catalog/product',
+                    'user_token=' . $this->openCart->session->data['user_token'])
+            );
         }
     }
 
