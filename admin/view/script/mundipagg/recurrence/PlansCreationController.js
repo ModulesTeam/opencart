@@ -7,10 +7,23 @@ var PlansCreationController = function (mundipaggRoot,formModelClass)
 
 PlansCreationController.prototype.init = function() {
     this.creationPageFormModel.init();
-    if (typeof MundipaggRecurrencyFormData !== "undefined") {
-        this.showConfigTable(MundipaggRecurrencyFormData);
+    if (typeof MundipaggTemplateSnapshot !== "undefined") {
+        this.showConfigTable(MundipaggTemplateSnapshot);
+    }
+    if (typeof MundipaggRecurrenceProducts !== "undefined") {
+        MundipaggRecurrenceProducts.id.forEach(function(value,index){
+            this.creationPageFormModel.addProductToPlan({
+                id: value,
+                name: MundipaggRecurrenceProducts.name[index],
+                cycleType: MundipaggRecurrenceProducts.cycleType[index],
+                cycles: MundipaggRecurrenceProducts.cycles[index],
+                quantity: MundipaggRecurrenceProducts.quantity[index],
+                thumb: MundipaggRecurrenceProducts.thumb[index]
+            });
+        }.bind(this));
     }
 };
+
 PlansCreationController.prototype.removeTemplateSnapShotDataFromForm = function() {
     this.creationPageFormModel.getFormElement()
         .find('#mundipagg-template-snapshot-data').remove();
@@ -211,17 +224,30 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     $('#mp-recurrence-product-search').autocomplete(autocompleteOptions);
 };
 
+
+
 OpencartRecurrencyCreationFormModel.prototype
     .addProductToPlan = function(productData) {
     var html = $('#mp-recurrence-product-row-template').html();
     html = html.replace(/\{product_id\}/g,productData.id);
     html = html.replace(/\{product_name\}/g,productData.name);
     html = html.replace(/\{product_thumb\}/g,productData.thumb);
+    html = html.replace(
+        /\{product_cycles\}/g,
+        typeof productData.cycles !== 'undefined' ? productData.cycles : '1'
+    );html = html.replace(
+        /\{product_quantity\}/g,
+        typeof productData.quantity !== 'undefined' ? productData.quantity : '1'
+    );
 
     var selectOptions = '';
     var intervalLocation = this.formController.mundipaggRoot.Location.recurrence.template.repetition.interval.type;
     Object.keys(intervalLocation).forEach(function(type){
-        selectOptions += '<option value="'+type+'">'+intervalLocation[type].label[1]+'</option>';
+        var selected = '';
+        if (typeof productData.cycleType !== 'undefined' && productData.cycleType === type) {
+            selected = 'selected'
+        }
+        selectOptions += '<option value="'+type+'" ' + selected + '>'+intervalLocation[type].label[1]+'</option>';
     });
     html = html.replace(/\{product_select_options\}/g,selectOptions);
 

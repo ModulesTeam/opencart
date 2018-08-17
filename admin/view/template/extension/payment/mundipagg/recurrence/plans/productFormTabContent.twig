@@ -37,18 +37,21 @@
     <tr>
         <td>
             <img src="{product_thumb}" alt="{product_name" />
-            {product_name}<input type="hidden" id="mp-recurrence-products[id][]" name="mp-recurrence-products[id][]" value="{product_id}"/>
+            {product_name}
+            <input type="hidden" id="mundipagg-recurrence-products[id][]" name="mundipagg-recurrence-products[id][]" value="{product_id}"/>
+            <input type="hidden" id="mundipagg-recurrence-products[name][]" name="mundipagg-recurrence-products[name][]" value="{product_name}"/>
+            <input type="hidden" id="mundipagg-recurrence-products[thumb][]" name="mundipagg-recurrence-products[thumb][]" value="{product_thumb}"/>
         </td>
 
         <td class="text-left">
-            <input type="number" min='1' placeholder="Quantidade de Produto" value="1" id="mp-recurrence-products[quantity][]" name="mp-recurrence-products[quantity][]" class="form-control">
+            <input type="number" min='1' placeholder="Quantidade de Produto" value="{product_quantity}" id="mundipagg-recurrence-products[quantity][]" name="mundipagg-recurrence-products[quantity][]" class="form-control">
         </td>
 
         <td>
-            <input type="number" min='1'  placeholder="Numero de Ciclos" value="1" id="mp-recurrence-products[cycles][]" name="mp-recurrence-products[cycles][]" class="form-control">
+            <input type="number" min='1'  placeholder="Numero de Ciclos" value="{product_cycles}" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" class="form-control">
         </td>
         <td>
-            <select id="mp-recurrence-products[cycleType][]" name="mp-recurrence-products[cycleType][]" class="form-control" title="Cycle Type">
+            <select id="mundipagg-recurrence-products[cycleType][]" name="mundipagg-recurrence-products[cycleType][]" class="form-control" title="Cycle Type">
                 {product_select_options}
             </select>
         </td>

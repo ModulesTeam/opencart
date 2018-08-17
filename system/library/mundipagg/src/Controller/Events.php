@@ -134,10 +134,15 @@ class Events
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';
        $planform['preventFormSubmit'] = true;
-       if (isset($this->openCart->session->data['mp-recurrency-form-data'])) {
-           $planform['RecurrencyFormData'] = $this->openCart->session->data['mp-recurrency-form-data'];
-       }
-       unset($this->openCart->session->data['mp-recurrency-form-data']);
+
+        if (isset($this->openCart->session->data['mundipagg-template-snapshot-data'])) {
+            $planform['MundipaggTemplateSnapshot'] = $this->openCart->session->data['mundipagg-template-snapshot-data'];
+        }
+        unset($this->openCart->session->data['mundipagg-template-snapshot-data']);
+        if (isset($this->openCart->session->data['mundipagg-recurrence-products'])) {
+            $planform['MundipaggRecurrenceProducts'] = $this->openCart->session->data['mundipagg-recurrence-products'];
+        }
+        unset($this->openCart->session->data['mundipagg-recurrence-products']);
 
        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
        $plans = $templateRepository->listEntities(0, false);

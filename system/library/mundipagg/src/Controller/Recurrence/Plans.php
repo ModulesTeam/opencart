@@ -48,8 +48,13 @@ class Plans extends Recurrence
         if (!$this->validateForm()) {
 
             if (isset($this->openCart->request->post['mundipagg-template-snapshot-data'])) {
-                $this->openCart->session->data['mp-recurrency-form-data'] =
+                $this->openCart->session->data['mundipagg-template-snapshot-data'] =
                     $this->openCart->request->post['mundipagg-template-snapshot-data']
+                ;
+            }
+            if (isset($this->openCart->request->post['mundipagg-recurrence-products'])) {
+                $this->openCart->session->data['mundipagg-recurrence-products'] =
+                    base64_encode(json_encode($this->openCart->request->post['mundipagg-recurrence-products']));
                 ;
             }
 
