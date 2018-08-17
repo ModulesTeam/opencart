@@ -51,47 +51,7 @@ class Plans extends Recurrence
             !$planValidation ||
             !$formValidation
         ) {
-
-            if (isset($this->openCart->request->post['mundipagg-template-snapshot-data'])) {
-                $this->openCart->session->data['mundipagg-template-snapshot-data'] =
-                    $this->openCart->request->post['mundipagg-template-snapshot-data']
-                ;
-            }
-            if (isset($this->openCart->request->post['mundipagg-recurrence-products'])) {
-                $this->openCart->session->data['mundipagg-recurrence-products'] =
-                    base64_encode(json_encode($this->openCart->request->post['mundipagg-recurrence-products']));
-                ;
-            }
-
-            $route = 'catalog/product/add';
-
-            // Any output needs to be another Action object.
-            $opencartReflection = new \ReflectionClass($this->openCart);
-            $registryProperty = $opencartReflection->getProperty('registry');
-            $registryProperty->setAccessible(true);
-            $registry = $registryProperty->getValue($this->openCart);
-            $registryProperty->setAccessible(false);
-
-            $file = DIR_APPLICATION . 'controller/catalog/product.php';
-            require_once($file);
-            $productController = new \ControllerCatalogProduct($registry);
-
-            $productControllerReflection = new \ReflectionClass($productController);
-            $errorProperty = $productControllerReflection->getProperty('error');
-            $errorProperty->setAccessible(true);
-            $errorProperty->setValue($productController,$this->openCart->error);
-            $errorProperty->setAccessible(false);
-
-            $output = $productController->add();
-
-            // Trigger the post events
-            $result = $this->openCart->event->trigger('controller/' . $route . '/after', array(&$route, &$output));
-
-            if (!is_null($result)) {
-                return $result;
-            }
-
-            return;
+            $this->handleValidationError();
         }
 
         if (($this->openCart->request->server['REQUEST_METHOD'] == 'POST')) {
@@ -864,6 +824,49 @@ class Plans extends Recurrence
         $data['footer'] = $this->load->controller('common/footer');
 
         $this->response->setOutput($this->load->view('catalog/product_form', $data));
+    }
+
+    protected function handleValidationError()
+    {
+        if (isset($this->openCart->request->post['mundipagg-template-snapshot-data'])) {
+            $this->openCart->session->data['mundipagg-template-snapshot-data'] =
+                $this->openCart->request->post['mundipagg-template-snapshot-data']
+            ;
+        }
+        if (isset($this->openCart->request->post['mundipagg-recurrence-products'])) {
+            $this->openCart->session->data['mundipagg-recurrence-products'] =
+                base64_encode(json_encode($this->openCart->request->post['mundipagg-recurrence-products']));
+            ;
+        }
+
+        $route = 'catalog/product/add';
+
+        $opencartReflection = new \ReflectionClass($this->openCart);
+        $registryProperty = $opencartReflection->getProperty('registry');
+        $registryProperty->setAccessible(true);
+        $registry = $registryProperty->getValue($this->openCart);
+        $registryProperty->setAccessible(false);
+
+        $file = DIR_APPLICATION . 'controller/catalog/product.php';
+        require_once($file);
+        $productController = new \ControllerCatalogProduct($registry);
+
+        $productControllerReflection = new \ReflectionClass($productController);
+        $errorProperty = $productControllerReflection->getProperty('error');
+        $errorProperty->setAccessible(true);
+        $errorProperty->setValue($productController,$this->openCart->error);
+        $errorProperty->setAccessible(false);
+
+        $output = $productController->add();
+
+        // Trigger the post events
+        $result = $this->openCart->event->trigger('controller/' . $route . '/after', array(&$route, &$output));
+
+        if (!is_null($result)) {
+            return $result;
+        }
+
+        return;
     }
 
 }
