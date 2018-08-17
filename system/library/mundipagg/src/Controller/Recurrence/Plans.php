@@ -128,11 +128,25 @@ class Plans extends Recurrence
         $products = $this->openCart->model_catalog_product->getProducts([
             'filter_name' => $term
         ]);
+
+        //filtering plans
+        $plans = $this->openCart->db->query("
+            SELECT product_id FROM `" . DB_PREFIX . "mundipagg_recurrency_product`;
+        ");
+
+        $planIds = [];
+        foreach ($plans->rows as $row) {
+            $planIds[] = $row["product_id"];
+        }
+
         header('Content-Type: application/json');
         header("HTTP/1.1 200 OK");
         http_response_code(200);
         $result = [];
         foreach ($products as $product) {
+            if (in_array($product['product_id'],$planIds)) {
+                continue;
+            }
             $data = new \stdClass();
             $data->label = $product['name'];
             $data->value = $product['product_id'];
