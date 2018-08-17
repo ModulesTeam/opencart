@@ -19,6 +19,10 @@ abstract class AbstractRep
         $this->db = $db;
     }
 
+    /**
+     * should return id of the created entity.
+     * @return int
+     */
     public function save(IAggregateRoot &$object){
         $objectId = null;
         if (

@@ -7,6 +7,8 @@ use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Factories\RecurrencyProductRootFactory;
 use Mundipagg\Factories\RecurrencySubproductValueObjectFactory;
 use Mundipagg\Factories\TemplateRootFactory;
+use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 
 class Plans extends Recurrence
 {
@@ -86,17 +88,25 @@ class Plans extends Recurrence
                 "productId" => null,
                 "template" => $templateRoot,
                 "isSingle" => false,
-                'mundipaggPlanId' => 'plan_xxxxxxxxxxxxxxxx', //@todo this is a placeholder.
                 'subProducts' => $subProducts
             ]));
 
+            //@todo start database transaction
             //save base product on opencart.
             $this->openCart->load->model('catalog/product');
             $opencartProductId = $this->openCart->model_catalog_product->addProduct($this->openCart->request->post);
             $recurrencyProduct->setProductId($opencartProductId);
 
-            //save plan product
+            //@todo: create plan on mundipagg
+            $mundipaggPlanId = 'plan_xxxxxxxxxxxxxxxx'; //@todo this is a placeholder.
 
+            $recurrencyProduct->setMundipaggPlanId($mundipaggPlanId);
+
+            //save plan product
+            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+            $recurrencyProductRepo->save($recurrencyProduct);
+
+            //@todo: commit database transaction only if mundipagg plan creation was successful.
 
         }
     }
