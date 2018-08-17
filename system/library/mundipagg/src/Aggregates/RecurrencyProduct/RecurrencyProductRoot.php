@@ -1,5 +1,4 @@
 <?php
-
 namespace Mundipagg\Aggregates\RecurrencyProduct;
 
 use Mundipagg\Aggregates\IAggregateRoot;
@@ -152,6 +151,4 @@ class RecurrencyProductRoot implements IAggregateRoot
     {
         return $this->template->getId();
     }
-
-
 }
