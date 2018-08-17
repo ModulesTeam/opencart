@@ -3,6 +3,9 @@
 namespace Mundipagg\Controller\Recurrence;
 
 use Action;
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
+use Mundipagg\Factories\RecurrencyProductRootFactory;
+use Mundipagg\Factories\RecurrencySubproductValueObjectFactory;
 use Mundipagg\Factories\TemplateRootFactory;
 
 class Plans extends Recurrence
@@ -62,14 +65,38 @@ class Plans extends Recurrence
             $templateRootFactory = new TemplateRootFactory();
             $templateRoot = $templateRootFactory->createFromJson($templateSnapshotData);
 
-            //if everything goes fine, re-encode $templateSnapshotData from temp templateRoot;
-            $templateSnapshotData = json_encode($templateRoot);
+            $recurrencyProductFactory = new RecurrencyProductRootFactory();
+            $recurrencySubproductValueObjectFactory = new RecurrencySubproductValueObjectFactory();
 
-            //save product on opencart.
+            //creating subproducts
+            $mundipaggRecurrencyProducts =
+                $this->openCart->request->post['mundipagg-recurrence-products'];
+            $subProducts = [];
+            foreach ($mundipaggRecurrencyProducts['cycles'] as $index => $cycles) {
+                $subProducts[] = $recurrencySubproductValueObjectFactory->createFromJson(json_encode([
+                    'productId' => $mundipaggRecurrencyProducts['id'][$index],
+                    'cycles' => $cycles,
+                    'cycleType' => $mundipaggRecurrencyProducts['cycleType'][$index],
+                    'quantity' => $mundipaggRecurrencyProducts['quantity'][$index],
+                ]));
+            }
+
+            //creating plan product
+            $recurrencyProduct = $recurrencyProductFactory->createFromJson(json_encode([
+                "productId" => null,
+                "template" => $templateRoot,
+                "isSingle" => false,
+                'mundipaggPlanId' => 'plan_xxxxxxxxxxxxxxxx', //@todo this is a placeholder.
+                'subProducts' => $subProducts
+            ]));
+
+            //save base product on opencart.
             $this->openCart->load->model('catalog/product');
-            $opencartProduct = $this->openCart->model_catalog_product->addProduct($this->openCart->request->post);
+            $opencartProductId = $this->openCart->model_catalog_product->addProduct($this->openCart->request->post);
+            $recurrencyProduct->setProductId($opencartProductId);
 
-            //get product id and create plan entity on the correct table.
+            //save plan product
+
 
         }
     }

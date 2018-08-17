@@ -1,0 +1,22 @@
+<?php
+
+namespace Mundipagg\Factories;
+
+
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
+
+class RecurrencySubproductValueObjectFactory
+{
+    public function createFromJson($jsonData)
+    {
+        $data = json_decode($jsonData);
+
+        $recurrencySubproduct = new RecurrencySubproductValueObject();
+        $recurrencySubproduct->setProductId($data->productId);
+        $recurrencySubproduct->setCycles($data->cycles);
+        $recurrencySubproduct->setCycleType($data->cycleType);
+        $recurrencySubproduct->setQuantity($data->quantity);
+
+        return $recurrencySubproduct;
+    }
+}
