@@ -10,11 +10,14 @@
         <h3>Adicionar produtos ao plano</h3>
     </div>
         <br>
-    <div class="form-group required">
+    <div class="form-group required {% if MundipaggRecurrenceErrors['recurrency_plan_product_error'] %} has-error {% endif %}">
         <label class="col-sm-2 control-label" for="">Nome do produto</label>
         <div class="col-sm-8 mp-search">
             <span id='mp-recurrence-product-search-icon' class="fa fa-search"></span>
             <input type="text" name="filter_product" value="" placeholder="Digite o nome do produto" id="mp-recurrence-product-search" class="form-control">
+            {% if MundipaggRecurrenceErrors['recurrency_plan_product_error'] %}
+            <div class="text-danger">{{ MundipaggRecurrenceErrors['recurrency_plan_product_error'] }}</div>
+            {% endif %}
         </div>
     </div>
     <hr>
@@ -36,7 +39,7 @@
 <script id="mp-recurrence-product-row-template" type="text/template">
     <tr>
         <td>
-            <img src="{product_thumb}" alt="{product_name" />
+            <img src="{product_thumb}" alt="{product_name}" />
             {product_name}
             <input type="hidden" id="mundipagg-recurrence-products[id][]" name="mundipagg-recurrence-products[id][]" value="{product_id}"/>
             <input type="hidden" id="mundipagg-recurrence-products[name][]" name="mundipagg-recurrence-products[name][]" value="{product_name}"/>
@@ -73,7 +76,7 @@
 <div class="tab-pane hidden tab-mundipagg-plan" id="tab-mundipagg-plan-subscriptions">
     <label class="col-sm-12 form-group template-select-edit-panel">Escolha um template de plano</label>
     <div class="col-sm-8 template-select-edit-panel" id="template-select-edit-panel">
-        <div class="form-group required">
+        <div class="form-group required {% if MundipaggRecurrenceErrors['recurrency_plan_template_error'] %} has-error {% endif %}">
             <div class="col-sm-10">
                 <select name="" id="select-subscription" class="form-control">
                     {% if plans | length > 0 %}
@@ -99,6 +102,9 @@
                     <i class="fa fa-plus-circle"></i>
                 </button>
             </div>
+            {% if MundipaggRecurrenceErrors['recurrency_plan_template_error'] %}
+                <div class="text-danger">{{ MundipaggRecurrenceErrors['recurrency_plan_template_error'] }}</div>
+            {% endif %}
         </div>
         <div id="customized" style="display: none;">
             {% include formPlan %}

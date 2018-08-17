@@ -144,11 +144,15 @@ class Events
         }
         unset($this->openCart->session->data['mundipagg-recurrence-products']);
 
-       $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
-       $plans = $templateRepository->listEntities(0, false);
-       $planform['plans'] = array_filter($plans, function($templateRoot){
-           return !$templateRoot->getTemplate()->isSingle();
-       });
+        if (isset($this->openCart->error['mundipagg_recurrency_errors'])) {
+            $planform['MundipaggRecurrenceErrors'] = $this->openCart->error['mundipagg_recurrency_errors'];
+        }
+
+        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+        $plans = $templateRepository->listEntities(0, false);
+        $planform['plans'] = array_filter($plans, function($templateRoot){
+            return !$templateRoot->getTemplate()->isSingle();
+        });
 
        $productFormTabContentTemplate = $this->openCart->load->view(
            $path . 'plans/productFormTabContent',

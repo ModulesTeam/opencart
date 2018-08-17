@@ -45,7 +45,12 @@ class Plans extends Recurrence
     public function save()
     {
         //@todo fazer repo de produto
-        if (!$this->validateForm()) {
+        $planValidation = $this->validatePlanConfig();
+        $formValidation = $this->validateForm();
+        if (
+            !$planValidation ||
+            !$formValidation
+        ) {
 
             if (isset($this->openCart->request->post['mundipagg-template-snapshot-data'])) {
                 $this->openCart->session->data['mundipagg-template-snapshot-data'] =
@@ -59,7 +64,6 @@ class Plans extends Recurrence
             }
 
             $route = 'catalog/product/add';
-            $action = new Action($route);
 
             // Any output needs to be another Action object.
             $opencartReflection = new \ReflectionClass($this->openCart);
@@ -67,7 +71,18 @@ class Plans extends Recurrence
             $registryProperty->setAccessible(true);
             $registry = $registryProperty->getValue($this->openCart);
             $registryProperty->setAccessible(false);
-            $output = $action->execute($registry, []);
+
+            $file = DIR_APPLICATION . 'controller/catalog/product.php';
+            require_once($file);
+            $productController = new \ControllerCatalogProduct($registry);
+
+            $productControllerReflection = new \ReflectionClass($productController);
+            $errorProperty = $productControllerReflection->getProperty('error');
+            $errorProperty->setAccessible(true);
+            $errorProperty->setValue($productController,$this->openCart->error);
+            $errorProperty->setAccessible(false);
+
+            $output = $productController->add();
 
             // Trigger the post events
             $result = $this->openCart->event->trigger('controller/' . $route . '/after', array(&$route, &$output));
@@ -79,10 +94,7 @@ class Plans extends Recurrence
             return;
         }
 
-        if (
-            ($this->openCart->request->server['REQUEST_METHOD'] == 'POST') &&
-            isset($this->openCart->request->post['mundipagg-template-snapshot-data'])
-        ) {
+        if (($this->openCart->request->server['REQUEST_METHOD'] == 'POST')) {
             $templateSnapshotData = $this->openCart->request->post['mundipagg-template-snapshot-data'];
             $templateSnapshotData = base64_decode($templateSnapshotData);
 
@@ -129,6 +141,26 @@ class Plans extends Recurrence
         }
         echo json_encode($result);
         die;
+    }
+
+    protected function validatePlanConfig()
+    {
+        $errors = [];
+        if (!isset($this->openCart->request->post['mundipagg-template-snapshot-data'])) {
+            $errors['recurrency_plan_template_error'] = 'A plan configuration must be added.';
+        }
+        if (!isset($this->openCart->request->post['mundipagg-recurrence-products'])) {
+            $errors['recurrency_plan_product_error'] = 'At least one product must be added to a plan';
+        }
+
+
+        if (count($errors)) {
+            $currentErrors = $this->openCart->error;
+            $currentErrors['mundipagg_recurrency_errors'] = $errors;
+            $this->openCart->error = $currentErrors;
+            return false;
+        };
+        return true;
     }
 
     protected function validateForm() {
@@ -194,9 +226,8 @@ class Plans extends Recurrence
         if ($error && !isset($error['warning'])) {
             $error['warning'] = $this->openCart->language->get('error_warning');
         }
-        $this->openCart->error = $error;
 
-        return !$this->openCart->error;
+        return !$error;
     }
 
     protected function getForm() {
