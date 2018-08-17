@@ -29,6 +29,7 @@ class ModelExtensionPaymentMundipagg extends Model
 
         //aggregates
         $this->createTemplateAggregateTables();
+        $this->createRecurrencyProductAggregateTables();
 
         $this->populatePaymentTable();
 
@@ -52,6 +53,7 @@ class ModelExtensionPaymentMundipagg extends Model
 
         //aggregates
         $this->dropTemplateAggregateTables();
+        $this->dropRecurrencyProductAggregateTables();
 
         $this->uninstallEvents();
     }
@@ -103,6 +105,56 @@ class ModelExtensionPaymentMundipagg extends Model
 
         $this->db->query("
             DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_template` CASCADE;
+        ");
+    }
+
+    private function createRecurrencyProductAggregateTables()
+    {
+        //recurrency product table
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_recurrency_product` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `product_id` INT NOT NULL,
+            `template_snapshot` TEXT NOT NULL,
+            `template_id` INT NULL,
+            `mundipagg_plan_id` VARCHAR(45) NULL,
+            `is_single` TINYINT NOT NULL,
+            PRIMARY KEY (`id`),
+            INDEX `fk_plan_template1_idx` (`template_id` ASC),
+            CONSTRAINT `fk_plan_template1`
+              FOREIGN KEY (`template_id`)
+              REFERENCES `" . DB_PREFIX . "mundipagg_template` (`id`)
+              ON DELETE NO ACTION
+              ON UPDATE NO ACTION)
+        ");
+
+        //recurrency sub product table
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_recurrency_subproduct` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `recurrency_product_id` INT NOT NULL,
+            `product_id` INT NOT NULL,
+            `quantity` INT NOT NULL,
+            `cycles` INT NOT NULL,
+            `cycle_type` CHAR NOT NULL,
+            PRIMARY KEY (`id`),
+            INDEX `fk_recurrency_subproduct_recurrency_product1_idx` (`recurrency_product_id` ASC),
+            CONSTRAINT `fk_recurrency_subproduct_recurrency_product1`
+            FOREIGN KEY (`recurrency_product_id`)
+            REFERENCES `" . DB_PREFIX . "mundipagg_recurrency_product` (`id`)
+            ON DELETE NO ACTION
+            ON UPDATE NO ACTION)
+        ");
+    }
+
+    private function dropRecurrencyProductAggregateTables()
+    {
+        $this->db->query("
+            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_recurrency_subproduct` CASCADE;
+        ");
+
+        $this->db->query("
+            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_recurrency_product` CASCADE;
         ");
     }
 
