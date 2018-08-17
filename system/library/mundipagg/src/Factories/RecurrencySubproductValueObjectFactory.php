@@ -9,7 +9,7 @@ class RecurrencySubproductValueObjectFactory
 {
     public function createFromJson($jsonData)
     {
-        $data = json_decode($jsonData);
+        $data = json_decode(utf8_decode($jsonData));
 
         $recurrencySubproduct = new RecurrencySubproductValueObject();
         $recurrencySubproduct->setProductId($data->productId);

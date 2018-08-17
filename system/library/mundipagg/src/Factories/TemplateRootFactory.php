@@ -87,7 +87,7 @@ class TemplateRootFactory
 
     public function createFromJson($jsonData)
     {
-        $data = json_decode($jsonData);
+        $data = json_decode(utf8_decode($jsonData));
         if (json_last_error() == JSON_ERROR_NONE) {
             $templateEntityFactory = new TemplateEntityFactory();
             $templateRoot = new TemplateRoot();

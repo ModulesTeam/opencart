@@ -8,12 +8,14 @@ class RecurrencyProductRootFactory
 {
     public function createFromJson($jsonData)
     {
-        $data = json_decode($jsonData);
+        $data = json_decode(utf8_decode($jsonData));
         $recurrencySubProductValueObjectFactory = new RecurrencySubproductValueObjectFactory();
 
         $recurrencyProduct = new RecurrencyProductRoot();
         $recurrencyProduct->setSingle($data->isSingle);
-        $recurrencyProduct->setMundipaggPlanId($data->mundipaggPlanId);
+        if (isset($data->mundipaggPlanId)) {
+            $recurrencyProduct->setMundipaggPlanId($data->mundipaggPlanId);
+        }
         $recurrencyProduct->setProductId($data->productId);
         $recurrencyProduct->setTemplate(
             (new TemplateRootFactory())->createFromJson(json_encode($data->template))

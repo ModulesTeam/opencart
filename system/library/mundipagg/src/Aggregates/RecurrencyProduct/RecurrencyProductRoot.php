@@ -147,4 +147,11 @@ class RecurrencyProductRoot implements IAggregateRoot
         $this->isSingle = $isSingle;
         return $this;
     }
+
+    public function getTemplateId()
+    {
+        return $this->template->getId();
+    }
+
+
 }

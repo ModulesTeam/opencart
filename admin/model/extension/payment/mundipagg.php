@@ -114,6 +114,7 @@ class ModelExtensionPaymentMundipagg extends Model
         $this->db->query("
             CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_recurrency_product` (
             `id` INT NOT NULL AUTO_INCREMENT,
+            `is_disabled` TINYINT NOT NULL DEFAULT 0,
             `product_id` INT NOT NULL,
             `template_snapshot` TEXT NOT NULL,
             `template_id` INT NULL,

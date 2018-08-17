@@ -56,7 +56,7 @@ class Plans extends Recurrence
             !$planValidation ||
             !$formValidation
         ) {
-            $this->handleValidationError();
+           return $this->handleValidationError();
         }
 
         if (($this->openCart->request->server['REQUEST_METHOD'] == 'POST')) {
