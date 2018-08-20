@@ -3,6 +3,7 @@
 namespace Mundipagg\Factories;
 
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
 
 class RecurrencyProductRootFactory
 {
@@ -29,5 +30,40 @@ class RecurrencyProductRootFactory
         }
 
         return $recurrencyProduct;
+    }
+
+    public function createFromDBData($dbData)
+    {
+        $productRoot = new RecurrencyProductRoot();
+
+        $productRoot
+            ->setId($dbData['id'])
+            ->setDisabled($dbData['is_disabled'])
+            ->setSingle($dbData['is_single'])
+            ->setMundipaggPlanId($dbData['mundipagg_plan_id'])
+            ->setProductId($dbData['product_id'])
+            ->setTemplate((new TemplateRootFactory())->createFromJson(
+                $dbData['template_snapshot']
+            ));
+
+        $subPproductIds = explode(',',$dbData['sub_product_id']);
+        $subQuantities = explode(',',$dbData['sub_quantity']);
+        $subCycles = explode(',',$dbData['sub_cycles']);
+        $subCycleTypes = explode(',',$dbData['sub_cycle_type']);
+
+        foreach ($subPproductIds as $index => $subProductId) {
+            if(strlen($subProductId) < 1) {
+                continue;
+            }
+            $productRoot->addSubproduct(
+                (new RecurrencySubproductValueObject())
+                ->setProductId($subProductId)
+                ->setQuantity($subQuantities[$index])
+                ->setCycles($subCycles[$index])
+                ->setCycleType($subCycleTypes[$index])
+            );
+        }
+
+        return $productRoot;
     }
 }

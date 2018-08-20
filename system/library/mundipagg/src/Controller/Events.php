@@ -1,10 +1,13 @@
 <?php
 namespace Mundipagg\Controller;
 
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
 use Mundipagg\Model\Order;
 use Mundipagg\Helper\AdminMenu as MundipaggHelperAdminMenu;
 use Mundipagg\Helper\ProductPageChanges as MundipaggHelperProductPageChanges;
 use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Repositories\TemplateRepository;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
@@ -108,6 +111,57 @@ class Events
         }
 
         return $this->template;
+    }
+
+    public function productEntry($data)
+    {
+        $get = $this->openCart->request->get;
+        $action = explode('/',$get['route']);
+        $action = end($action);
+
+        switch ($action) {
+            case "delete":
+                return $this->handleProductDelete();
+        }
+    }
+
+    protected function handleProductDelete()
+    {
+        //verify if there is plan products on delete command
+        $post = $this->openCart->request->post;
+        if (isset($post['selected'])) {
+            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+            $selected = array_map(function($element){
+                return intval($element);
+            },$post['selected']);
+
+            $plans = $recurrencyProductRepo->listEntities(0,false);
+
+            $subProductsOfPlans = [];
+
+            foreach ($selected as $productId) {
+                /** @var RecurrencyProductRoot $product */
+                foreach ($plans as $plan) {
+                    if ($plan->getProductId() == $productId) {
+                        $plan->setDisabled(true);
+                        $recurrencyProductRepo->save($plan);
+                        continue;
+                    }
+                    $subProducts = $plan->getSubProducts();
+                    /** @var RecurrencySubproductValueObject $subProduct */
+                    foreach ($subProducts as $subProduct) {
+                        if ($subProduct->getProductId() == $productId) {
+                            if(!isset($subProductsOfPlans[$productId])) {
+                                $subProductsOfPlans[$productId] = [];
+                            }
+                            $subProductsOfPlans[$productId][$plan->getProductId()] = true;
+                        }
+                    }
+                }
+            }
+
+
+        }
     }
 
     public function productFormEntry($data)
