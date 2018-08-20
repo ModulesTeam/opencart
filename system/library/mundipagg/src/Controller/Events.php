@@ -122,6 +122,60 @@ class Events
         switch ($action) {
             case "delete":
                 return $this->handleProductDelete();
+            case "product":
+                return $this->handleProductIndex();
+        }
+    }
+
+    protected function handleProductIndex()
+    {
+        $opencartSessionData = $this->openCart->session->data;
+        $errorData = [];
+        if (isset($opencartSessionData['mundipagg-cant-delete-product-data'])) {
+            $cantDeleteData = $opencartSessionData['mundipagg-cant-delete-product-data'];
+            unset($opencartSessionData['mundipagg-cant-delete-product-data']);
+
+            $errorData['warning'] = '';
+            foreach ($cantDeleteData as $product) {
+                $productError = "Can't delete product '<strong>{$product['name']}</strong>' because this product is in the following plans:<br /><ul>";
+                foreach ($product['plans'] as $planName) {
+                    $productError .= "<li>$planName</li>";
+                }
+                $productError .= "</ul>";
+            }
+            $errorData['warning'] = $productError;
+        }
+
+        $this->openCart->session->data = $opencartSessionData;
+        if(count($errorData)) {
+            $opencartReflection = new \ReflectionClass($this->openCart);
+            $errorProperty = $opencartReflection->getProperty('error');
+            $errorProperty->setAccessible(true);
+            $currentErrors = $errorProperty->getValue($this->openCart);
+
+            $currentErrors = array_merge($currentErrors,$errorData);
+
+            $errorProperty->setAccessible(false);
+
+            $opencartReflection = new \ReflectionClass($this->openCart);
+            $registryProperty = $opencartReflection->getProperty('registry');
+            $registryProperty->setAccessible(true);
+            $registry = $registryProperty->getValue($this->openCart);
+            $registryProperty->setAccessible(false);
+
+            $file = DIR_APPLICATION . 'controller/catalog/product.php';
+            require_once($file);
+            $productController = new \ControllerCatalogProduct($registry);
+
+            $productControllerReflection = new \ReflectionClass($productController);
+            $errorProperty = $productControllerReflection->getProperty('error');
+            $errorProperty->setAccessible(true);
+            $errorProperty->setValue($productController,$currentErrors);
+            $errorProperty->setAccessible(false);
+
+            $productController->index();
+
+            return $productController->response->getOutput();
         }
     }
 
@@ -148,19 +202,41 @@ class Events
                         continue;
                     }
                     $subProducts = $plan->getSubProducts();
-                    /** @var RecurrencySubproductValueObject $subProduct */
-                    foreach ($subProducts as $subProduct) {
-                        if ($subProduct->getProductId() == $productId) {
-                            if(!isset($subProductsOfPlans[$productId])) {
-                                $subProductsOfPlans[$productId] = [];
+                    if (!in_array($plan->getProductId(),$selected)) {
+                        /** @var RecurrencySubproductValueObject $subProduct */
+                        foreach ($subProducts as $subProduct) {
+                            if ($subProduct->getProductId() == $productId) {
+                                if(!isset($subProductsOfPlans[$productId])) {
+                                    $subProductsOfPlans[$productId] = [];
+                                }
+                                $subProductsOfPlans[$productId][$plan->getProductId()] = true;
                             }
-                            $subProductsOfPlans[$productId][$plan->getProductId()] = true;
                         }
                     }
                 }
             }
 
+            if (count($subProductsOfPlans)) {
+                $this->openCart->load->model('catalog/product');
 
+                $cantDeleteData = [];
+                foreach ($subProductsOfPlans as $subProductId => $planProducts) {
+                    $subProduct = $this->openCart->model_catalog_product->getProduct($subProductId);
+                    $cantDeleteData[$subProductId] = [
+                        "name" => $subProduct["name"],
+                        "plans" => []
+                    ];
+                    foreach ($planProducts as $planId => $discard) {
+                        $plan = $this->openCart->model_catalog_product->getProduct($planId);
+                        $cantDeleteData[$subProductId]["plans"][] = $plan["name"];
+                    }
+                }
+                $sessionData = $this->openCart->session->data;
+                $sessionData['mundipagg-cant-delete-product-data'] = $cantDeleteData;
+                $this->openCart->session->data = $sessionData;
+
+                $this->openCart->response->redirect($this->openCart->url->link('catalog/product', 'user_token=' . $this->openCart->session->data['user_token']));
+            }
         }
     }
 

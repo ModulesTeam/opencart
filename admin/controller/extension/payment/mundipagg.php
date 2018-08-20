@@ -694,6 +694,11 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $template = $mundipaggEvents->$method($data);
 
         if ($template) {
+
+            if (is_string($template)) {
+                return $template;
+            }
+
             return $template->render(
                 $this->config->get('template_directory') . $route,
                 $this->config->get('template_cache')

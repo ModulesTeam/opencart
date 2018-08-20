@@ -194,6 +194,13 @@ class ModelExtensionPaymentMundipagg extends Model
             'extension/payment/mundipagg/callEvents'
         );
 
+        //Add product plan index middleware
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_add_product_plan_index_middleware',
+            'admin/controller/catalog/product/before',
+            'extension/payment/mundipagg/callEvents'
+        );
+
         //Add saved credit card list
         $this->model_setting_event->addEvent(
             'payment_mundipagg_saved_creditcards',
