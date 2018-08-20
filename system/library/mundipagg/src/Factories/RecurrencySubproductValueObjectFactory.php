@@ -2,7 +2,6 @@
 
 namespace Mundipagg\Factories;
 
-
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
 
 class RecurrencySubproductValueObjectFactory
