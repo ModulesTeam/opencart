@@ -133,17 +133,36 @@ class Events
        $planform['formPlan'] = $path . 'templates/form_plan.twig';
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';
+       $planform['preventFormSubmit'] = true;
 
-       $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
-       $plans = $templateRepository->listEntities(0, false);
-       $planform['plans'] = array_filter($plans, function($templateRoot){
-           return !$templateRoot->getTemplate()->isSingle();
-       });
+        if (isset($this->openCart->session->data['mundipagg-template-snapshot-data'])) {
+            $planform['MundipaggTemplateSnapshot'] = $this->openCart->session->data['mundipagg-template-snapshot-data'];
+        }
+        unset($this->openCart->session->data['mundipagg-template-snapshot-data']);
+        if (isset($this->openCart->session->data['mundipagg-recurrence-products'])) {
+            $planform['MundipaggRecurrenceProducts'] = $this->openCart->session->data['mundipagg-recurrence-products'];
+        }
+        unset($this->openCart->session->data['mundipagg-recurrence-products']);
+
+        if (isset($this->openCart->error['mundipagg_recurrency_errors'])) {
+            $planform['MundipaggRecurrenceErrors'] = $this->openCart->error['mundipagg_recurrency_errors'];
+        }
+
+        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+        $plans = $templateRepository->listEntities(0, false);
+        $planform['plans'] = array_filter($plans, function($templateRoot){
+            return !$templateRoot->getTemplate()->isSingle();
+        });
 
        $productFormTabContentTemplate = $this->openCart->load->view(
            $path . 'plans/productFormTabContent',
            $planform
        );
+
+        $planCreationScript = $this->openCart->load->view(
+            $path . 'creationScripts',
+            $planform
+        );
 
        $helper = new MundipaggHelperProductPageChanges($this->openCart);
        $data['heading_title'] = 'Plano';
@@ -151,6 +170,7 @@ class Events
 
        $data['tab_design'] = $data['tab_design'] . $productFormTemplate;
        $data['footer'] = $data['footer'] . $productFormTabContentTemplate;
+       $data['footer'] .= $planCreationScript;
 
        foreach ($data as $key => $value) {
            $this->template->set($key, $value);
@@ -170,6 +190,7 @@ class Events
        $planform['formPlan'] = $path . 'templates/form_plan.twig';
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';
+       $planform['productCreationForm'] = true;
 
        $productFormTabContentTemplate = $this->openCart->load->view(
            $path . 'plans/productFormTabContent',

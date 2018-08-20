@@ -2,7 +2,7 @@
     <label class="col-sm-5">Ciclos</label>
     <label class="col-sm-5">Intervalo</label>
     <div class="col-sm-5">
-        <input type="text" class="form-control" placeholder="3" name="intervals[0][cycles]" value="{{ selectedTemplateRoot.repetitions[0].cycles }}">
+        <input type="text" class="form-control" placeholder="3" id='mp-recurrency-cycles' name="intervals[0][cycles]" value="{{ selectedTemplateRoot.repetitions[0].cycles }}">
     </div>
     <div class="frequency">
         <div class="col-sm-5">
@@ -22,7 +22,7 @@
     <label class="col-sm-5">Trial</label>
     <div class="col-sm-5">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="15" name="trial" value="{{ selectedTemplateRoot.template.trial }}">
+          <input type="text" class="form-control" placeholder="15" name="trial" id='mp-recurrency-trial' value="{{ selectedTemplateRoot.template.trial }}">
           <span class="input-group-addon">Days</span>
         </div>
     </div>

@@ -13,7 +13,9 @@ class OpencartDatabaseBridge extends AbstractDatabaseBridge
     {
         $this->tableArray = [
             "TEMPLATE_TABLE" =>  DB_PREFIX . "mundipagg_template",
-            "TEMPLATE_REPETITION_TABLE" =>  DB_PREFIX . "mundipagg_template_repetition"
+            "TEMPLATE_REPETITION_TABLE" =>  DB_PREFIX . "mundipagg_template_repetition",
+            "RECURRENCY_PRODUCT_TABLE" => DB_PREFIX . "mundipagg_recurrency_product",
+            "RECURRENCY_SUBPRODUCT_TABLE" => DB_PREFIX . "mundipagg_recurrency_subproduct",
         ];
     }
 

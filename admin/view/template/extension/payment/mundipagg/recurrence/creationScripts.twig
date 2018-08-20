@@ -1,0 +1,33 @@
+<script type="text/javascript" src="view/script/mundipagg/MundipaggLoader.js"></script>
+<script type="text/javascript" src="view/script/mundipagg/OpencartMundipaggLoader.js"></script>
+<script type="text/javascript" src="view/script/mundipagg/recurrence/PlansCreationController.js"></script>
+<script type="text/javascript" src="view/script/mundipagg/recurrence/OpencartRecurrencyCreationFormModel.js"></script>
+<script type="text/javascript" src="view/script/mundipagg/lib/jquery-ui.min.js"></script>
+<style>@import "view/stylesheet/mundipagg/lib/jquery-ui.min.css"; </style>
+<style>
+    .ui-autocomplete {
+        background-color: inherit;
+        border-style: solid;
+        border-width: 1px;
+    }
+    .mp-search input { text-indent: 30px;}
+    .mp-search .fa {
+        position: absolute;
+        top: 27%;
+        left: 3%;
+        font-size: 15px;
+    }
+</style>
+<script>
+
+    var Mundipagg = new MundipaggLoader(OpencartMundipaggLoader,['Location']);
+
+    Mundipagg.load(function(){
+         var mundipaggPlansCreationController = new PlansCreationController(
+            Mundipagg,
+            OpencartRecurrencyCreationFormModel
+        );
+
+        mundipaggPlansCreationController.init();
+    });
+</script>
