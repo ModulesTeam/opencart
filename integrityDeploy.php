@@ -14,7 +14,6 @@ foreach ($rawLines as $rawLine) {
             $integrityEngineBasePath = explode('/',$line[1]);
             array_pop($integrityEngineBasePath);
             $integrityEngineBasePath = './' . implode('/',$integrityEngineBasePath) . '/';
-//            var_dump($integrityEngineBasePath);die;
             $integrityEngineClassFilePath = $integrityEngineBasePath . 'IntegrityEngine.php';
             $integrityFilePath = $integrityEngineBasePath . 'integrityCheck';
             break;

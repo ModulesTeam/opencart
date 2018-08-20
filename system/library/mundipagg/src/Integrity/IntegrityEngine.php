@@ -9,7 +9,6 @@ class IntegrityEngine
 
     private function hasPermissions($file)
     {
-//        var_dump($file, file_exists($file));
         if (!file_exists($file)) {
             echo "<pre>File <strong>'$file'</strong> does not exists!</pre>\n";
             return false;
@@ -55,7 +54,7 @@ class IntegrityEngine
         $files = scandir($dir);
         $md5 = [];
         foreach ($files as $file) {
-            if ($file !== '.' && $file !== '..') {
+            if ($file !== '.' && $file !== '..' && !$this->isDirectoriesIgnored($ignored, $file) ) {
                 $file = $dir . DIRECTORY_SEPARATOR . $file;
                 $md5[$file] = $this->generateFilesPath($file, $ignored);
             }
@@ -86,9 +85,9 @@ class IntegrityEngine
         $data = explode('";b:1;}', $data);
 
         $files = [];
-        foreach ($data as $line) {
+        foreach ($data as $index => $line) {
             $raw = explode('"', $line);
-            if (count($raw) > 1) {
+            if (count($raw) > 1 && is_file(end($raw))) {
                 $files[] = end($raw);
             }
         }
@@ -137,17 +136,13 @@ class IntegrityEngine
                 $list = array_merge($list, $this->listFilesOnDir($line, $ignoredDir));
             }
         }
-
         return $list;
     }
 
     public function isDirectoriesIgnored(array $directories, $line)
     {
-        $array = array_filter($directories, function ($dir) use ($line) {
-            return  strpos($line, trim($dir)) !== 0;
-        });
 
-        return count($array) !== count($directories);
+        return in_array($line, $directories);
     }
 
     public function verifyIntegrity($modmanFilePath, $integrityCheckFilePath, $ignoreList = [])
