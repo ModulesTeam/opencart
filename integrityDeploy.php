@@ -12,6 +12,8 @@ foreach ($rawLines as $rawLine) {
         $line = array_values(array_filter(explode(' ', $rawLine)));
         if ($line[0] === 'modman') {
             $integrityEngineBasePath = explode('/', $line[1]);
+            array_shift($integrityEngineBasePath);
+            array_shift($integrityEngineBasePath);
             array_pop($integrityEngineBasePath);
             $integrityEngineBasePath = './' . implode('/', $integrityEngineBasePath) . '/';
             $integrityEngineClassFilePath = $integrityEngineBasePath . 'IntegrityEngine.php';
