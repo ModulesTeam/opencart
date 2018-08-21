@@ -137,7 +137,6 @@ class RecurrencyProductRoot implements IAggregateRoot
         $this->subProducts[] = $subProduct;
     }
 
-
     /**
      * @param bool $isSingle
      * @return RecurrencyProductRoot

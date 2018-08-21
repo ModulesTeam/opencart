@@ -46,10 +46,10 @@ class RecurrencyProductRootFactory
                 $dbData['template_snapshot']
             ));
 
-        $subPproductIds = explode(',',$dbData['sub_product_id']);
-        $subQuantities = explode(',',$dbData['sub_quantity']);
-        $subCycles = explode(',',$dbData['sub_cycles']);
-        $subCycleTypes = explode(',',$dbData['sub_cycle_type']);
+        $subPproductIds = explode(',' ,$dbData['sub_product_id']);
+        $subQuantities = explode(',' ,$dbData['sub_quantity']);
+        $subCycles = explode(',' ,$dbData['sub_cycles']);
+        $subCycleTypes = explode(',' ,$dbData['sub_cycle_type']);
 
         foreach ($subPproductIds as $index => $subProductId) {
             if(strlen($subProductId) < 1) {

@@ -116,7 +116,7 @@ class Events
     public function productEntry($data)
     {
         $get = $this->openCart->request->get;
-        $action = explode('/',$get['route']);
+        $action = explode('/', $get['route']);
         $action = end($action);
 
         switch ($action) {
