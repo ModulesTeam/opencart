@@ -4,7 +4,6 @@ namespace Mundipagg\Integrity;
 
 interface SystemInfoInterface
 {
-
     public function getModuleVersion();
 
     public function getPlatformVersion();
