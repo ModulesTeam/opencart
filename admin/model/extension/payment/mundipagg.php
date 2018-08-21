@@ -190,7 +190,7 @@ class ModelExtensionPaymentMundipagg extends Model
         //Add product plan delete middleware
         $this->model_setting_event->addEvent(
             'payment_mundipagg_add_product_plan_delete_middleware',
-            'admin/controller/product/delete/before',
+            'admin/controller/catalog/product/delete/before',
             'extension/payment/mundipagg/callEvents'
         );
 

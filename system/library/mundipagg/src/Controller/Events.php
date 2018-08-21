@@ -37,7 +37,7 @@ class Events
 
     public function productListEntry($data)
     {
-        if ($this->openCart->request->get['filter_mp_type']) {
+        if (isset($this->openCart->request->get['filter_mp_type'])) {
             $data['mp_selected_product_type_filter'] =
                 strtolower($this->openCart->request->get['filter_mp_type']);
         }
