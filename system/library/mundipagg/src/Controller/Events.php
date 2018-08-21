@@ -301,6 +301,67 @@ class Events
 
     public function productFormEntry($data)
     {
+        if (isset($this->openCart->request->get['product_id'])) {
+            $productId = intval($this->openCart->request->get['product_id']);
+
+            $planRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+            $plans = $planRepo->listEntities(0,false);
+            /** @var RecurrencyProductRoot $plan */
+            foreach ($plans as $plan) {
+                if ($plan->getProductId() == $productId) {
+                    $get = $this->openCart->request->get;
+                    $get['mundipagg_plan'] = '';
+                    $this->openCart->request->get = $get;
+                    $data['mpEditPlanId'] = $plan->getId();
+
+                    $session = $this->openCart->session->data;
+                    $session['mundipagg-template-snapshot-data'] =
+                        base64_encode(json_encode($plan->getTemplate()));
+
+                    $this->openCart->load->model('catalog/product');
+
+                    $subProductsToSession = [
+                        'cycles' => [],
+                        'cycleType' => [],
+                        'id' => [],
+                        'name' => [],
+                        'quantity' => [],
+                        'thumb' => []
+                    ];
+                    $subProducts = $plan->getSubProducts();
+                    /** @var RecurrencySubproductValueObject $subProduct */
+                    foreach ($subProducts as $index => $subProduct) {
+                        $subProductsToSession['cycles'][$index] = $subProduct->getCycles();
+                        $subProductsToSession['cycleType'][$index] = $subProduct->getCycleType();
+                        $subProductsToSession['quantity'][$index] = $subProduct->getQuantity();
+                        $subProductsToSession['id'][$index] = $subProduct->getProductId();
+
+                        $product = $this->openCart->model_catalog_product->getProduct(
+                            $subProduct->getProductId()
+                        );
+                        $subProductsToSession['name'][$index] = $product['name'];
+
+                        if (is_file(DIR_IMAGE . $product['image'])) {
+                            $subProductsToSession['thumb'][$index] =
+                                $this->openCart->model_tool_image->resize($product['image'], 40, 40);
+                        } else {
+                            $subProductsToSession['thumb'][$index] =
+                                $this->openCart->model_tool_image->resize('no_image.png', 40, 40);
+                        }
+                    }
+
+                    if (count($subProductsToSession['id'])) {
+                        $session['mundipagg-recurrence-products'] =
+                            base64_encode(json_encode($subProductsToSession));
+                    }
+
+                    $this->openCart->session->data = $session;
+
+                    break;
+                }
+            }
+        }
+
         if (isset($this->openCart->request->get['mundipagg_plan'])) {
             return $this->handleRecurrencePlanTab($data);
         }
