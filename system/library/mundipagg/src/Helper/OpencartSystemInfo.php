@@ -33,18 +33,18 @@ class OpencartSystemInfo implements SystemInfoInterface
     public function getDirectoriesIgnored()
     {
         return [
-            './system/library/mundipagg/vendor/'
+            './system/library/mundipagg//vendor'
         ];
     }
 
     public function getModmanPath()
     {
-        return '/app/system/library/mundipagg/src/Integrity/modman';
+        return DIR_SYSTEM . 'library/mundipagg/src/Integrity/modman';
     }
 
     public function getIntegrityCheckPath()
     {
-        return '/app/system/library/mundipagg/src/Integrity/integrityCheck';
+        return DIR_SYSTEM . 'library/mundipagg/src/Integrity/integrityCheck';
     }
 
     public function getInstallType()

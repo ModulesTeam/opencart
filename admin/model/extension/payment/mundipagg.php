@@ -190,7 +190,7 @@ class ModelExtensionPaymentMundipagg extends Model
         //Add product plan delete middleware
         $this->model_setting_event->addEvent(
             'payment_mundipagg_add_product_plan_delete_middleware',
-            'admin/controller/product/delete/before',
+            'admin/controller/catalog/product/delete/before',
             'extension/payment/mundipagg/callEvents'
         );
 
@@ -200,6 +200,13 @@ class ModelExtensionPaymentMundipagg extends Model
             'admin/controller/catalog/product/before',
             'extension/payment/mundipagg/callEvents'
         );
+
+        //Add recurrency filters to product list in admin
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_add_product_list_recurrency_filter',
+            'admin/view/catalog/product_list/before',
+            'extension/payment/mundipagg/callEvents'
+        );;
 
         //Add saved credit card list
         $this->model_setting_event->addEvent(

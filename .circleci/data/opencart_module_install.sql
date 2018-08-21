@@ -167,7 +167,10 @@ INSERT INTO opencart.oc_event (code, `trigger`, action, status, sort_order) VALU
 ('payment_mundipagg_saved_creditcards', 'catalog/view/account/*/after', 'extension/payment/mundipagg_events/showSavedCreditcards', 1, 9999),
 ('payment_mundipagg_show_account_order_info', 'catalog/view/account/order_info/after', 'extension/payment/mundipagg_events/showAccountOrderInfo', 1, 0),
 ('payment_mundipagg_show_checkout_order_info', 'catalog/view/common/success/after', 'extension/payment/mundipagg_events/showCheckoutOrderInfo', 1, 0),
-('payment_mundipagg_prepare_checkout_order_info', 'catalog/controller/checkout/success/before', 'extension/payment/mundipagg_events/prepareCheckoutOrderInfo', 1, 0);
+('payment_mundipagg_prepare_checkout_order_info', 'catalog/controller/checkout/success/before', 'extension/payment/mundipagg_events/prepareCheckoutOrderInfo', 1, 0),
+('payment_mundipagg_add_product_plan_delete_middleware', 'admin/controller/catalog/product/delete/before', 'extension/payment/mundipagg/callEvents', 1, 90),
+('payment_mundipagg_add_product_plan_index_middleware', 'admin/controller/catalog/product/before', 'extension/payment/mundipagg/callEvents', 1, 90),
+('payment_mundipagg_add_product_list_recurrency_filter', 'admin/view/catalog/product_list/before', 'extension/payment/mundipagg/callEvents', 1, 90);
 
 INSERT INTO opencart.oc_extension (type, code) VALUES
 ('payment', 'mundipagg');

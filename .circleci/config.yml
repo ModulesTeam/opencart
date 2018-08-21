@@ -80,6 +80,8 @@ jobs:
                "INSERT INTO opencart.oc_setting (store_id, code, \`key\`, value, serialized) VALUES \
                  (0, 'payment_mundipagg', 'payment_mundipagg_test_secret_key', '${API_TEST_SECRET_KEY}', 0), \
                  (0, 'payment_mundipagg', 'payment_mundipagg_test_public_key', '${API_TEST_PUBLIC_KEY}', 0);"
+             docker exec -i newimage sh -c \
+                 "cd /app/.modman/opencart && composer update -vvv"
       - run:
           name: Clear useless files
           command: |

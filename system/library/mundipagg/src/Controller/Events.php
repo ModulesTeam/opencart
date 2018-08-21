@@ -35,6 +35,25 @@ class Events
         return false;
     }
 
+    public function productListEntry($data)
+    {
+        if (isset($this->openCart->request->get['filter_mp_type'])) {
+            $data['mp_selected_product_type_filter'] =
+                strtolower($this->openCart->request->get['filter_mp_type']);
+        }
+
+        $script = $this->openCart->load
+            ->view('extension/payment/mundipagg/product_actions', $data);
+
+        $data['footer'] = $script . $data['footer'];
+
+        foreach ($data as $key => $value) {
+            $this->template->set($key, $value);
+        }
+
+        return $this->template;
+    }
+
     /**
      * Show the Mundipagg's button in order list
      * @param array $data
@@ -148,35 +167,10 @@ class Events
 
         $this->openCart->session->data = $opencartSessionData;
         if(count($errorData)) {
-            $opencartReflection = new \ReflectionClass($this->openCart);
-            $errorProperty = $opencartReflection->getProperty('error');
-            $errorProperty->setAccessible(true);
-            $currentErrors = $errorProperty->getValue($this->openCart);
-
-            $currentErrors = array_merge($currentErrors,$errorData);
-
-            $errorProperty->setAccessible(false);
-
-            $opencartReflection = new \ReflectionClass($this->openCart);
-            $registryProperty = $opencartReflection->getProperty('registry');
-            $registryProperty->setAccessible(true);
-            $registry = $registryProperty->getValue($this->openCart);
-            $registryProperty->setAccessible(false);
-
-            $file = DIR_APPLICATION . 'controller/catalog/product.php';
-            require_once($file);
-            $productController = new \ControllerCatalogProduct($registry);
-
-            $productControllerReflection = new \ReflectionClass($productController);
-            $errorProperty = $productControllerReflection->getProperty('error');
-            $errorProperty->setAccessible(true);
-            $errorProperty->setValue($productController,$currentErrors);
-            $errorProperty->setAccessible(false);
-
-            $productController->index();
-
-            return $productController->response->getOutput();
+            return $this->handleProductIndexError($errorData);
         }
+
+        return $this->handleProductIndexList();
     }
 
     protected function handleProductDelete()
@@ -238,6 +232,71 @@ class Events
                 $this->openCart->response->redirect($this->openCart->url->link('catalog/product', 'user_token=' . $this->openCart->session->data['user_token']));
             }
         }
+    }
+
+    protected function handleProductIndexError($errorData)
+    {
+        $opencartReflection = new \ReflectionClass($this->openCart);
+        $errorProperty = $opencartReflection->getProperty('error');
+        $errorProperty->setAccessible(true);
+        $currentErrors = $errorProperty->getValue($this->openCart);
+
+        $currentErrors = array_merge($currentErrors, $errorData);
+
+        $errorProperty->setAccessible(false);
+
+        $opencartReflection = new \ReflectionClass($this->openCart);
+        $registryProperty = $opencartReflection->getProperty('registry');
+        $registryProperty->setAccessible(true);
+        $registry = $registryProperty->getValue($this->openCart);
+        $registryProperty->setAccessible(false);
+
+        $file = DIR_APPLICATION . 'controller/catalog/product.php';
+        require_once($file);
+        $productController = new \ControllerCatalogProduct($registry);
+
+        $productControllerReflection = new \ReflectionClass($productController);
+        $errorProperty = $productControllerReflection->getProperty('error');
+        $errorProperty->setAccessible(true);
+        $errorProperty->setValue($productController, $currentErrors);
+        $errorProperty->setAccessible(false);
+
+        $productController->index();
+
+        return $productController->response->getOutput();
+    }
+
+    protected function handleProductIndexList()
+    {
+        $opencartReflection = new \ReflectionClass($this->openCart);
+        $registryProperty = $opencartReflection->getProperty('registry');
+        $registryProperty->setAccessible(true);
+        $registry = $registryProperty->getValue($this->openCart);
+        $registryProperty->setAccessible(false);
+
+        $file = DIR_APPLICATION . 'controller/catalog/product.php';
+        require_once($file);
+        $productController = new \ControllerCatalogProduct($registry);
+        $productControllerReflection = new \ReflectionClass($productController);
+        $productController->index();
+
+        $this->openCart->load->model('extension/payment/mundipagg_product');
+
+        $registryProperty = $productControllerReflection->getProperty('registry');
+        $registryProperty->setAccessible(true);
+        $registry = $registryProperty->getValue($productController);
+        $registry->set(
+            'model_catalog_product',
+            $this->openCart->model_extension_payment_mundipagg_product
+        );
+        $registryProperty->setValue($productController, $registry);
+        $registryProperty->setAccessible(false);
+
+        $getListMethod = new \ReflectionMethod(get_class($productController), 'getList');
+        $getListMethod->setAccessible(true);
+        $getListMethod->invoke($productController);
+
+        $this->openCart->model_extension_payment_mundipagg_product->getProducts();
     }
 
     public function productFormEntry($data)

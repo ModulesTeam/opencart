@@ -45,4 +45,4 @@ system/library/mundipagg/* system/library/mundipagg/
 image/catalog/mundipagg/ image/catalog/mundipagg/
 
 # Modman
-modman system/library/mundipagg/src/Integrity/modman
+modman .modman/opencart/system/library/mundipagg/src/Integrity/modman
