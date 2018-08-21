@@ -177,6 +177,39 @@ class Events
 
             return $productController->response->getOutput();
         }
+
+        $opencartReflection = new \ReflectionClass($this->openCart);
+        $registryProperty = $opencartReflection->getProperty('registry');
+        $registryProperty->setAccessible(true);
+        $registry = $registryProperty->getValue($this->openCart);
+        $registryProperty->setAccessible(false);
+
+        $file = DIR_APPLICATION . 'controller/catalog/product.php';
+        require_once($file);
+        $productController = new \ControllerCatalogProduct($registry);
+        $productControllerReflection = new \ReflectionClass($productController);
+        $productController->index();
+
+        $this->openCart->load->model('extension/payment/mundipagg_product');
+
+        $registryProperty = $productControllerReflection->getProperty('registry');
+        $registryProperty->setAccessible(true);
+        $registry = $registryProperty->getValue($productController);
+        $registry->set('model_catalog_product',$this->openCart->model_extension_payment_mundipagg_product);
+        $registryProperty->setValue($productController,$registry);
+        $registryProperty->setAccessible(false);
+
+        $getListMethod = new \ReflectionMethod(get_class($productController), 'getList');
+        $getListMethod->setAccessible(true);
+        $getListMethod->invoke($productController);
+
+        $this->openCart->model_extension_payment_mundipagg_product->getProducts();
+
+
+
+
+
+
     }
 
     protected function handleProductDelete()
