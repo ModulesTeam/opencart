@@ -174,16 +174,17 @@ workflows:
             - build
           filters:
              branches:
-               only: release
+               only: develop
       - publish:
+          context: DockerRegistry
           requires:
             - test
           filters:
             branches:
-              only: release
+              only: develop
       - deploy_staging:
           requires:
             - publish
           filters:
             branches:
-              only: release
+              only: develop
