@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Mundipagg\Helper;
 
 use Mundipagg\Integrity\AbstractOrderInfo;
