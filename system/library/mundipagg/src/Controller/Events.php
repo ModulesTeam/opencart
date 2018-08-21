@@ -312,7 +312,6 @@ class Events
                     $get = $this->openCart->request->get;
                     $get['mundipagg_plan'] = '';
                     $this->openCart->request->get = $get;
-                    $data['mpEditPlanId'] = $plan->getId();
 
                     $session = $this->openCart->session->data;
                     $session['mundipagg-template-snapshot-data'] =
