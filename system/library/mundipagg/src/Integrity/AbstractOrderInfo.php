@@ -14,6 +14,13 @@ abstract class AbstractOrderInfo implements OrderInfoInterface
         return $this->order;
     }
 
+    public function getOrderInfo()
+    {
+        if ($this->order !== null ) {
+            return $this->_getOrderInfo();
+        }
+        return null;
+    }
     public function getOrderHistory()
     {
         if ($this->order !== null ) {
@@ -39,6 +46,8 @@ abstract class AbstractOrderInfo implements OrderInfoInterface
     }
 
     abstract protected function _loadOrder($id);
+
+    abstract protected function _getOrderInfo();
 
     abstract protected function _getOrderHistory();
 

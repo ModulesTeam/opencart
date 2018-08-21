@@ -8,6 +8,8 @@ interface OrderInfoInterface
 
     public function getOrder();
 
+    public function getOrderInfo();
+
     public function getOrderHistory();
 
     public function getOrderCharges();

@@ -44,4 +44,9 @@ class OpencartOrderInfo extends AbstractOrderInfo
             'invoice_prefix' => $this->getOrder()['invoice_prefix']
         ];
     }
+
+    protected function _getOrderInfo()
+    {
+        return $this->getOrder();
+    }
 }
