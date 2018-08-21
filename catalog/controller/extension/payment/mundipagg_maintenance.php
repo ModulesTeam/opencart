@@ -9,7 +9,6 @@ use Mundipagg\Integrity\IntegrityException;
 
 class ControllerExtensionPaymentMundipaggMaintenance extends Controller
 {
-
     public function version()
     {
         try {
@@ -49,7 +48,6 @@ class ControllerExtensionPaymentMundipaggMaintenance extends Controller
             return $this->response->setOutput($e->getMessage());
         }
     }
-
 
     protected function getIntegrityController()
     {

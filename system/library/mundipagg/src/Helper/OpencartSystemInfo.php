@@ -105,6 +105,6 @@ class OpencartSystemInfo implements SystemInfoInterface
 
     public function getDownloadRouter()
     {
-        return 'index.php?route=extension/payment/mundipagg_maintenance/downloadLog';
+        return 'index.php?route=extension/payment/mundipagg_maintenance/downloadLog&';
     }
 }

@@ -32,7 +32,7 @@ class IntegrityViewer
 
             if (is_readable($logFile)) {
                 $fileRoute =  $url;
-                $fileRoute .= '&token=';
+                $fileRoute .= 'token=';
                 $fileRoute .= isset($params['token']) ? $params['token'] : '';
                 $fileRoute .= '&file=' . base64_encode($logFile);
 
