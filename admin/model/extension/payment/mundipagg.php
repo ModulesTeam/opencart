@@ -201,6 +201,13 @@ class ModelExtensionPaymentMundipagg extends Model
             'extension/payment/mundipagg/callEvents'
         );
 
+        //Add recurrency filters to product list in admin
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_add_product_list_recurrency_filter',
+            'admin/view/catalog/product_list/before',
+            'extension/payment/mundipagg/callEvents'
+        );;
+
         //Add saved credit card list
         $this->model_setting_event->addEvent(
             'payment_mundipagg_saved_creditcards',
@@ -227,6 +234,8 @@ class ModelExtensionPaymentMundipagg extends Model
             'catalog/controller/checkout/success/before',
             'extension/payment/mundipagg_events/prepareCheckoutOrderInfo'
         );
+
+
     }
 
     /***

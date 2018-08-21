@@ -35,6 +35,31 @@ class Events
         return false;
     }
 
+    public function productListEntry($data)
+    {
+        if ($this->openCart->request->get['filter_mp_type']) {
+            $data['mp_selected_product_type_filter'] =
+                strtolower($this->openCart->request->get['filter_mp_type']);
+        }
+
+        $script = $this->openCart->load
+            ->view('extension/payment/mundipagg/product_actions', $data);
+
+        $test = array_filter($data, function($element){
+            if (!is_string($element)) {
+                return false;
+            }
+            return strpos($element,'Product Name') !== false;
+        });
+        $data['footer'] = $script . $data['footer'];
+
+        foreach ($data as $key => $value) {
+            $this->template->set($key, $value);
+        }
+
+        return $this->template;
+    }
+
     /**
      * Show the Mundipagg's button in order list
      * @param array $data
