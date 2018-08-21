@@ -121,7 +121,8 @@ class Plans extends Recurrence
             }
             else {
                 //save base product on opencart.
-                $opencartProductId = $this->openCart->model_catalog_product->addProduct($this->openCart->request->post);
+                $opencartProductId = $this->openCart->model_catalog_product
+                    ->addProduct($this->openCart->request->post);
                 //@todo: create plan on mundipagg
                 $mundipaggPlanId = 'plan_xxxxxxxxxxxxxxxx'; //@todo this is a placeholder.
             }
