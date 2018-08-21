@@ -1,5 +1,4 @@
 ## Admin
-admin/controller/extension/payment/mundipagg_events.php admin/controller/extension/payment/mundipagg_events.php
 admin/view/image/mundipagg/ admin/view/image/mundipagg/
 admin/view/stylesheet/mundipagg admin/view/stylesheet/mundipagg
 admin/view/script/mundipagg admin/view/script/mundipagg
@@ -15,7 +14,7 @@ admin/controller/extension/payment/mundipagg.php admin/controller/extension/paym
 
 # language
 admin/language/en-gb/extension/payment/mundipagg.php admin/language/en-gb/extension/payment/mundipagg.php
-admin/language/pt-br/payment/mundipagg.php admin/language/pt-br/extension/payment/mundipagg.php
+admin/language/pt-br/extension/payment/mundipagg.php admin/language/pt-br/extension/payment/mundipagg.php
 
 ##Catalog
 
@@ -45,3 +44,5 @@ system/library/mundipagg/* system/library/mundipagg/
 # image
 image/catalog/mundipagg/ image/catalog/mundipagg/
 
+# Modman
+modman system/library/mundipagg/src/Integrity/modman
