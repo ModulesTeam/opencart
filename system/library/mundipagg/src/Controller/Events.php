@@ -1,10 +1,13 @@
 <?php
 namespace Mundipagg\Controller;
 
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
 use Mundipagg\Model\Order;
 use Mundipagg\Helper\AdminMenu as MundipaggHelperAdminMenu;
 use Mundipagg\Helper\ProductPageChanges as MundipaggHelperProductPageChanges;
 use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Repositories\TemplateRepository;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
@@ -110,6 +113,133 @@ class Events
         return $this->template;
     }
 
+    public function productEntry($data)
+    {
+        $get = $this->openCart->request->get;
+        $action = explode('/', $get['route']);
+        $action = end($action);
+
+        switch ($action) {
+            case "delete":
+                return $this->handleProductDelete();
+            case "product":
+                return $this->handleProductIndex();
+        }
+    }
+
+    protected function handleProductIndex()
+    {
+        $opencartSessionData = $this->openCart->session->data;
+        $errorData = [];
+        if (isset($opencartSessionData['mundipagg-cant-delete-product-data'])) {
+            $cantDeleteData = $opencartSessionData['mundipagg-cant-delete-product-data'];
+            unset($opencartSessionData['mundipagg-cant-delete-product-data']);
+
+            $errorData['warning'] = '';
+            foreach ($cantDeleteData as $product) {
+                $productError = "Can't delete product '<strong>{$product['name']}</strong>' because this product is in the following plans:<br /><ul>";
+                foreach ($product['plans'] as $planName) {
+                    $productError .= "<li>$planName</li>";
+                }
+                $productError .= "</ul>";
+            }
+            $errorData['warning'] = $productError;
+        }
+
+        $this->openCart->session->data = $opencartSessionData;
+        if(count($errorData)) {
+            $opencartReflection = new \ReflectionClass($this->openCart);
+            $errorProperty = $opencartReflection->getProperty('error');
+            $errorProperty->setAccessible(true);
+            $currentErrors = $errorProperty->getValue($this->openCart);
+
+            $currentErrors = array_merge($currentErrors,$errorData);
+
+            $errorProperty->setAccessible(false);
+
+            $opencartReflection = new \ReflectionClass($this->openCart);
+            $registryProperty = $opencartReflection->getProperty('registry');
+            $registryProperty->setAccessible(true);
+            $registry = $registryProperty->getValue($this->openCart);
+            $registryProperty->setAccessible(false);
+
+            $file = DIR_APPLICATION . 'controller/catalog/product.php';
+            require_once($file);
+            $productController = new \ControllerCatalogProduct($registry);
+
+            $productControllerReflection = new \ReflectionClass($productController);
+            $errorProperty = $productControllerReflection->getProperty('error');
+            $errorProperty->setAccessible(true);
+            $errorProperty->setValue($productController,$currentErrors);
+            $errorProperty->setAccessible(false);
+
+            $productController->index();
+
+            return $productController->response->getOutput();
+        }
+    }
+
+    protected function handleProductDelete()
+    {
+        //verify if there is plan products on delete command
+        $post = $this->openCart->request->post;
+        if (isset($post['selected'])) {
+            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+            $selected = array_map(function($element){
+                return intval($element);
+            },$post['selected']);
+
+            $plans = $recurrencyProductRepo->listEntities(0,false);
+
+            $subProductsOfPlans = [];
+
+            foreach ($selected as $productId) {
+                /** @var RecurrencyProductRoot $product */
+                foreach ($plans as $plan) {
+                    if ($plan->getProductId() == $productId) {
+                        $plan->setDisabled(true);
+                        $recurrencyProductRepo->save($plan);
+                        continue;
+                    }
+                    $subProducts = $plan->getSubProducts();
+                    if (!in_array($plan->getProductId(),$selected)) {
+                        /** @var RecurrencySubproductValueObject $subProduct */
+                        foreach ($subProducts as $subProduct) {
+                            if ($subProduct->getProductId() == $productId) {
+                                if(!isset($subProductsOfPlans[$productId])) {
+                                    $subProductsOfPlans[$productId] = [];
+                                }
+                                $subProductsOfPlans[$productId][$plan->getProductId()] = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (count($subProductsOfPlans)) {
+                $this->openCart->load->model('catalog/product');
+
+                $cantDeleteData = [];
+                foreach ($subProductsOfPlans as $subProductId => $planProducts) {
+                    $subProduct = $this->openCart->model_catalog_product->getProduct($subProductId);
+                    $cantDeleteData[$subProductId] = [
+                        "name" => $subProduct["name"],
+                        "plans" => []
+                    ];
+                    foreach ($planProducts as $planId => $discard) {
+                        $plan = $this->openCart->model_catalog_product->getProduct($planId);
+                        $cantDeleteData[$subProductId]["plans"][] = $plan["name"];
+                    }
+                }
+                $sessionData = $this->openCart->session->data;
+                $sessionData['mundipagg-cant-delete-product-data'] = $cantDeleteData;
+                $this->openCart->session->data = $sessionData;
+
+                $this->openCart->response->redirect($this->openCart->url->link('catalog/product', 'user_token=' . $this->openCart->session->data['user_token']));
+            }
+        }
+    }
+
     public function productFormEntry($data)
     {
         if (isset($this->openCart->request->get['mundipagg_plan'])) {
@@ -133,17 +263,36 @@ class Events
        $planform['formPlan'] = $path . 'templates/form_plan.twig';
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';
+       $planform['preventFormSubmit'] = true;
 
-       $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
-       $plans = $templateRepository->listEntities(0, false);
-       $planform['plans'] = array_filter($plans, function($templateRoot){
-           return !$templateRoot->getTemplate()->isSingle();
-       });
+        if (isset($this->openCart->session->data['mundipagg-template-snapshot-data'])) {
+            $planform['MundipaggTemplateSnapshot'] = $this->openCart->session->data['mundipagg-template-snapshot-data'];
+        }
+        unset($this->openCart->session->data['mundipagg-template-snapshot-data']);
+        if (isset($this->openCart->session->data['mundipagg-recurrence-products'])) {
+            $planform['MundipaggRecurrenceProducts'] = $this->openCart->session->data['mundipagg-recurrence-products'];
+        }
+        unset($this->openCart->session->data['mundipagg-recurrence-products']);
+
+        if (isset($this->openCart->error['mundipagg_recurrency_errors'])) {
+            $planform['MundipaggRecurrenceErrors'] = $this->openCart->error['mundipagg_recurrency_errors'];
+        }
+
+        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+        $plans = $templateRepository->listEntities(0, false);
+        $planform['plans'] = array_filter($plans, function($templateRoot){
+            return !$templateRoot->getTemplate()->isSingle();
+        });
 
        $productFormTabContentTemplate = $this->openCart->load->view(
            $path . 'plans/productFormTabContent',
            $planform
        );
+
+        $planCreationScript = $this->openCart->load->view(
+            $path . 'creationScripts',
+            $planform
+        );
 
        $helper = new MundipaggHelperProductPageChanges($this->openCart);
        $data['heading_title'] = 'Plano';
@@ -151,6 +300,7 @@ class Events
 
        $data['tab_design'] = $data['tab_design'] . $productFormTemplate;
        $data['footer'] = $data['footer'] . $productFormTabContentTemplate;
+       $data['footer'] .= $planCreationScript;
 
        foreach ($data as $key => $value) {
            $this->template->set($key, $value);
@@ -170,6 +320,7 @@ class Events
        $planform['formPlan'] = $path . 'templates/form_plan.twig';
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';
+       $planform['productCreationForm'] = true;
 
        $productFormTabContentTemplate = $this->openCart->load->view(
            $path . 'plans/productFormTabContent',

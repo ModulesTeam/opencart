@@ -13,6 +13,7 @@ use Mundipagg\Controller\Recurrence\Plans as MundipaggRecurrencePlans;
 use Mundipagg\Controller\Recurrence\Subscriptions as MundipaggSubscriptions;
 use Mundipagg\Controller\Recurrence\Single as MundipaggRecurrenceSingle;
 use Mundipagg\Controller\Recurrence\Templates as MundipaggRecurrenceTemplates;
+use Mundipagg\Controller\Location as MundipaggLocation;
 
 use MundiAPILib\MundiAPIClient;
 use Mundipagg\Order;
@@ -122,6 +123,20 @@ class ControllerExtensionPaymentMundipagg extends Controller
         }
 
         $templates->index();
+    }
+
+    public function location()
+    {
+        $location = new MundipaggLocation($this);
+
+        if (isset($this->request->get['action'])) {
+            $action = $this->request->get['action'];
+            $location->$action();
+
+            return;
+        }
+
+        $location->index();
     }
 
     public function single()
@@ -679,6 +694,11 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $template = $mundipaggEvents->$method($data);
 
         if ($template) {
+
+            if (is_string($template)) {
+                return $template;
+            }
+
             return $template->render(
                 $this->config->get('template_directory') . $route,
                 $this->config->get('template_cache')

@@ -1,4 +1,7 @@
 <?php
+
+require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
+
 // Heading
 $_['heading_title'] = 'MundiPagg';
 $_['text_mundipagg'] = '<a href="https://github.com/mundipagg/opencart" target="_blank"><img src="/admin/view/image/mundipagg/mundipagg.png" alt="MundiPagg" title="MundiPagg" style="border: 1px solid #EEEEEE;" /></a>';
@@ -155,4 +158,58 @@ $_['charge_screen'] = [
     'charge_capture' => 'Charge capture',
     'charge_cancel' => 'Charge cancel',
     'charge_action_success' => 'Charge updated successfully'
+];
+
+// Recurrence
+$_['mundipagg'] = [
+    'recurrence' => [
+        'template' => [
+            'due' => [
+                'type' => [
+                    \Mundipagg\Aggregates\Template\DueValueObject::TYPE_EXACT => [
+                        'label' => 'Every day %d',
+                        'name' => 'Exact day'
+                    ],
+                    \Mundipagg\Aggregates\Template\DueValueObject::TYPE_PREPAID => [
+                        'label' => 'Prepaid',
+                        'name' => 'Prepaid'
+                    ],
+                    \Mundipagg\Aggregates\Template\DueValueObject::TYPE_POSTPAID => [
+                        'label' => 'Postpaid',
+                        'name' => 'Postpaid'
+                    ]
+                ]
+            ],
+            'repetition' => [
+                'discount' => [
+                    'type' => [
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::DISCOUNT_TYPE_FIXED => [
+                            'label' => "%s%.2f",
+                            'symbol' => "$"
+                        ],
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::DISCOUNT_TYPE_PERCENT => [
+                            'label' => "%s%.2f%%",
+                            'symbol' => "%"
+                        ]
+                    ]
+                ],
+                'interval' => [
+                    'type' => [
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_WEEKLY => [
+                            'label' => ['week','weeks'],
+                            'name' => 'Weekly'
+                        ],
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_MONTHLY => [
+                            'label' => ['month','months'],
+                            'name' => 'Monthly'
+                        ],
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_YEARLY => [
+                            'label' => ['year','years'],
+                            'name' => 'Yearly'
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
 ];
