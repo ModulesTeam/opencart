@@ -42,7 +42,7 @@ class IntegrityController
         }
         $this->orderInfo->loadOrder($orderId);
 
-        $this->viewer->handleDefaultInfoView("#Order", $this->orderInfo->getOrder()->getData());
+        $this->viewer->handleDefaultInfoView("#Order", $this->orderInfo->getOrder());
         $this->viewer->handleDefaultInfoView("#History", $this->orderInfo->getOrderHistory());
         $this->viewer->handleDefaultInfoView("#Charges", $this->orderInfo->getOrderCharges());
         $this->viewer->handleDefaultInfoView("#Invoices", $this->orderInfo->getOrderInvoices());

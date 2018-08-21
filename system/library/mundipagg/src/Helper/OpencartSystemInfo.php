@@ -97,7 +97,10 @@ class OpencartSystemInfo implements SystemInfoInterface
 
     public function getRequestParam($param)
     {
-        return $this->openCart->request->get[$param];
+        if (!empty($this->openCart->request->get[$param])) {
+            return $this->openCart->request->get[$param];
+        }
+        return null;
     }
 
     public function getDownloadRouter()

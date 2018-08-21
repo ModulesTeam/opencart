@@ -14,7 +14,7 @@ admin/controller/extension/payment/mundipagg.php admin/controller/extension/paym
 
 # language
 admin/language/en-gb/extension/payment/mundipagg.php admin/language/en-gb/extension/payment/mundipagg.php
-admin/language/pt-br/payment/mundipagg.php admin/language/pt-br/extension/payment/mundipagg.php
+admin/language/pt-br/extension/payment/mundipagg.php admin/language/pt-br/extension/payment/mundipagg.php
 
 ##Catalog
 
