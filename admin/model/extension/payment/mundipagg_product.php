@@ -4,8 +4,10 @@ class ModelExtensionPaymentMundipaggProduct extends ModelCatalogProduct
 {
     public function getProducts($data = array())
     {
-        $filter = isset($this->request->get['filter_mp_type']) ?
-            strtolower($this->request->get['filter_mp_type']) : '';
+        $filter = '';
+        if (isset($this->request->get['filter_mp_type'])) {
+            $filter = strtolower($this->request->get['filter_mp_type']);
+        }
 
         $sql = "
             SELECT

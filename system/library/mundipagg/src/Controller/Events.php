@@ -241,7 +241,7 @@ class Events
         $errorProperty->setAccessible(true);
         $currentErrors = $errorProperty->getValue($this->openCart);
 
-        $currentErrors = array_merge($currentErrors,$errorData);
+        $currentErrors = array_merge($currentErrors, $errorData);
 
         $errorProperty->setAccessible(false);
 
@@ -258,7 +258,7 @@ class Events
         $productControllerReflection = new \ReflectionClass($productController);
         $errorProperty = $productControllerReflection->getProperty('error');
         $errorProperty->setAccessible(true);
-        $errorProperty->setValue($productController,$currentErrors);
+        $errorProperty->setValue($productController, $currentErrors);
         $errorProperty->setAccessible(false);
 
         $productController->index();
@@ -285,8 +285,11 @@ class Events
         $registryProperty = $productControllerReflection->getProperty('registry');
         $registryProperty->setAccessible(true);
         $registry = $registryProperty->getValue($productController);
-        $registry->set('model_catalog_product',$this->openCart->model_extension_payment_mundipagg_product);
-        $registryProperty->setValue($productController,$registry);
+        $registry->set(
+            'model_catalog_product',
+            $this->openCart->model_extension_payment_mundipagg_product
+        );
+        $registryProperty->setValue($productController, $registry);
         $registryProperty->setAccessible(false);
 
         $getListMethod = new \ReflectionMethod(get_class($productController), 'getList');
