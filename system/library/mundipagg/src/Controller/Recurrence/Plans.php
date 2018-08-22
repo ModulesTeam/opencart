@@ -97,7 +97,7 @@ class Plans extends Recurrence
             //check if is edit
             if (isset($this->openCart->request->get['product_id'])) {
                 $productId = intval($this->openCart->request->get['product_id']);
-                $plans = $recurrencyProductRepo->listEntities(0,false);
+                $plans = $recurrencyProductRepo->listEntities(0, false);
                 /** @var RecurrencyProductRoot $plan */
                 foreach ($plans as $plan) {
                     if ($plan->getProductId() == $productId) {

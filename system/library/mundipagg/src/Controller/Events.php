@@ -305,7 +305,7 @@ class Events
             $productId = intval($this->openCart->request->get['product_id']);
 
             $planRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
-            $plans = $planRepo->listEntities(0,false);
+            $plans = $planRepo->listEntities(0, false);
             /** @var RecurrencyProductRoot $plan */
             foreach ($plans as $plan) {
                 if ($plan->getProductId() == $productId) {
