@@ -90,23 +90,50 @@ class Plans extends Recurrence
                 'subProducts' => $subProducts
             ]));
 
-            //@todo start database transaction
-            //save base product on opencart.
             $this->openCart->load->model('catalog/product');
-            $opencartProductId = $this->openCart->model_catalog_product->addProduct($this->openCart->request->post);
+            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+
+            $isEdit = false;
+            //check if is edit
+            if (isset($this->openCart->request->get['product_id'])) {
+                $productId = intval($this->openCart->request->get['product_id']);
+                $plans = $recurrencyProductRepo->listEntities(0, false);
+                /** @var RecurrencyProductRoot $plan */
+                foreach ($plans as $plan) {
+                    if ($plan->getProductId() == $productId) {
+                        $isEdit = true;
+                        $planId = $plan->getId();
+                        $mundipaggPlanId = $plan->getMundipaggPlanId();
+                        $opencartProductId = $plan->getProductId();
+                        break;
+                    }
+                }
+            }
+
+            //@todo start database transaction
+            if ($isEdit) {
+                //edit base product on opencart
+                $this->openCart->model_catalog_product->editProduct(
+                    $this->openCart->request->get['product_id'],
+                    $this->openCart->request->post
+                );
+                $recurrencyProduct->setId($planId);
+            }
+            else {
+                //save base product on opencart.
+                $opencartProductId = $this->openCart->model_catalog_product
+                    ->addProduct($this->openCart->request->post);
+                //@todo: create plan on mundipagg
+                $mundipaggPlanId = 'plan_xxxxxxxxxxxxxxxx'; //@todo this is a placeholder.
+            }
+
             $recurrencyProduct->setProductId($opencartProductId);
-
-            //@todo: create plan on mundipagg
-            $mundipaggPlanId = 'plan_xxxxxxxxxxxxxxxx'; //@todo this is a placeholder.
-
             $recurrencyProduct->setMundipaggPlanId($mundipaggPlanId);
 
             //save plan product
-            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
             $recurrencyProductRepo->save($recurrencyProduct);
 
             //@todo: commit database transaction only if mundipagg plan creation was successful.
-
 
             //redirect to success.
             $this->openCart->response->redirect(

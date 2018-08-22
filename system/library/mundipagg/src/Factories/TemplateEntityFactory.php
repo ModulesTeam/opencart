@@ -69,7 +69,7 @@ class TemplateEntityFactory
             $templateEntity = new TemplateEntity();
             $templateEntity
                 ->setName($data->name)
-                ->setDescription($data->name)
+                ->setDescription($data->description)
                 ->setIsSingle($data->isSingle)
                 ->setAcceptBoleto($data->acceptBoleto)
                 ->setAcceptCreditCard($data->acceptCreditCard)
