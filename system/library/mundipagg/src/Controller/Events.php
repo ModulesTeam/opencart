@@ -229,7 +229,20 @@ class Events
                 $sessionData['mundipagg-cant-delete-product-data'] = $cantDeleteData;
                 $this->openCart->session->data = $sessionData;
 
-                $this->openCart->response->redirect($this->openCart->url->link('catalog/product', 'user_token=' . $this->openCart->session->data['user_token']));
+                $getParams = $this->openCart->request->get;
+                $getParams['user_token'] = $this->openCart->session->data['user_token'];
+                unset($getParams['route']);
+                $getParams = array_map(function($param,$key){
+                    return "$key=$param";
+                },$getParams,array_keys($getParams));
+                $getParams = implode('&',$getParams);
+
+                $this->openCart->response->redirect(
+                    $this->openCart->url->link(
+                        'catalog/product',
+                        $getParams
+                    )
+                );
             }
         }
     }
