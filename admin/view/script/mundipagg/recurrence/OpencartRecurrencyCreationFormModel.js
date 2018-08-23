@@ -196,9 +196,10 @@ OpencartRecurrencyCreationFormModel.prototype
 
 OpencartRecurrencyCreationFormModel.prototype
     .updateTemplateSnapshotDetailPanel = function(templateSnapshotData) {
-    var tds = this.getTemplateSnapshotDetailPanelElement()
-        .find('table#images tbody td');
-    $(tds[0]).html((function(templateSnapshotData){
+    var configContainer = $("#mp-recurrence-plan-config-row-container");
+    var html = $('#mp-recurrence-plan-config-row-template').html();
+
+    html = html.replace(/\{plan_name\}/g,(function(templateSnapshotData){
         var retn = templateSnapshotData.template.name;
         retn += ' <span class="label label-primary">plan</span>';
         if (templateSnapshotData.template.trial > 0) {
@@ -208,8 +209,10 @@ OpencartRecurrencyCreationFormModel.prototype
         }
         return retn;
     })(templateSnapshotData));
-    $(tds[1]).html(templateSnapshotData.template.description);
-    $(tds[2]).html((function(templateSnapshotData){
+
+    html = html.replace(/\{plan_description\}/g,templateSnapshotData.template.description);
+
+    html = html.replace(/\{plan_payment\}/g,(function(templateSnapshotData){
         var retn = "";
         if (templateSnapshotData.template.acceptBoleto) {
             retn += "<span class='label label-default'>Boleto</span> ";
@@ -219,7 +222,8 @@ OpencartRecurrencyCreationFormModel.prototype
         }
         return retn;
     })(templateSnapshotData));
-    $(tds[3]).html((function(templateSnapshotData,mundipaggRoot){
+
+    html = html.replace(/\{plan_due\}/g,(function(templateSnapshotData,mundipaggRoot){
         var retn = mundipaggRoot.Location
             .recurrence.template.due
             .type[templateSnapshotData.dueAt.type].label;
@@ -229,7 +233,7 @@ OpencartRecurrencyCreationFormModel.prototype
 
     })(templateSnapshotData,this.formController.mundipaggRoot));
 
-    $(tds[4]).html((function(templateSnapshotData,mundipaggRoot){
+    html = html.replace(/\{plan_cycles\}/g,(function(templateSnapshotData,mundipaggRoot){
 
         var intervalLabel = mundipaggRoot.Location
             .recurrence.template.repetition
@@ -247,12 +251,14 @@ OpencartRecurrencyCreationFormModel.prototype
         return retn;
     })(templateSnapshotData,this.formController.mundipaggRoot));
 
-    $(tds[5]).html((function(templateSnapshotData){
+    html = html.replace(/\{plan_installment\}/g,(function(templateSnapshotData){
         if (templateSnapshotData.template.allowInstallments) {
             return '<span class="label label-info">Sim</span>';
         }
         return '<span class="label label-default">Não</span>';
     })(templateSnapshotData));
+
+    configContainer.html(html);
 };
 
 OpencartRecurrencyCreationFormModel.prototype

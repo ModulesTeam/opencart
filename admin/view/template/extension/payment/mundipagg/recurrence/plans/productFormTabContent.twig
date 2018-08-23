@@ -72,6 +72,16 @@
         </td>
     </tr>
 </script>
+<script id="mp-recurrence-plan-config-row-template" type="text/template">
+    <tr>
+        <td>{plan_name}</td>
+        <td>{plan_description}</td>
+        <td>{plan_payment}</td>
+        <td>{plan_due}</td>
+        <td>{plan_cycles}</td>
+        <td>{plan_installment}</td>
+    </tr>
+</script>
 
 <div class="tab-pane hidden tab-mundipagg-plan" id="tab-mundipagg-plan-subscriptions">
     <label class="col-sm-12 form-group template-select-edit-panel">Escolha um template de plano</label>
@@ -140,15 +150,8 @@
                     <td class="text-center">Ciclos</td>
                     <td class="text-center">Parcelamento</td>
                 </tr>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
+                <tbody id='mp-recurrence-plan-config-row-container'>
+
                 </tbody>
             </table>
             <button type="button" title="" class="btn btn-primary" id="template-snapshot-edit">

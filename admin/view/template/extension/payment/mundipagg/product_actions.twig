@@ -42,6 +42,12 @@
             $('#mp-filter-recurrency-type-select-template').html()
         );
         $('#mp-filter-recurrency-type-select').val('{{ mp_selected_product_type_filter }}');
+
+        var addProductButton = $('a[href="' + ('{{ add }}'.replace(/&amp;/g, '&')) + '"]');
+        addProductButton.attr('data-original-title','Add new product');
+        $('<span> Add product</span>').insertAfter(addProductButton.find('i'));
+        $($('#mp-plan-single-product-add-buttons-template').html())
+            .insertBefore(addProductButton);
     });
 </script>
 
@@ -55,4 +61,8 @@
             <option value="single">Single</option>
         </select>
     </div>
+</script>
+
+<script id="mp-plan-single-product-add-buttons-template" type="text/template">
+    <a href="{{ add }}&mundipagg_plan" data-toggle="tooltip" title="Add new Plan" class="btn btn-primary" style="margin-right: 0.2em"><i class="fa fa-plus"></i><span> Add plan</span></a>
 </script>
