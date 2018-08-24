@@ -14,6 +14,16 @@ if [ $RC != "0" ]
         exit 1
 fi
 
-echo -e "The integrityCheck file is OK."
+echo -e "The integrityCheck file is OK.\n"
+
+echo -e "Checking for uncommited files..."
+STAGINGFILESCOUNT=$(git status --porcelain | grep '^[^?]' | wc -l)
+
+if [ $STAGINGFILESCOUNT != 0 ]; then
+	echo -e "There are some files waiting for commit. Please, commit then before pushing."
+	echo -e "######################################\n"
+	exit 1
+fi
+echo -e "There aren't files waiting for commit. Push can continue."
 echo -e "######################################\n"
 exit 0
