@@ -27,7 +27,7 @@
             <tr>
                 <td class="text-left">Produto</td>
                 <td>Quantidade</td>
-                <td colspan="2" class="text-center">Ciclos</td>
+                <td class="text-center">Ciclos</td>
                 <td></td>
             </tr>
             </thead>
@@ -44,6 +44,7 @@
             <input type="hidden" id="mundipagg-recurrence-products[id][]" name="mundipagg-recurrence-products[id][]" value="{product_id}"/>
             <input type="hidden" id="mundipagg-recurrence-products[name][]" name="mundipagg-recurrence-products[name][]" value="{product_name}"/>
             <input type="hidden" id="mundipagg-recurrence-products[thumb][]" name="mundipagg-recurrence-products[thumb][]" value="{product_thumb}"/>
+            <input type="hidden" id="mundipagg-recurrence-products[cycleType][]" name="mundipagg-recurrence-products[cycleType][]" value="{product_cycle_type}"/>
         </td>
 
         <td class="text-left">
@@ -53,11 +54,7 @@
         <td>
             <input type="number" min='1'  placeholder="Numero de Ciclos" value="{product_cycles}" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" class="form-control">
         </td>
-        <td>
-            <select id="mundipagg-recurrence-products[cycleType][]" name="mundipagg-recurrence-products[cycleType][]" class="form-control" title="Cycle Type">
-                {product_select_options}
-            </select>
-        </td>
+
         <td>
             <button
                     type="button"

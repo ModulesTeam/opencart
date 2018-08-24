@@ -135,21 +135,14 @@ OpencartRecurrencyCreationFormModel.prototype
     html = html.replace(
         /\{product_cycles\}/g,
         typeof productData.cycles !== 'undefined' ? productData.cycles : '1'
-    );html = html.replace(
+    );
+    html = html.replace(
         /\{product_quantity\}/g,
         typeof productData.quantity !== 'undefined' ? productData.quantity : '1'
     );
 
-    var selectOptions = '';
     var intervalLocation = this.formController.mundipaggRoot.Location.recurrence.template.repetition.interval.type;
-    Object.keys(intervalLocation).forEach(function(type){
-        var selected = '';
-        if (typeof productData.cycleType !== 'undefined' && productData.cycleType === type) {
-            selected = 'selected'
-        }
-        selectOptions += '<option value="'+type+'" ' + selected + '>'+intervalLocation[type].label[1]+'</option>';
-    });
-    html = html.replace(/\{product_select_options\}/g,selectOptions);
+    html = html.replace(/\{product_cycle_type\}/g,Object.keys(intervalLocation).shift());
 
     $('#mp-recurrence-product-table-body').append(html);
 };
