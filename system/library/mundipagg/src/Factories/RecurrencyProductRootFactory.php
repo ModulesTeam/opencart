@@ -7,6 +7,18 @@ use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
 
 class RecurrencyProductRootFactory
 {
+    /**
+     * @param $jsonData
+     * @return RecurrencyProductRoot
+     * @throws \Exception
+     * @example
+     * [
+     *  "productId" => null,
+     *  "template" => $templateRoot,
+     *  "isSingle" => true,
+     *  "subProducts" => $subProducts
+     * ]
+     */
     public function createFromJson($jsonData)
     {
         $data = json_decode(utf8_decode($jsonData));
