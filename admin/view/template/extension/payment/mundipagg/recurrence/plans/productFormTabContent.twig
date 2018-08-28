@@ -86,6 +86,7 @@
         <div class="form-group required {% if MundipaggRecurrenceErrors['recurrency_plan_template_error'] %} has-error {% endif %}">
             <div class="col-sm-10">
                 <select name="" id="select-subscription" class="form-control">
+                    <option value="">Selecione</option>
                     {% if plans | length > 0 %}
                     <optgroup label="Configurações pré definidas" id="pre-defined">
                         {% for plan in plans %}
@@ -94,20 +95,23 @@
                     </optgroup>
                     {% endif %}
                     <optgroup label="Configurações por plano" id="new">
-                        <option value="" title="Paga em 12 meses parcelado"> Criar configuração específica para este plano </option>
+                        <option value=""> Criar configuração específica para este plano </option>
                     </optgroup>
                 </select>
             </div>
             <div class="col-sm-2 actions-templates">
-                <button
-                        type="button"
-                        title=""
-                        class="btn btn-primary add-pre-defined"
-                        data-original-title="Add"
-                        id="add-template-from-select-button"
-                >
-                    <i class="fa fa-plus-circle"></i>
-                </button>
+                {% if plans | length > 0 %}
+                    <button
+                            type="button"
+                            title=""
+                            class="btn btn-primary add-pre-defined"
+                            data-original-title="Add"
+                            id="add-template-from-select-button"
+                            style="display: none"
+                    >
+                        <i class="fa fa-plus-circle"></i>
+                    </button>
+                {% endif %}
             </div>
             {% if MundipaggRecurrenceErrors['recurrency_plan_template_error'] %}
                 <div class="text-danger">{{ MundipaggRecurrenceErrors['recurrency_plan_template_error'] }}</div>
@@ -122,12 +126,17 @@
     $(document).ready(function() {
         $("#select-subscription").change(function(){
             var selected = $("option:selected", this);
+
+            $('#add-template-from-select-button').hide();
+            
             if(selected.parent()[0].id == "new"){
                 $('#customized').css('display', 'block');
                 $('.actions-templates').css('display', 'none');
+
             } else if(selected.parent()[0].id == "pre-defined"){
                 $('#customized').css('display', 'none');
                 $('.actions-templates').css('display', 'unset');
+                $('#add-template-from-select-button').show();
             }
         });
     });
