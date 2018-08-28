@@ -1,4 +1,4 @@
 {
     "pre-push": "integrity-check",
-    "composer": "/usr/bin/composer"
+    "composer": "/usr/local/bin/composer"
 }
