@@ -162,6 +162,10 @@ $_['charge_screen'] = [
 
 // Recurrence
 $_['mundipagg'] = [
+    'misc' => [
+        'of' => 'of',
+        'discount' => 'discount'
+    ],
     'recurrence' => [
         'template' => [
             'due' => [
@@ -181,6 +185,9 @@ $_['mundipagg'] = [
                 ]
             ],
             'repetition' => [
+                'cycle' => [
+                    'label' => ['cycle','cycles']
+                ],
                 'discount' => [
                     'type' => [
                         \Mundipagg\Aggregates\Template\RepetitionValueObject::DISCOUNT_TYPE_FIXED => [

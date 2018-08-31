@@ -33,7 +33,7 @@ PlansCreationController.prototype.addTemplateSnapShotDataToForm = function() {
     this.creationPageFormModel.getFormElement()
         .append('' +
             '<input type="hidden" id="mundipagg-template-snapshot-data" ' +
-            'name="mundipagg-template-snapshot-data" value="'+data+'" />');
+            'name="mundipagg-template-snapshot-data" value="' + data + '" />');
 };
 
 PlansCreationController.prototype.showConfigTable = function(templateSnapshot) {
@@ -74,24 +74,31 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
         .prop( "disabled", true );
 
     this.removeTemplateSnapShotDataFromForm();
-
     $.ajax({
         url: templateInfoUrl + "&template_id=" + selectedElementId,
         success: this.showConfigTable.bind(this),
         error: function(result) {
-            console.log("error",result.responseJSON);
+            console.log("error",result);
         },
         complete: function() {
-            this.creationPageFormModel
-                .getAddTemplateFromSelectButtonElement()
-                .prop( "disabled", false)
-                .find("i")
-                .addClass('fa-plus-circle')
-                .removeClass('fa-cog fa-spin');
-
-            this.creationPageFormModel
-                .getTemplateSelectElement()
-                .prop( "disabled", false );
+            removeLoadingAnimation(this);
         }.bind(this)
     });
 };
+
+/**
+ * Stop loading and enable template select
+ * @param $obj
+ */
+function removeLoadingAnimation($obj) {
+    $obj.creationPageFormModel
+        .getAddTemplateFromSelectButtonElement()
+        .prop( "disabled", false)
+        .find("i")
+        .addClass('fa-plus-circle')
+        .removeClass('fa-cog fa-spin');
+
+    $obj.creationPageFormModel
+        .getTemplateSelectElement()
+        .prop( "disabled", false );
+}
