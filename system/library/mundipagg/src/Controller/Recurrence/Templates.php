@@ -142,7 +142,7 @@ class Templates extends Recurrence
             $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
             $template = $templateRepository->find($templateId);
             if($template) {
-                $templateJson = json_encode($template, JSON_PRETTY_PRINT);
+                $templateJson = json_encode($template);
                 http_response_code(200);
                 echo $templateJson;
                 die;

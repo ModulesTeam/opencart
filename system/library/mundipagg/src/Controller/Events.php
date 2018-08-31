@@ -489,7 +489,6 @@ class Events
             $this->template->set($key, $value);
         }
 
-	    return $this->template;
-
+        return $this->template;
     }
 }

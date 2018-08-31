@@ -121,7 +121,6 @@ class RecurrencyProductRepository extends AbstractRep
         $subProducts = $recurrencyProduct->getSubProducts();
 
         if (count($subProducts) > 0) {
-
             $query ="
             INSERT INTO `" . $this->db->getTable('RECURRENCY_SUBPRODUCT_TABLE') . "` (
                     `recurrency_product_id`,
