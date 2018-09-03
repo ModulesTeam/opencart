@@ -322,9 +322,6 @@ class Events
             /** @var RecurrencyProductRoot $plan */
             foreach ($plans as $plan) {
                 if ($plan->getProductId() == $productId) {
-                    $get = $this->openCart->request->get;
-                    $get['mundipagg_plan'] = '';
-                    $this->openCart->request->get = $get;
 
                     $session = $this->openCart->session->data;
                     $session['mundipagg-template-snapshot-data'] =
@@ -341,6 +338,9 @@ class Events
                         'thumb' => []
                     ];
                     $subProducts = $plan->getSubProducts();
+
+                    $this->fillMundipaggRequestData($subProducts);
+
                     /** @var RecurrencySubproductValueObject $subProduct */
                     foreach ($subProducts as $index => $subProduct) {
                         $subProductsToSession['cycles'][$index] = $subProduct->getCycles();
@@ -381,6 +381,20 @@ class Events
         if (isset($this->openCart->request->get['mundipagg_single'])) {
             return $this->handleRecurrenceSingleTab($data);
         }
+    }
+
+    private function fillMundipaggRequestData($subProducts)
+    {
+        $get = $this->openCart->request->get;
+
+        if (count($subProducts) > 0) {
+            $get['mundipagg_plan'] = '';
+            $this->openCart->request->get = $get;
+            return;
+        }
+
+        $get['mundipagg_single'] = '';
+        $this->openCart->request->get = $get;
     }
 
     public function handleRecurrencePlanTab($data)
