@@ -164,7 +164,7 @@ $_['mundipagg'] = [
             ],
             'repetition' => [
                 'cycle' => [
-                    'label' => ['cycle','cycles']
+                    'label' => ['ciclo','ciclos']
                 ],
                 'discount' => [
                     'type' => [
@@ -181,15 +181,15 @@ $_['mundipagg'] = [
                 'interval' => [
                     'type' => [
                         \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_WEEKLY => [
-                            'label' => ['week','weeks'],
+                            'label' => ['semana','semanas'],
                             'name' => 'Semanalmente'
                         ],
                         \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_MONTHLY => [
-                            'label' => ['month','months'],
+                            'label' => ['mês','meses'],
                             'name' => 'Mensalmente'
                         ],
                         \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_YEARLY => [
-                            'label' => ['year','years'],
+                            'label' => ['ano','anos'],
                             'name' => 'Anualmente'
                         ]
                     ]

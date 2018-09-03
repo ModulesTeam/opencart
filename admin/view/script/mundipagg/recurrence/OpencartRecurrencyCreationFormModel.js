@@ -192,7 +192,7 @@ OpencartRecurrencyCreationFormModel.prototype
 };
 OpencartRecurrencyCreationFormModel.prototype
     .getTemplateSelectEditPanelElement = function() {
-    return $('.template-select-edit-panel');
+    return $('#customized');
 };
 
 OpencartRecurrencyCreationFormModel.prototype
@@ -244,7 +244,7 @@ OpencartRecurrencyCreationFormModel.prototype
 
         retn = '';
 
-        $.each(templateSnapshotData.repetitions, function( key, value) {
+        $.each(templateSnapshotData.repetitions, function(key, value) {
             intervalLabel = mundipaggRoot.Location
                 .recurrence.template.repetition
                 .interval.type[value.intervalType].label;

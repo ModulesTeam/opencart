@@ -78,7 +78,7 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
         url: templateInfoUrl + "&template_id=" + selectedElementId,
         success: this.showConfigTable.bind(this),
         error: function(result) {
-            console.log("error",result);
+            console.log("error", result);
         },
         complete: function() {
             removeLoadingAnimation(this);
@@ -93,12 +93,12 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
 function removeLoadingAnimation($obj) {
     $obj.creationPageFormModel
         .getAddTemplateFromSelectButtonElement()
-        .prop( "disabled", false)
+        .prop("disabled", false)
         .find("i")
         .addClass('fa-plus-circle')
         .removeClass('fa-cog fa-spin');
 
     $obj.creationPageFormModel
         .getTemplateSelectElement()
-        .prop( "disabled", false );
+        .prop("disabled", false);
 }

@@ -66,10 +66,8 @@ class Recurrence
     {
         $planValidation = $this->validateConfig();
         $formValidation = $this->validateForm();
-        if (
-            !$planValidation ||
-            !$formValidation
-        ) {
+        
+        if (!$planValidation || !$formValidation) {
             return $this->handleValidationError();
         }
 
