@@ -4,11 +4,12 @@
 
 <script>
     {% if MundipaggTemplateSnapshot %}
-    MundipaggTemplateSnapshot = JSON.parse(atob('{{ MundipaggTemplateSnapshot }}'));
+        MundipaggTemplateSnapshot = JSON.parse(atob('{{ MundipaggTemplateSnapshot }}'));
     {% endif %}
     {% if MundipaggRecurrenceProducts %}
-    MundipaggRecurrenceProducts = JSON.parse(atob('{{ MundipaggRecurrenceProducts }}'));
+        MundipaggRecurrenceProducts = JSON.parse(atob('{{ MundipaggRecurrenceProducts }}'));
     {% endif %}
+    
     $('script').last().remove();
 </script>
 
