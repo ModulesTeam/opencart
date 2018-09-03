@@ -7,6 +7,7 @@ var PlansCreationController = function (mundipaggRoot,formModelClass)
 
 PlansCreationController.prototype.init = function() {
     this.creationPageFormModel.init();
+
     if (typeof MundipaggTemplateSnapshot !== "undefined") {
         this.showConfigTable(MundipaggTemplateSnapshot);
     }
