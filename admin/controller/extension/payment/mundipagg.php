@@ -111,6 +111,9 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $subscriptions->index();
     }
 
+    /**
+     * Recurrence template route
+     */
     public function templates()
     {
         $templates = new MundipaggRecurrenceTemplates($this);
@@ -139,6 +142,9 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $location->index();
     }
 
+    /**
+     * Recurrence product route
+     */
     public function single()
     {
         $single = new MundipaggRecurrenceSingle($this);
@@ -153,6 +159,9 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $single->index();
     }
 
+    /**
+     * Recurrence plan route
+     */
     public function plans()
     {
         $plans = new MundipaggRecurrencePlans($this);

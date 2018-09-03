@@ -19,7 +19,7 @@ class Single extends Recurrence
         $this->data['addLink'] =
             'index.php?route=catalog/product/edit&user_token=' .
             $this->openCart->request->get['user_token'] .
-            '&mundipagg_plan';
+            '&mundipagg_single';
 
         $this->data['actionsTemplate'] =
             $this->openCart->load->view(
@@ -37,5 +37,21 @@ class Single extends Recurrence
             $this->openCart->load->view($this->templateDir . 'plans/list');
 
         $this->render('plans/base');
+    }
+
+    protected function validateConfig()
+    {
+        $errors = [];
+        if (!isset($this->openCart->request->post['mundipagg-template-snapshot-data'])) {
+            $errors['recurrency_plan_template_error'] = 'A plan configuration must be added.';
+        }
+
+        if (count($errors)) {
+            $currentErrors = $this->openCart->error;
+            $currentErrors['mundipagg_recurrency_errors'] = $errors;
+            $this->openCart->error = $currentErrors;
+            return false;
+        };
+        return true;
     }
 }

@@ -6,12 +6,25 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     var _self = this;
     //replace form action
     var formAction = $('#form-product').attr('action');
+    var recurrenceType = $('#recurrence-type').val();
     var splitData = formAction.split("?");
     var baseUrl = splitData[0];
+
     splitData = splitData[1].split("&");
-    splitData[0] = 'route=extension/payment/mundipagg/plans';
-    var finalUrl = baseUrl + '?' + splitData.join("&") + "&action=save&mundipagg_plan";
-    $('#form-product').attr('action',finalUrl);
+
+    splitData[0] =
+        'route=extension/payment/mundipagg/' + recurrenceType +
+        '&is_' + recurrenceType
+    ;
+
+    var finalUrl =
+        baseUrl + '?' +
+        splitData.join("&") +
+        "&action=save&mundipagg_" +
+        recurrenceType.replace('s', '')
+    ;
+
+    $('#form-product').attr('action', finalUrl);
 
     //defining templateInfoUrl
     splitData[0] = 'route=extension/payment/mundipagg/templates';
@@ -179,7 +192,7 @@ OpencartRecurrencyCreationFormModel.prototype
 };
 OpencartRecurrencyCreationFormModel.prototype
     .getTemplateSelectEditPanelElement = function() {
-    return $('.template-select-edit-panel');
+    return $('#customized');
 };
 
 OpencartRecurrencyCreationFormModel.prototype
@@ -189,6 +202,7 @@ OpencartRecurrencyCreationFormModel.prototype
 
 OpencartRecurrencyCreationFormModel.prototype
     .updateTemplateSnapshotDetailPanel = function(templateSnapshotData) {
+
     var configContainer = $("#mp-recurrence-plan-config-row-container");
     var html = $('#mp-recurrence-plan-config-row-template').html();
 
@@ -216,7 +230,7 @@ OpencartRecurrencyCreationFormModel.prototype
         return retn;
     })(templateSnapshotData));
 
-    html = html.replace(/\{plan_due\}/g,(function(templateSnapshotData,mundipaggRoot){
+    html = html.replace(/\{plan_due\}/g, (function(templateSnapshotData, mundipaggRoot){
         var retn = mundipaggRoot.Location
             .recurrence.template.due
             .type[templateSnapshotData.dueAt.type].label;
@@ -224,24 +238,50 @@ OpencartRecurrencyCreationFormModel.prototype
 
         return "<span class='label label-default'>" + retn + "</span>";
 
-    })(templateSnapshotData,this.formController.mundipaggRoot));
+    })(templateSnapshotData, this.formController.mundipaggRoot));
 
-    html = html.replace(/\{plan_cycles\}/g,(function(templateSnapshotData,mundipaggRoot){
+    html = html.replace(/\{plan_cycles\}/g, (function(templateSnapshotData, mundipaggRoot){
 
-        var intervalLabel = mundipaggRoot.Location
-            .recurrence.template.repetition
-            .interval.type[templateSnapshotData.repetitions[0].intervalType].label;
-        intervalLabel = intervalLabel[
-            templateSnapshotData.repetitions[0].frequency > 1 ? 1 : 0
-            ];
+        retn = '';
 
-        var retn = '<span class="label label-default">' +
-            templateSnapshotData.repetitions[0].cycles +
-            ' cycles</span> ';
-        retn += '<span class="label label-default">' +
-            templateSnapshotData.repetitions[0].frequency + ' ' + intervalLabel +
-            '</span> '
+        $.each(templateSnapshotData.repetitions, function(key, value) {
+            intervalLabel = mundipaggRoot.Location
+                .recurrence.template.repetition
+                .interval.type[value.intervalType].label;
+
+            cyclesLabel = mundipaggRoot.Location
+                .recurrence.template.repetition.cycle.label;
+
+            label = intervalLabel[
+                templateSnapshotData.repetitions[0].frequency > 1 ? 1 : 0
+                ];
+
+            retn += '<span class="label label-default">';
+            retn += value.cycles;
+
+            if(value.cycles > 1) {
+                retn += ' ' + cyclesLabel[1];
+            } else {
+                retn += ' ' + cyclesLabel[0];
+            }
+
+            retn += ' ' + mundipaggRoot.Location.misc.of + ' ';
+            retn += value.frequency + ' ' + label + ' ';
+
+            if (value.discountValue != null) {
+                discountLabel = mundipaggRoot.Location
+                    .recurrence.template.repetition
+                    .discount.type[value.discountType].symbol;
+
+                retn += ' - ' + mundipaggRoot.Location.misc.discount + ': ';
+                retn += value.discountValue + ' ' + discountLabel;
+            }
+
+            retn += '</span><br><br>';
+        });
+
         return retn;
+
     })(templateSnapshotData,this.formController.mundipaggRoot));
 
     html = html.replace(/\{plan_installment\}/g,(function(templateSnapshotData){

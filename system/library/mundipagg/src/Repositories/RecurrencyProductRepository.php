@@ -118,29 +118,33 @@ class RecurrencyProductRepository extends AbstractRep
      */
     protected function createSubproducts(IAggregateRoot &$recurrencyProduct)
     {
-        $query ="
-        INSERT INTO `" . $this->db->getTable('RECURRENCY_SUBPRODUCT_TABLE') . "` (
-                `recurrency_product_id`,
-                `product_id`,
-                `quantity`,
-                `cycles`,
-                `cycle_type`                                
-            ) VALUES 
-        ";
+        $subProducts = $recurrencyProduct->getSubProducts();
 
-        /** @var RecurrencySubproductValueObject $subProduct */
-        foreach ($recurrencyProduct->getSubProducts() as $subProduct) {
-            $query .= "(
-                {$recurrencyProduct->getId()},
-                {$subProduct->getProductId()},
-                {$subProduct->getQuantity()},
-                {$subProduct->getCycles()},
-                '{$subProduct->getCycleType()}'
-            ),";
+        if (count($subProducts) > 0) {
+            $query ="
+            INSERT INTO `" . $this->db->getTable('RECURRENCY_SUBPRODUCT_TABLE') . "` (
+                    `recurrency_product_id`,
+                    `product_id`,
+                    `quantity`,
+                    `cycles`,
+                    `cycle_type`                                
+                ) VALUES 
+            ";
+
+            /** @var RecurrencySubproductValueObject $subProduct */
+            foreach ($subProducts as $subProduct) {
+                $query .= "(
+                    {$recurrencyProduct->getId()},
+                    {$subProduct->getProductId()},
+                    {$subProduct->getQuantity()},
+                    {$subProduct->getCycles()},
+                    '{$subProduct->getCycleType()}'
+                ),";
+            }
+            $query = rtrim($query,',') . ';';
+
+            $this->db->query($query);
         }
-        $query = rtrim($query,',') . ';';
-
-        $this->db->query($query);
     }
 
     protected function deleteSubproducts($recurrencyProduct)

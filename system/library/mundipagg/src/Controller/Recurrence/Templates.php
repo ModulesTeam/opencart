@@ -62,7 +62,7 @@ class Templates extends Recurrence
             'extension/payment/mundipagg/templates',
             [
                 'user_token' => $this->openCart->session->data['user_token'],
-                'action' => 'save'
+                'action' => 'saveTemplate'
             ],
             true
         );
@@ -110,7 +110,7 @@ class Templates extends Recurrence
     /**
      * @throws \Exception
      */
-    protected function save()
+    protected function saveTemplate()
     {
         $postData = $this->openCart->request->post;
 
