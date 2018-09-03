@@ -15,7 +15,6 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     splitData[0] =
         'route=extension/payment/mundipagg/' + recurrenceType +
         '&is_' + recurrenceType
-        '&is_' + recurrenceType
     ;
 
     var finalUrl =
