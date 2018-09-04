@@ -1,0 +1,90 @@
+<h3>{{ text_payment_data }}</h3>
+<div class="payment-data-tables">
+    {% for charge in charges %}
+        {% if charge.payment_method == 'boleto' %}
+            <table class="table table-bordered table-hover">
+                <tbody>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_payment_method }}</td>
+                    <td>Boleto</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_boleto_link }}</td>
+                    <td>
+                        <a href='{{ charge.boleto_link }}' target='_blank'>
+                            {{ boleto_link_message }}
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_boleto_line_code }}</td>
+                    <td>{{ charge.boleto_line_code }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_boleto_due_at }}</td>
+                    <td>{{ charge.boleto_due_at }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_paid_amount }}</td>
+                    <td>{{ charge.paid_amount }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_amount }}</td>
+                    <td>{{ charge.amount }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_status }}</td>
+                    <td>{{ charge.status }}</td>
+                </tr>
+                </tbody>
+            </table>
+        {% endif %}
+        {% if charge.payment_method == 'credit_card' %}
+            <table class="table table-bordered table-hover">
+                <tbody>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_payment_method }}</td>
+                    <td>Credit Card</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_creditcard_holder_name }}</td>
+                    <td>{{ charge.creditcard_holder_name }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_creditcard_brand }}</td>
+                    <td>{{ charge.creditcard_brand }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_creditcard_number }}</td>
+                    <td>{{ charge.creditcard_last_four_digits }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_creditcard_installments }}</td>
+                    <td>{{ charge.creditcard_installments }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_paid_amount }}</td>
+                    <td>{{ charge.paid_amount }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_amount }}</td>
+                    <td>{{ charge.amount }}</td>
+                </tr>
+                <tr>
+                    <td class='payment-data-table-label'>{{ column_status }}</td>
+                    <td>{{ charge.status }}</td>
+                </tr>
+                </tbody>
+            </table>
+        {% endif %}
+    {% endfor %}
+</div>
+<style>
+    /**
+    My Account Payment Data
+    */
+    .payment-data-tables .payment-data-table-label {
+        font-weight: bold;
+        width: 30%;
+    }
+</style>

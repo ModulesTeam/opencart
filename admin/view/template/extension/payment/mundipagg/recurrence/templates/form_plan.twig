@@ -1,0 +1,20 @@
+{% include formBase %}
+{% include panelPlanFrequency %}
+
+<script>
+    {% if MundipaggTemplateSnapshot %}
+    MundipaggTemplateSnapshot = JSON.parse(atob('{{ MundipaggTemplateSnapshot }}'));
+    {% endif %}
+    {% if MundipaggRecurrenceProducts %}
+    MundipaggRecurrenceProducts = JSON.parse(atob('{{ MundipaggRecurrenceProducts }}'));
+    {% endif %}
+    $('script').last().remove();
+</script>
+
+<div class="form-group required">
+    <div class="col-sm-10">
+        <button type="{{ preventFormSubmit == true ? 'button' : 'submit' }}" title="" class="btn btn-primary" data-original-title="Save" id="mp-add-plan-template-button">
+            {{ selectedTemplateRoot ? "Editar" : "Adicionar configuração"}}
+        </button>
+    </div>
+</div>

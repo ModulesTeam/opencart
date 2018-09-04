@@ -72,6 +72,7 @@ class ModelExtensionPaymentMundipaggCreditCard extends Model
      */
     private function getInstallmentAmount($totalAmountWithInterest, $installments)
     {
+        $totalAmountWithInterest = str_replace(",", "", $totalAmountWithInterest);
         return number_format($totalAmountWithInterest/$installments, 2, '.', ',');
     }
     

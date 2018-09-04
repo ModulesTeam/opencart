@@ -1,0 +1,71 @@
+<script>
+    $(document).ready(function() {
+        $('#button-filter').on('click', function() {
+            var url = '';
+
+            var filter_name = $('input[name=\'filter_name\']').val();
+
+            if (filter_name) {
+                url += '&filter_name=' + encodeURIComponent(filter_name);
+            }
+
+            var filter_model = $('input[name=\'filter_model\']').val();
+
+            if (filter_model) {
+                url += '&filter_model=' + encodeURIComponent(filter_model);
+            }
+
+            var filter_price = $('input[name=\'filter_price\']').val();
+
+            if (filter_price) {
+                url += '&filter_price=' + encodeURIComponent(filter_price);
+            }
+
+            var filter_quantity = $('input[name=\'filter_quantity\']').val();
+
+            if (filter_quantity) {
+                url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
+            }
+
+            var filter_status = $('select[name=\'filter_status\']').val();
+
+            if (filter_status !== '') {
+                url += '&filter_status=' + encodeURIComponent(filter_status);
+            }
+
+            var extra = '&filter_mp_type=' + $('#mp-filter-recurrency-type-select').val();
+
+            location = 'index.php?route=catalog/product&user_token={{ user_token }}' + url + extra;
+        });
+
+        $('#filter-product div.panel div.panel-body div:last-child').before(
+            $('#mp-filter-recurrency-type-select-template').html()
+        );
+        $('#mp-filter-recurrency-type-select').val('{{ mp_selected_product_type_filter }}');
+
+        var addProductButton = $('a[href="' + ('{{ add }}'.replace(/&amp;/g, '&')) + '"]');
+
+        addProductButton.attr('data-original-title','Add new product');
+
+        $('<span> Add product</span>').insertAfter(addProductButton.find('i'));
+        $($('#mp-plan-single-product-add-buttons-template').html())
+            .insertBefore(addProductButton);
+    });
+</script>
+
+<script id="mp-filter-recurrency-type-select-template" type="text/template">
+    <div class="form-group">
+        <label class="control-label" for="mp-filter-recurrency-type-select">Product Type</label>
+        <select id="mp-filter-recurrency-type-select" class="form-control">
+            <option value="">All</option>
+            <option value="normal">Normal</option>
+            <option value="plan">Plan</option>
+            <option value="single">Single</option>
+        </select>
+    </div>
+</script>
+
+<script id="mp-plan-single-product-add-buttons-template" type="text/template">
+    <a href="{{ add }}&mundipagg_plan" data-toggle="tooltip" title="Adicionar plano" class="btn btn-primary" style="margin-right: 0.2em"><i class="fa fa-plus"></i><span> Adicionar plano</span></a>
+    <a href="{{ add }}&mundipagg_single" data-toggle="tooltip" title="Adicionar produto recorrente" class="btn btn-primary" style="margin-right: 0.2em"><i class="fa fa-plus"></i><span> Adicionar produto recorrente</span></a>
+</script>

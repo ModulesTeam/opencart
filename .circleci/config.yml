@@ -1,0 +1,192 @@
+version: 2
+jobs:
+  build:
+    working_directory: /app
+    docker:
+      - image: php:7.1-apache
+        environment:
+          APP_ENV: test
+    steps:
+       - checkout
+       - run:
+          name: Install system packages
+          command: apt-get update && apt-get -y install zip git zlib1g-dev wget
+       - run:
+          name: Install PHP extensions
+          command: |
+            docker-php-ext-install pdo
+            docker-php-ext-install zip
+       - run:
+          name: Install Composer
+          command: |
+            apt-get update
+            apt-get install -y curl nano
+            curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+       - run:
+          name: Display PHP information
+          command: |
+            php -v
+            composer --version
+       - run:
+          name: Check PHP sintax
+          command: find . -name \*.php -exec php -l "{}" \;
+       - store_artifacts:
+          path: /app
+          destination: app-artifact
+       - run:
+          name: Install project dependencies
+          command: |
+            cd /app
+            composer install
+       - persist_to_workspace:
+          root: /
+          paths:
+            - app
+  test:
+    working_directory: /
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: /
+      - run:
+          name: Copy CI files to root
+          command: |
+             cd /app
+             cp .circleci/data/Dockerfile .
+             cp .circleci/data/wait-for-mysql.sh .
+             cp .circleci/data/opencart_module_install.sql .
+      - run:
+          name: Build image base for modifications
+          command: |
+             cd /app
+             docker build -t ${DOCKER_ACCOUNT}/${PROJECT_NAME}:latest .
+             docker run --name newimage -d -p3306:3306 -p80:80 ${DOCKER_ACCOUNT}/${PROJECT_NAME}:latest
+             docker cp /app/. newimage:app/.modman/opencart
+             docker exec -it newimage ls
+      - run:
+          name: Wait for MySQL Service
+          command: |
+             docker exec -it newimage sh /app/.modman/opencart/wait-for-mysql.sh
+             docker exec -it newimage rm /app/.modman/opencart/wait-for-mysql.sh
+      - run:
+          name: Activate and setup Plugin
+          command: |
+             docker exec -it newimage /root/bin/modman repair
+             docker exec -it newimage /bin/sh -c \
+                "mysql opencart < /app/.modman/opencart/opencart_module_install.sql"
+             docker exec -it newimage mysql opencart -e \
+               "INSERT INTO opencart.oc_setting (store_id, code, \`key\`, value, serialized) VALUES \
+                 (0, 'payment_mundipagg', 'payment_mundipagg_test_secret_key', '${API_TEST_SECRET_KEY}', 0), \
+                 (0, 'payment_mundipagg', 'payment_mundipagg_test_public_key', '${API_TEST_PUBLIC_KEY}', 0);"
+             docker exec -i newimage sh -c \
+                 "cd /app/.modman/opencart && composer update -vvv"
+      - run:
+          name: Clear useless files
+          command: |
+             docker exec -i newimage sh -c \
+               "cd /app/.modman/opencart && \
+               rm -rf .github .circleci .git .gitignore && \
+               rm -rf Dockerfile wait-for-mysql.sh \
+               opencart_module_install.sql LICENSE *.MD"
+      - run:
+          name: Commit basic configs into Docker image
+          command: |
+            sleep 5 && docker stop newimage
+            docker commit newimage ${DOCKER_ACCOUNT}/${PROJECT_NAME}:latest
+            sleep 5 && docker start newimage
+      - run:
+          name: Install and run Functional Tests dependencies
+          command: |
+            docker exec -i newimage sh -c \
+              "wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+              echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | tee /etc/apt/sources.list.d/google-chrome.list && \
+              apt-get -y update && apt-get -y install google-chrome-unstable"
+            docker exec -i newimage sh -c \
+              "cd /app/.modman/opencart && composer update -vvv"
+            docker exec -i newimage sh -c \
+              "cd /app/.modman/opencart/features/bootstrap && echo 'BASE_URL=http://localhost' > .env"
+      - run: 
+          name: Run Functional Tests      
+          command: |
+            docker exec --detach newimage google-chrome-unstable --disable-gpu --no-sandbox --headless --remote-debugging-address=127.0.0.1 --remote-debugging-port=9222 &
+            docker exec -i newimage sh -c "cd /app/.modman/opencart && php vendor/bin/behat features/test.feature"
+      - run:
+          name: Reset image and set final configurations
+          command: |
+            sleep 5 && docker rm -f newimage
+            docker run --name newimage -d -p3306:3306 -p80:80 ${DOCKER_ACCOUNT}/${PROJECT_NAME}:latest
+            docker cp /app/. newimage:app/.modman/opencart
+            docker exec -it newimage /bin/sh -c "sed -i 's|http://localhost|https://${STG_URL}|g' config.php"
+            docker exec -it newimage /bin/sh -c "sed -i 's|http://localhost|https://${STG_URL}|g' admin/config.php"
+            docker exec -it newimage /bin/sh -c \
+            "echo \"define('HTTP_SERVER', 'http://${STG_URL}/');\" >> /app/config.php && \
+            echo \"define('HTTPS_SERVER', 'https://${STG_URL}/');\" >> /app/config.php && \
+            echo \"define('HTTP_SERVER', 'http://${STG_URL}/admin/');\" >> /app/admin/config.php && \
+            echo \"define('HTTPS_SERVER', 'https://${STG_URL}/admin/');\" >> /app/admin/config.php && \
+            echo \"define('HTTP_CATALOG', 'http://${STG_URL}/');\" >> /app/admin/config.php && \
+            echo \"define('HTTPs_CATALOG', 'https://${STG_URL}/');\" >> /app/admin/config.php \
+            "          
+      - run:
+          name: Commit and save Docker image
+          command: |
+             sleep 5 && docker stop newimage
+             docker commit newimage ${DOCKER_ACCOUNT}/${PROJECT_NAME}:latest
+             mkdir -p /docker-cache
+             docker image save --output /docker-cache/image.tar ${DOCKER_ACCOUNT}/${PROJECT_NAME}:latest
+      - persist_to_workspace:
+                root: /
+                paths:
+                  - docker-cache
+  publish:
+    working_directory: /
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: /docker-cache
+      - deploy:
+          name: Load and push Docker image
+          command: |
+             sleep 5 && docker image load -q -i docker-cache/docker-cache/image.tar
+             docker login ${DOCKER_ACCOUNT} -u ${DOCKER_USER} -p ${DOCKER_PASS}
+             docker tag ${DOCKER_ACCOUNT}/${PROJECT_NAME} "${DOCKER_ACCOUNT}/${PROJECT_NAME}:latest"
+             docker tag ${DOCKER_ACCOUNT}/${PROJECT_NAME} "${DOCKER_ACCOUNT}/${PROJECT_NAME}:${CIRCLE_BRANCH}"
+             docker tag ${DOCKER_ACCOUNT}/${PROJECT_NAME} "${DOCKER_ACCOUNT}/${PROJECT_NAME}:${CIRCLE_SHA1:0:8}"
+             docker push "${DOCKER_ACCOUNT}/${PROJECT_NAME}"
+
+  deploy_staging:
+     machine: true
+     steps:
+       - run:
+           name: Send deployment webhook to Rancher
+           command: |
+             BODY='{"push_data":{"tag":"'"${CIRCLE_BRANCH}"'"},"repository":{"repo_name":"'"${DOCKER_ACCOUNT}/${PROJECT_NAME}"'"}}'
+             curl -X POST ${RANCHER_STG_DEPLOY_URL} -H 'Content-Type: application/json' -d "${BODY}"
+
+workflows:
+  version: 2
+  build_test_publish_deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+          filters:
+             branches:
+               only: develop
+      - publish:
+          context: DockerRegistry
+          requires:
+            - test
+          filters:
+            branches:
+              only: develop
+      - deploy_staging:
+          requires:
+            - publish
+          filters:
+            branches:
+              only: develop

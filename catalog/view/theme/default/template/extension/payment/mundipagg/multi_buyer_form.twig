@@ -1,0 +1,124 @@
+<div id="multi-buyer-form-{{ inputId }}" style="display: none">
+    <div class="row">
+        <div class="col-sm-5 multi-buyer-form">
+            <label for="multi-buyer-name-{{ inputId }}">Nome</label>
+            <input
+                    name="multi-buyer-name-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-name-{{ inputId }}">
+            <span id="multi-buyer-name-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
+        </div>
+
+        <div class="col-sm-5 multi-buyer-form">
+            <label for="multi-buyer-email-{{ inputId }}">Email</label>
+            <input
+                    name="multi-buyer-email-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-email-{{ inputId }}">
+            <span id="multi-buyer-email-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
+        </div>
+
+        <div class="col-sm-2 multi-buyer-form">
+            <label for="multi-buyer-document-{{ inputId }}">CPF</label>
+            <input
+                    name="multi-buyer-document-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-document-{{ inputId }}">
+            <span id="multi-buyer-document-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-sm-7 multi-buyer-form">
+            <label for="multi-buyer-street-{{ inputId }}">Rua</label>
+            <input
+                    name="multi-buyer-street-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-street-{{ inputId }}">
+            <span id="multi-buyer-street-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
+        </div>
+
+        <div class="col-sm-2 multi-buyer-form">
+            <label for="multi-buyer-number-{{ inputId }}">Número</label>
+            <input
+                    name="multi-buyer-number-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-number-{{ inputId }}">
+        </div>
+
+        <div class="col-sm-3 multi-buyer-form">
+            <label for="multi-buyer-zipcode-{{ inputId }}">CEP</label>
+            <input
+                    name="multi-buyer-zipcode-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-zipcode-{{ inputId }}">
+            <span id="multi-buyer-zipcode-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-3 multi-buyer-form">
+            <label for="multi-buyer-neighborhood-{{ inputId }}">Bairro</label>
+            <input
+                    name="multi-buyer-neighborhood-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-neighborhood-{{ inputId }}">
+        </div>
+
+        <div class="col-sm-3 multi-buyer-form">
+            <label for="multi-buyer-city-{{ inputId }}">Cidade</label>
+            <input
+                    name="multi-buyer-city-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-city-{{ inputId }}">
+            <span id="multi-buyer-city-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
+        </div>
+
+        <div class="col-sm-3 multi-buyer-form">
+            <label for="multi-buyer-country-{{ inputId }}">País</label>
+            <select
+                    name="multi-buyer-country-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    onChange="getState(this)"
+                    id="multi-buyer-country-{{ inputId }}">
+                <option value="">Selecione</option>
+            </select>
+            <span id="multi-buyer-country-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
+        </div>
+
+        <div class="col-sm-3 multi-buyer-form">
+            <label for="multi-buyer-state-{{ inputId }}">Estado</label>
+            <select
+                    name="multi-buyer-state-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-state-{{ inputId }}"
+                    disabled>
+                <option value="">Selecione o Pais</option>
+            </select>
+            <span id="multi-buyer-state-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 multi-buyer-form">
+            <label for="multi-buyer-complement-{{ inputId }}">Complemento</label>
+            <input
+                    name="multi-buyer-complement-{{ inputId }}"
+                    type="text"
+                    class="form-control"
+                    id="multi-buyer-complement-{{ inputId }}">
+        </div>
+    </div>
+</div>

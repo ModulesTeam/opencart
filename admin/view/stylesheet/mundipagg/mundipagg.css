@@ -1,0 +1,55 @@
+.plan-grid{
+    list-style: none;
+}
+
+.plan-grid li {
+    float: left;
+}
+
+.plan-item-img{
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 40px;
+    padding: 5px;
+}
+
+.plan-item-img-thumbnail {
+    width: 80%;
+}
+.plan-cover {
+    text-align: center;
+}
+
+.plan-cover img {
+    padding: 5px;
+    width: 222px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.loader {
+    margin: 80% 50% 0 50%;
+    position: absolute;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.emd-mundi-loader path {
+    stroke-dasharray: 173 23;
+    stroke-dashoffset: 136px;
+    animation: dash 1.5s linear infinite;
+    stroke:#00b7b4 ;
+
+}
+
+@keyframes dash {
+    from {
+        stroke-dashoffset: 136px;
+    }
+    to {
+        stroke-dashoffset: 332px;
+    }
+}

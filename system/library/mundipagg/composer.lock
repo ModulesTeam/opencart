@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "5318020a5b9d41fcae869b38b9f01b72",
@@ -103,12 +103,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mundipagg/MundiAPI-PHP.git",
-                "reference": "4c181f58994285e74f644eba4ee97242017a18be"
+                "reference": "0c41d0dddd0bebb7fd3c7111a2fe92ab9bdae92b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mundipagg/MundiAPI-PHP/zipball/4c181f58994285e74f644eba4ee97242017a18be",
-                "reference": "4c181f58994285e74f644eba4ee97242017a18be",
+                "url": "https://api.github.com/repos/mundipagg/MundiAPI-PHP/zipball/0c41d0dddd0bebb7fd3c7111a2fe92ab9bdae92b",
+                "reference": "0c41d0dddd0bebb7fd3c7111a2fe92ab9bdae92b",
                 "shasum": ""
             },
             "require": {
@@ -147,7 +147,7 @@
                 "api",
                 "sdk"
             ],
-            "time": "2018-02-27T18:13:17+00:00"
+            "time": "2018-07-19T19:35:33+00:00"
         }
     ],
     "packages-dev": [],

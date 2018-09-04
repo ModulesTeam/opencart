@@ -88,7 +88,7 @@ class MundipaggCatalogTest extends OpenCartTest
         $this->markTestSkipped('must be revisited.');
 
         $client = new \GuzzleHttp\Client();
-        $response = $client->post('https://api.mundipagg.com/core/v1.0/tokens?appId=' . getenv('TEST_PUBLIC_KEY'), [
+        $response = $client->post('https://api.mundipagg.com/core/v1/tokens?appId=' . getenv('TEST_PUBLIC_KEY'), [
             'body' => [
                 'type' => 'credit_card',
                 'number' => '4556809418730432',

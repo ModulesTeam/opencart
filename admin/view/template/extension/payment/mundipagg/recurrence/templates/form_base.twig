@@ -1,0 +1,106 @@
+<label class="col-sm-12 form-group">Nome</label>
+<div class="form-group required">
+    <div class="col-sm-10">
+        <input type="text" name="name" value="{{ selectedTemplateRoot.template.name }}" placeholder="" id="mp-recurrency-name" class="form-control">
+    </div>
+</div>
+
+<label class="col-sm-12 form-group">Descrição</label>
+<div class="form-group">
+    <div class="col-sm-10">
+        <textarea type="text" name="description" value="" placeholder="" id="mp-recurrency-description" class="form-control">{{ selectedTemplateRoot.template.description }}</textarea>
+    </div>
+</div>
+
+<label class="col-sm-12 form-group">Métodos de pagamento</label>
+<div class="form-group required">
+    <div class="col-sm-10">
+        <div class="checkbox">
+            <label>
+              <input type="checkbox" name="payment_method[]" id="checkbox-creditcard" value="credit_card" class="mp-checkbox-creditcard-{{ formId }}"
+                  {% if selectedTemplateRoot.template.isAcceptCreditCard %}
+                      checked
+                  {% endif %}
+              > Credit Card
+            </label>
+        </div>
+        <div class="checkbox">
+            <label>
+              <input type="checkbox" name="payment_method[]" id="checkbox-boleto" value="boleto"
+                  {% if selectedTemplateRoot.template.isAcceptBoleto %}
+                      checked
+                  {% endif %}
+              > Boleto
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="installment-{{ formId }}">
+    <label class="col-sm-12 form-group">Permite parcelamento</label>
+    <div class="form-group required">
+        <div class="col-sm-10">
+            <select name="allow_installment" id="allow_installment" class="form-control mp-allow-installment-{{ formId }}">
+                <option value="1"> Sim </option>
+                <option value="0"> Não </option>
+            </select>
+        </div>
+    </div>
+</div>
+<hr>
+<div class="form-group required">
+    <label class="col-sm-5">Vencimento</label>
+    <label class="col-sm-5 mp-expiry-date-{{ formId }}">Dia</label>
+    <label class="col-sm-5 mp-expiry-date-placeholder-{{ formId }}">&nbsp;</label>
+
+    <div class="col-sm-5">
+        <select name="expiry_type" id="expiry_type" class="form-control mp-expiry-type-{{ formId }}">
+            {% for dueType in dueTypesArray %}
+            <option value="{{ dueType.code }}">{{ dueType.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-sm-5 mp-expiry-date-placeholder-{{ formId }}">&nbsp;</div>
+    <div class="col-sm-5">
+        <select name="expiry_date" id="expiry_date" class="form-control mp-expiry-date-{{ formId }}">
+            {% for day in  1..31 %}<option>{{ day }}</option>{% endfor %}
+        </select>
+    </div>
+</div>
+{% if selectedTemplateRoot %}
+    <input type="hidden" name="template-id" value="{{ selectedTemplateRoot.template.id }}" />
+{% endif %}
+<script>
+
+    $('.installment-{{ formId }}').hide();
+    $('.mp-expiry-date-placeholder-{{ formId }}').hide();
+    $('.mp-checkbox-creditcard-{{ formId }}').change(function () {
+            var method = $('.mp-checkbox-creditcard-{{ formId }}').is(':checked') ?
+                'show' : 'hide';
+            return $('.installment-{{ formId }}')[method]();
+    });
+
+    $('.mp-expiry-type-{{ formId }}').change(function(event){
+
+        var value = $(event.target).val();
+        $('.mp-expiry-date-{{ formId }}').show();
+        $('.mp-expiry-date-placeholder-{{ formId }}').hide();
+        if (value !== '{{ constant('Mundipagg\\Aggregates\\Template\\DueValueObject::TYPE_EXACT') }}') {
+            $('.mp-expiry-date-{{ formId }}').hide();
+            $('.mp-expiry-date-placeholder-{{ formId }}').show();
+        }
+    });
+
+    {% if selectedTemplateRoot.dueAt.type %}
+        $('.mp-allow-installment-{{ formId }}').val(
+            (!!'{{ selectedTemplateRoot.template.allowInstallments }}') ? '1' : '0'
+        );
+        $('.mp-expiry-type-{{ formId }}').val('{{ selectedTemplateRoot.dueAt.type }}');
+        $('.mp-expiry-type-{{ formId }}').change();
+    {% endif %}
+
+    $(document).ready(function() {
+        $('.mp-checkbox-creditcard-{{ formId }}').change();
+    });
+
+</script>

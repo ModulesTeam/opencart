@@ -6,6 +6,8 @@ use Mundipagg\Order;
 use Mundipagg\Model\Order as OrderModel;
 use Mundipagg\Settings\CreditCard;
 use Mundipagg\Model\Creditcard as CreditCardModel;
+use Mundipagg\Log;
+use Mundipagg\LogMessages;
 
 class TwoCreditCards
 {
@@ -16,6 +18,7 @@ class TwoCreditCards
     private $cart;
     private $cardId;
     private $order;
+    private $multiBuyer;
 
     private $amount;
     private $amountWithInterest;
@@ -24,7 +27,7 @@ class TwoCreditCards
     private $token;
     private $saveCreditCards;
 
-    public function __construct($openCart, $details, $cart)
+    public function __construct($openCart, $details, $cart, $multiBuyer = null)
     {
         $this->openCart = $openCart;
         $this->details = $details;
@@ -34,6 +37,8 @@ class TwoCreditCards
         $this->order->setCustomerModel($this->openCart->model_extension_payment_mundipagg_customer);
 
         $this->model = new OrderModel($openCart);
+
+        $this->multiBuyer = $multiBuyer;
 
         $orderId = $this->openCart->session->data['order_id'];
         $this->orderDetails = $this->openCart->model_checkout_order->getOrder($orderId);
@@ -59,7 +64,8 @@ class TwoCreditCards
                 'twoCreditCards',
                 $this->amountWithInterest,
                 $this->token,
-                $this->cardId
+                $this->cardId,
+                $this->multiBuyer
             );
         } catch (\Exception $e) {
             Log::create()
@@ -154,14 +160,26 @@ class TwoCreditCards
 
     private function setToken()
     {
-        $this->token[] = $this->details['munditoken-1'];
-        $this->token[] = $this->details['munditoken-2'];
+        $this->token[0] = null;
+        if (isset($this->details['munditoken-1'])) {
+            $this->token[0] = $this->details['munditoken-1'];
+        }
+
+        $this->token[1] = null;
+        if (isset($this->details['munditoken-2'])) {
+            $this->token[1] = $this->details['munditoken-2'];
+        }
     }
 
     private function setCardId()
     {
-        $this->cardId[] = $this->details['mundipaggSavedCreditCard-1'];
-        $this->cardId[] = $this->details['mundipaggSavedCreditCard-2'];
+        if (isset($this->details['mundipaggSavedCreditCard-1'])) {
+            $this->cardId[0] = $this->details['mundipaggSavedCreditCard-1'];
+        }
+
+        if (isset($this->details['mundipaggSavedCreditCard-2'])) {
+            $this->cardId[1] = $this->details['mundipaggSavedCreditCard-2'];
+        }
     }
 
     private function setInstallments()
@@ -175,10 +193,10 @@ class TwoCreditCards
     private function setSaveCreditCard()
     {
         if (isset($this->details['save-this-credit-card-1'])) {
-            $this->saveCreditCards[] = $this->details['save-this-credit-card-1'] === 'on';
+            $this->saveCreditCards[0] = $this->details['save-this-credit-card-1'] === 'on';
         }
         if (isset($this->details['save-this-credit-card-2'])) {
-            $this->saveCreditCards[] = $this->details['save-this-credit-card-2'] === 'on';
+            $this->saveCreditCards[1] = $this->details['save-this-credit-card-2'] === 'on';
         }
     }
 
@@ -187,7 +205,7 @@ class TwoCreditCards
         $chargeFirstCard = $orderResponse->charges[0];
         $chargeSecondCard = $orderResponse->charges[1];
 
-        if ($this->saveCreditCards[0]) {
+        if (!empty($this->saveCreditCards[0]) && $this->saveCreditCards[0]) {
             $this->saveCard(
                 $orderResponse->customer->id,
                 $chargeFirstCard->lastTransaction->card,
@@ -196,7 +214,8 @@ class TwoCreditCards
             );
         }
 
-        if ($this->saveCreditCards[1]) {
+        if (!empty($this->saveCreditCards[1]) && $this->saveCreditCards[1]) {
+
             $this->saveCard(
                 $orderResponse->customer->id,
                 $chargeSecondCard->lastTransaction->card,

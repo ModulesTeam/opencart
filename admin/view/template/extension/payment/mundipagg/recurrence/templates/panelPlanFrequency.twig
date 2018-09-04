@@ -1,0 +1,36 @@
+<div class="form-group required">
+    <label class="col-sm-5">Ciclos</label>
+    <label class="col-sm-5">Intervalo</label>
+    <div class="col-sm-5">
+        <input type="number" min="1" class="form-control" placeholder="Digite o número de ciclos" id='mp-recurrency-cycles' name="intervals[0][cycles]" value="{{ selectedTemplateRoot.repetitions[0].cycles }}">
+    </div>
+    <div class="frequency">
+        <div class="col-sm-5">
+            <select id="frequency" class="form-control" name="intervals[0][frequency]">
+                {% for frequency in  1..12 %}<option>{{ frequency }}</option>{% endfor %}
+            </select>
+            <select id="interval" class="form-control" name="intervals[0][type]">
+                {% for intervalType in intervalTypesArray %}
+                    <option value="{{ intervalType.code }}">{{ intervalType.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="form-group required">
+    <label class="col-sm-5">Trial</label>
+    <div class="col-sm-5">
+        <div class="input-group">
+          <input type="number" min="0" class="form-control" placeholder="Digite o número de dias do trial" name="trial" id='mp-recurrency-trial' value="{{ selectedTemplateRoot.template.trial }}">
+          <span class="input-group-addon">Dias</span>
+        </div>
+    </div>
+</div>
+
+{% if selectedTemplateRoot.repetitions[0].intervalType %}
+    <script>
+        $('#interval').val('{{ selectedTemplateRoot.repetitions[0].intervalType }}');
+        $('#frequency').val('{{ selectedTemplateRoot.repetitions[0].frequency }}');
+    </script>
+{% endif %}

@@ -22,7 +22,8 @@ $_['credit_card'] = [
     'without_interest' => 'without interest',
     'interest' => 'interest: ',
     'new_credit_card' => 'New Card',
-    'save_creditcard_message' => 'Save this card to future orders'
+    'save_creditcard_message' => 'Save this card to future orders',
+    'multibuyer_message' => 'Fill other buyer data'
 ];
 
 $_['order'] = [
@@ -71,3 +72,44 @@ $_['order_statuses'] = [
     'canceled' => 'Order canceled',
     'failed' => 'Order failed'
 ];
+
+$_['account_info'] = [
+    'text_payment_data' => 'Dados de Pagamento',
+    'column_payment_method' => 'Método de pagamento',
+    'column_status' => 'Status',
+    'column_paid_amount' => 'Quantia paga',
+    'column_amount' => 'Quantia Total',
+
+    'column_boleto_link' => 'Link',
+    'column_boleto_line_code' => 'Código de barras',
+    'column_boleto_due_at' => 'Vencimento',
+
+    'column_creditcard_holder_name' => 'Nome do titular',
+    'column_creditcard_brand' => 'Bandeira',
+    'column_creditcard_number' => 'Numero do cartão',
+    'column_creditcard_installments' => 'Parcelas',
+
+    'boleto_link_message' => 'Clique aqui para exibir seu boleto',
+    'text_no_results' => 'Sem resultados.'
+];
+
+//for future translations, this lines are commented.
+//$_['account_info'] = [
+//    'text_payment_data' => 'Payment Data',
+//    'column_payment_method' => 'Payment Method',
+//    'column_status' => 'Status',
+//    'column_paid_amount' => 'Paid amount',
+//    'column_amount' => 'Amount',
+//
+//    'column_boleto_link' => 'Link',
+//    'column_boleto_line_code' => 'Line Code',
+//    'column_boleto_due_at' => 'Due At',
+//
+//    'column_creditcard_holder_name' => 'Holder Name',
+//    'column_creditcard_brand' => 'Brand',
+//    'column_creditcard_number' => 'Number',
+//    'column_creditcard_installments' => 'Installments',
+//
+//    'boleto_link_message' => 'Click here to show your billet.',
+//    'text_no_results' => 'No results.'
+//];

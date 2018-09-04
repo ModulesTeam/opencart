@@ -1,5 +1,8 @@
 {{ boleto_link_message }}
 
 <script>
-    window.open('{{ boleto_link }}', "_blank");
+    var link = '{{ boleto_link }}';
+    if (link != '') {
+        window.open('{{ boleto_link }}', "_blank");
+    }
 </script>

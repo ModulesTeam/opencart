@@ -9,4 +9,15 @@
         <img src="image/catalog/mundipagg/boleto.png" title="Boleto" alt="Boleto" width="75" onclick="generate();">
     </div>
 </div>
+    {%  if isMultiBuyerEnabled %}
+        <hr />
+        <div class="row">
+            <div class="col-sm-12">
+                <input type="checkbox" class="float-to-left multi-buyer-check" id="multi-buyer-{{ inputId }}" name="multi-buyer-status-{{ inputId }}" onChange="toogleMultiBuyerForm({{inputId}})"/>
+                <label for="multi-buyer-{{ inputId }}">{{ credit_card.multibuyer_message }}</label>
+            </div>
+        </div>
+
+        {% include multiBuyerFormTemplate %}
+    {% endif %}
 

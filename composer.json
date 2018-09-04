@@ -8,7 +8,8 @@
         "beyondit/opencart-test-suite": "3.0.x",
         "consolidation/robo": "^1.1",
         "vlucas/phpdotenv" : "^2.4",
-        "colinmollenhour/modman": "^1.12"
+        "colinmollenhour/modman": "^1.12",
+        "felipebool/crook": "^0.0.12"
     },
     "scripts" : {
 		"test-admin": "phpunit --testsuite admin-tests --colors=always",
@@ -24,7 +25,8 @@
         "build" : "composer install --prefer-dist -q -d system/library/mundipagg/",
         "post-install-cmd": [
             "@build"
-        ]
+        ],
+        "integrity-check": "./integrityPrePushCheck.sh"
     },
     "extra" : {
         "src-dir" : "src/upload"

@@ -1,0 +1,40 @@
+{{ header }}
+<link href="view/stylesheet/mundipagg/mundipagg.css" type="text/css" rel="stylesheet" />
+
+{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            {{ actionsTemplate }}
+            <h1><i class="fa fa-book"></i> {{ heading_title }}</h1>
+            {{ breadcrumbtemplate }}
+            <div class="well well-lg">Cras nulla lectus, lacinia in consequat a, tristique eu diam. Curabitur dapibus ante vitae nisi fringilla vulputate. Donec luctus, nibh eget faucibus bibendum, sapien lorem efficitur lectus, a iaculis nunc ipsum ac odio. Morbi turpis augue, viverra ac euismod eu, aliquam vel nunc. Quisque justo diam, pulvinar non mattis ut, malesuada id augue. Praesent justo ipsum, sagittis tincidunt finibus eu, tempor ut tortor. Sed et porttitor enim. Ut dignissim laoreet porttitor. Aenean arcu libero, pharetra in pulvinar in, </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="panel panel-default">
+            {{ panelIconsTemplate }}
+            <div class="panel-body">
+                {{ content }}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+$(document).ready(function () {
+
+    $('#list-template').hide();
+
+    $('.checkbox-tab').change(function() {
+            $('#grid-template').toggle();
+            $('#list-template').toggle();
+    });
+});
+
+</script>
+
+{{ footer }}

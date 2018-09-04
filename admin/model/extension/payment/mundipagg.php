@@ -24,9 +24,15 @@ class ModelExtensionPaymentMundipagg extends Model
         $this->createOrderTable();
         $this->createChargeTable();
         $this->createCreditCardTable();
-        $this->createBoletoLinkTable();
+        $this->createOrderBoletoInfoTable();
+        $this->createOrderCardInfoTable();
+
+        //aggregates
+        $this->createTemplateAggregateTables();
+        $this->createRecurrencyProductAggregateTables();
 
         $this->populatePaymentTable();
+
         $this->installEvents();
     }
 
@@ -42,8 +48,115 @@ class ModelExtensionPaymentMundipagg extends Model
         $this->dropOrderTable();
         $this->dropChargeTable();
         $this->dropCreditCardTable();
-        $this->dropBoletoLinkTable();
+        $this->dropOrderBoletoInfoTable();
+        $this->dropOrderCardInfoTable();
+
+        //aggregates
+        $this->dropTemplateAggregateTables();
+        $this->dropRecurrencyProductAggregateTables();
+
         $this->uninstallEvents();
+    }
+
+    private function createTemplateAggregateTables()
+    {
+        //template table
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_template` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `is_disabled` TINYINT NOT NULL DEFAULT 0,
+            `is_single` TINYINT NOT NULL DEFAULT 0,
+            `name` VARCHAR(45) NULL,
+            `description` TEXT NULL,
+            `accept_credit_card` TINYINT NOT NULL DEFAULT 0,
+            `accept_boleto` TINYINT NOT NULL DEFAULT 0,
+            `allow_installments` TINYINT NOT NULL DEFAULT 0,
+            `due_type` CHAR NOT NULL,
+            `due_value` TINYINT NOT NULL DEFAULT 0,            
+            `trial` TINYINT NOT NULL DEFAULT 0,
+            PRIMARY KEY (`id`))   
+        ");
+
+        //template_repetition table
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_template_repetition` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `template_id` INT NOT NULL,
+            `cycles` INT NOT NULL,
+            `frequency` INT NOT NULL,
+            `interval_type` CHAR NOT NULL,
+            `discount_type` CHAR NOT NULL,
+            `discount_value` FLOAT NOT NULL,
+            PRIMARY KEY (`id`, `template_id`),
+            INDEX `fk_template_repetition_template1_idx` (`template_id` ASC),
+            CONSTRAINT `fk_template_repetition_template1`
+              FOREIGN KEY (`template_id`)
+              REFERENCES `" . DB_PREFIX . "mundipagg_template` (`id`)
+              ON DELETE NO ACTION
+              ON UPDATE NO ACTION)
+        ");
+    }
+
+    private function dropTemplateAggregateTables()
+    {
+        $this->db->query("
+            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_template_repetition` CASCADE;
+        ");
+
+        $this->db->query("
+            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_template` CASCADE;
+        ");
+    }
+
+    private function createRecurrencyProductAggregateTables()
+    {
+        //recurrency product table
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_recurrency_product` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `is_disabled` TINYINT NOT NULL DEFAULT 0,
+            `product_id` INT NOT NULL,
+            `template_snapshot` TEXT NOT NULL,
+            `template_id` INT NULL,
+            `mundipagg_plan_id` VARCHAR(45) NULL,
+            `is_single` TINYINT NOT NULL,
+            PRIMARY KEY (`id`),
+            INDEX `fk_plan_template1_idx` (`template_id` ASC),
+            CONSTRAINT `fk_plan_template1`
+              FOREIGN KEY (`template_id`)
+              REFERENCES `" . DB_PREFIX . "mundipagg_template` (`id`)
+              ON DELETE NO ACTION
+              ON UPDATE NO ACTION)
+        ");
+
+        //recurrency sub product table
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_recurrency_subproduct` (
+            `id` INT NOT NULL AUTO_INCREMENT,
+            `recurrency_product_id` INT NOT NULL,
+            `product_id` INT NOT NULL,
+            `quantity` INT NOT NULL,
+            `cycles` INT NOT NULL,
+            `cycle_type` CHAR NOT NULL,
+            PRIMARY KEY (`id`),
+            INDEX `fk_recurrency_subproduct_recurrency_product1_idx` (`recurrency_product_id` ASC),
+            CONSTRAINT `fk_recurrency_subproduct_recurrency_product1`
+            FOREIGN KEY (`recurrency_product_id`)
+            REFERENCES `" . DB_PREFIX . "mundipagg_recurrency_product` (`id`)
+            ON DELETE NO ACTION
+            ON UPDATE NO ACTION)
+        ");
+    }
+
+    private function dropRecurrencyProductAggregateTables()
+    {
+        $this->db->query("
+            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_recurrency_subproduct` CASCADE;
+        ");
+
+        $this->db->query("
+            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_recurrency_product` CASCADE;
+        ");
     }
 
     /**
@@ -60,11 +173,54 @@ class ModelExtensionPaymentMundipagg extends Model
             'extension/payment/mundipagg/callEvents'
         );
 
+        //Add Mundipagg options in admin menu
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_add_mundipagg_menu',
+            'admin/view/common/column_left/before',
+            'extension/payment/mundipagg/callEvents'
+        );
+
+        //Add plan options in product page
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_add_product_plan_tab',
+            'admin/view/catalog/product_form/before',
+            'extension/payment/mundipagg/callEvents'
+        );
+
+        //Add product plan delete middleware
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_add_product_plan_delete_middleware',
+            'admin/controller/catalog/product/delete/before',
+            'extension/payment/mundipagg/callEvents'
+        );
+
+        //Add product plan index middleware
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_add_product_plan_index_middleware',
+            'admin/controller/catalog/product/before',
+            'extension/payment/mundipagg/callEvents'
+        );
+
+        //Add recurrency filters to product list in admin
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_add_product_list_recurrency_filter',
+            'admin/view/catalog/product_list/before',
+            'extension/payment/mundipagg/callEvents'
+        );;
+
         //Add saved credit card list
         $this->model_setting_event->addEvent(
             'payment_mundipagg_saved_creditcards',
             'catalog/view/account/*/after',
-            'extension/payment/mundipagg_events/showSavedCreditcards'
+            'extension/payment/mundipagg_events/showSavedCreditcards',
+            1,
+            9999
+        );
+
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_show_account_order_info',
+            'catalog/view/account/order_info/after',
+            'extension/payment/mundipagg_events/showAccountOrderInfo'
         );
 
         $this->model_setting_event->addEvent(
@@ -78,10 +234,6 @@ class ModelExtensionPaymentMundipagg extends Model
             'catalog/controller/checkout/success/before',
             'extension/payment/mundipagg_events/prepareCheckoutOrderInfo'
         );
-
-        /**
-         * @todo Add module link by event
-         */
     }
 
     /***
@@ -380,21 +532,46 @@ class ModelExtensionPaymentMundipagg extends Model
         );
     }
 
-    private function createBoletoLinkTable()
+    private function createOrderBoletoInfoTable()
     {
         $this->db->query(
-            'CREATE TABLE IF NOT EXISTS `'. DB_PREFIX .'mundipagg_boleto_link` (
+            "CREATE TABLE IF NOT EXISTS `". DB_PREFIX ."mundipagg_order_boleto_info` (
                 `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `opencart_order_id` INT(11) NOT NULL,
-                `link` VARCHAR(256) NOT NULL
-                );'
+                `charge_id` VARCHAR(30) NOT NULL,
+                `line_code` VARCHAR(60) NOT NULL DEFAULT '(INVALID DATA)',
+                `due_at` VARCHAR(30) NOT NULL DEFAULT '(INVALID DATA)',
+                `link` VARCHAR(256) NOT NULL DEFAULT '(INVALID DATA)'
+                );"
         );
     }
 
-    private function dropBoletoLinkTable()
+    private function dropOrderBoletoInfoTable()
     {
         $this->db->query(
-            'DROP TABLE IF EXISTS `' . DB_PREFIX . 'mundipagg_boleto_link`;'
+            'DROP TABLE IF EXISTS `' . DB_PREFIX . 'mundipagg_order_boleto_info`;'
+        );
+    }
+
+    private function createOrderCardInfoTable()
+    {
+        $this->db->query(
+            "CREATE TABLE IF NOT EXISTS `". DB_PREFIX ."mundipagg_order_creditcard_info` (
+                `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `opencart_order_id` INT(11) NOT NULL,
+                `charge_id` VARCHAR(30) NOT NULL,
+                `holder_name` VARCHAR(100) NOT NULL DEFAULT '(INVALID DATA)',
+                `brand` VARCHAR(30) NOT NULL DEFAULT '(INVALID DATA)',
+                `last_four_digits` INT NOT NULL DEFAULT 0000,
+                `installments` INT NOT NULL DEFAULT 0
+                );"
+        );
+    }
+
+    private function dropOrderCardInfoTable()
+    {
+        $this->db->query(
+            'DROP TABLE IF EXISTS `' . DB_PREFIX . 'mundipagg_order_creditcard_info`;'
         );
     }
 

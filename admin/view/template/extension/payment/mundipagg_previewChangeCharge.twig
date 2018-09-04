@@ -1,11 +1,12 @@
 {{ header }}{{ column_left }}
 <div id="content">
+    <link href="view/stylesheet/mundipagg/mundipagg.css" type="text/css" rel="stylesheet"/>
     <div class="page-header">
         <div class="container-fluid">
             <div class="pull-right">
                 <a href="{{ cancel }}" data-toggle="tooltip" title="{{ misc.button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
             </div>
-            <h1><i class="fa fa-credit-card"></i> {{ heading_title }}</h1>
+            <h1><i class="fa fa-credit-card"></i> {{ text.heading_title }}</h1>
             <ul class="breadcrumb">
                 {% for breadcrumb in breadcrumbs %}
                 <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
@@ -17,17 +18,17 @@
     <div class="container-fluid">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title"><i class="fa fa-info-circle"></i> {{ text_order }}</h3>
+          <h3 class="panel-title"><i class="fa fa-info-circle"></i> {{ text.order }} (#{{ order_id }})</h3>
         </div>
 
         <table class="table table-bordered">
           <thead>
             <tr>
-              <td class="text-left">{{ column_product }}</td>
-              <td class="text-left">{{ column_model }}</td>
-              <td class="text-right">{{ column_quantity }}</td>
-              <td class="text-right">{{ column_price }}</td>
-              <td class="text-right">{{ column_total }}</td>
+              <td class="text-left">{{ text.product }}</td>
+              <td class="text-left">{{ text.model }}</td>
+              <td class="text-right">{{ text.quantity }}</td>
+              <td class="text-right">{{ text.unit_price }}</td>
+              <td class="text-right">{{ text.total }}</td>
             </tr>
           </thead>
           <tbody>
@@ -63,6 +64,7 @@
         </table>
       </div>
     </div>
+
     <div class="container-fluid">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -73,12 +75,13 @@
                 <table class="table table-bordered">
                   <thead>
                     <tr>
-                      <td class="text-left">Charge ID</td>
-                      <td class="text-left">Payment method</td>
-                      <td class="text-center">Status</td>
-                      <td class="text-right">Paid amount</td>
-                      <td class="text-right">Amount</td>
-                      <td class="text-center">Action</td>
+                      <td class="text-left">{{ text.charge_id }}</td>
+                      <td class="text-left">{{ text.payment_method }}</td>
+                      <td class="text-center">{{ text.status }}</td>
+                      <td class="text-right">{{ text.paid_amount }}</td>
+                      <td class="text-right">{{ text.canceled_amount }}</td>
+                      <td class="text-right">{{ text.amount }}</td>
+                      <td class="text-center">{{ text.actions }}</td>
                     </tr>
                   </thead>
                   <tbody>
@@ -88,12 +91,25 @@
                             <td class="text-left">{{ charge.payment_method }}</td>
                             <td class="text-center">{{ charge.status }}</td>
                             <td class="text-right">{{ charge.paid_amount }}</td>
+                            <td class="text-right">{{ charge.canceled_amount }}</td>
                             <td class="text-right">{{ charge.amount }}</td>
                             <td class="text-center">
                               {% if charge.actions %}
                                   {% for action in charge.actions %}
-                                      <a href="{{ action.url }}">{{ action.name }}</a>
+                                      <button
+                                              type="button"
+                                              class="btn btn-primary callActionModal"
+                                              data-toggle="modal"
+                                              data-target="#orderActionsModal"
+                                              action-type="{{ action }}"
+                                              order-id="{{ order_id }}"
+                                              value="{{ charge.charge_id }}"
+                                      >
+                                          {{ action }}
+                                      </button>
                                   {% endfor %}
+                              {% else  %}
+                                  -
                               {% endif %}
                             </td>
                           </tr>
@@ -103,5 +119,9 @@
 	        </div>
         </div>
     </div>
+    <input type="hidden" value="{{ chargeModalInformationUrl }}" id="chargeModalInformationUrl" />
+    <input type="hidden" value="{{ performChargeActionUrl }}" id="performChargeActionUrl" />
+    {% include cancel_capture_modal_template  %}
 </div>
+<script src="view/script/mundipagg/cancel_capture.js"></script>
 {{ footer }}

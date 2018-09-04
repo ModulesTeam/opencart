@@ -298,8 +298,8 @@ class ControllerExtensionPaymentMundipaggEvents extends Controller
         $this->session->data['boleto_links'] = [];
         if (isset($this->session->data['order_id'])) {
             $orderId = $this->session->data['order_id'];
-            $this->load->model('extension/payment/mundipagg_boleto_link');
-            $boletoLinks = $this->model_extension_payment_mundipagg_boleto_link->getBoletoLinks($orderId);
+            $this->load->model('extension/payment/mundipagg_order_boleto_info');
+            $boletoLinks = $this->model_extension_payment_mundipagg_order_boleto_info->getBoletoLinks($orderId);
             $this->session->data['boleto_links'] = $boletoLinks;
         }
     }
@@ -340,5 +340,50 @@ class ControllerExtensionPaymentMundipaggEvents extends Controller
                 get('config')->
                 get('template_cache')
             );
+    }
+
+    public function showAccountOrderInfo(string $route, $data = array(), $template = null)
+    {
+        $template = new Template($this->registry->get('config')->get('template_engine'));
+
+        $templateData = $this->getShowAccountOrderInfoTemplateData();
+        $view  = $this->load->view('extension/payment/mundipagg/account/order_info', $templateData);
+
+        $data['text_history'] = '</h3>' . $view . '<h3>'. $data['text_history'];
+
+        foreach ($data as $key => $value) {
+            $template->set($key, $value);
+        }
+
+        $config = $this->registry->get('config');
+        return $template->render(
+            $config->get('template_directory') . $route,
+            $config->get('template_cache')
+        );
+    }
+
+    private function getShowAccountOrderInfoTemplateData()
+    {
+        $order_id ='0';
+        if (isset($this->request->get['order_id'])) {
+            $order_id = intval($this->request->get['order_id']);
+        }
+
+        $order = new Mundipagg\Model\Order($this);
+        $charges = $order->getCharge($order_id);
+
+        setlocale(LC_MONETARY, 'pt_BR.UTF-8');
+        array_walk($charges->rows,function(&$row) {
+            //formatting amount
+            $row['amount'] = money_format('%n', $row['amount'] / 100);
+            $row['paid_amount'] = money_format('%n', $row['paid_amount'] / 100);
+        });
+
+        $this->load->language('extension/payment/mundipagg');
+        $accountInfoLang = $this->language->get('account_info');
+
+        $templateData = array_merge($accountInfoLang,['charges' => $charges->rows]);
+
+        return $templateData;
     }
 }

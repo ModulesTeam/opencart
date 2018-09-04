@@ -1,0 +1,150 @@
+<div class="panel-heading">
+    <h3>{{recurrence.title}}</h3>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="recurrenceSingleSubscription-enabled">{{ recurrence.singleSubscription_title }}</label>
+    <div class="col-sm-10">
+        {% if not settings.recurrence_singleSubscription %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_singleSubscription_status" id="recurrenceSingleSubscription-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_singleSubscription_status" id="recurrenceSingleSubscription-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings.recurrence_singleSubscription == '0' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_singleSubscription_status" id="recurrenceSingleSubscription-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_singleSubscription_status" id="recurrenceSingleSubscription-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings.recurrence_singleSubscription == '1' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_singleSubscription_status" id="recurrenceSingleSubscription-enabled" value="1" checked="checked">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_singleSubscription_status" id="recurrenceSingleSubscription-disabled" value="0">{{ misc.no }}
+            </label>
+        {% endif %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="recurrenceSubscriptionByPlan-enabled">{{ recurrence.subscriptionByPlan_title }}</label>
+    <div class="col-sm-10">
+        {% if not settings.recurrence_subscriptionByPlan %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionByPlan_status" id="recurrenceSubscriptionByPlan-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionByPlan_status" id="recurrenceSubscriptionByPlan-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings.recurrence_subscriptionByPlan == '0' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionByPlan_status" id="recurrenceSubscriptionByPlan-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionByPlan_status" id="recurrenceSubscriptionByPlan-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings.recurrence_subscriptionByPlan == '1' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionByPlan_status" id="recurrenceSubscriptionByPlan-enabled" value="1" checked="checked">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionByPlan_status" id="recurrenceSubscriptionByPlan-disabled" value="0">{{ misc.no }}
+            </label>
+        {% endif %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="recurrencePaymentUpdateCustomer-enable">{{ recurrence.paymentUpdateCustomer_title }}</label>
+    <div class="col-sm-10">
+        {% if not settings.recurrence_paymentUpdateCustomer %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_paymentUpdateCustomer_status" id="recurrencePaymentUpdateCustomer-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_paymentUpdateCustomer_status" id="recurrencePaymentUpdateCustomer-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings..recurrence_paymentUpdateCustomer == '0' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_paymentUpdateCustomer_status" id="recurrencePaymentUpdateCustomer-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_paymentUpdateCustomer_status" id="recurrencePaymentUpdateCustomer-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings.recurrence_paymentUpdateCustomer == '1' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_paymentUpdateCustomer_status" id="recurrencePaymentUpdateCustomer-enabled" value="1" checked="checked">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_paymentUpdateCustomer_status" id="recurrencePaymentUpdateCustomer-disabled" value="0">{{ misc.no }}
+            </label>
+        {% endif %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="recurrenceCreditcardUpdateCustomer-enabled">{{ recurrence.creditcardUpdateCustomer_title }}</label>
+    <div class="col-sm-10">
+        {% if not settings.recurrence_creditcardUpdateCustomer %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_creditcardUpdateCustomer_status" id="recurrenceCreditcardUpdateCustomer-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_creditcardUpdateCustomer_status" id="recurrenceCreditcardUpdateCustomer-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings.recurrence_creditcardUpdateCustomer == '0' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_creditcardUpdateCustomer_status" id="recurrenceCreditcardUpdateCustomer-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_creditcardUpdateCustomer_status" id="recurrenceCreditcardUpdateCustomer-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings.recurrence_creditcardUpdateCustomer == '1' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_creditcardUpdateCustomer_status" id="recurrenceCreditcardUpdateCustomer-enabled" value="1" checked="checked">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_creditcardUpdateCustomer_status" id="recurrenceCreditcardUpdateCustomer-disabled" value="0">{{ misc.no }}
+            </label>
+        {% endif %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-2 control-label" for="recurrenceSubscriptionInstallment-enabled">{{ recurrence.subscriptionInstallment_title }}</label>
+    <div class="col-sm-10">
+        {% if not settings.recurrence_subscriptionInstallment %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionInstallment_status" id="recurrenceSubscriptionInstallment-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionInstallment_status" id="recurrenceSubscriptionInstallment-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings.recurrence_subscriptionInstallment == '0' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionInstallment_status" id="recurrenceSubscriptionInstallment-enabled" value="1">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionInstallment_status" id="recurrenceSubscriptionInstallment-disabled" value="0" checked="checked">{{ misc.no }}
+            </label>
+        {% elseif settings.recurrence_subscriptionInstallment == '1' %}
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionInstallment_status" id="recurrenceSubscriptionInstallment-enabled" value="1" checked="checked">{{ misc.yes }}
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="payment_mundipagg_recurrence_subscriptionInstallment_status" id="recurrenceSubscriptionInstallment-disabled" value="0">{{ misc.no }}
+            </label>
+        {% endif %}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{ recurrence.checkoutConflictMessage_title }}</span></label>
+    <div class="col-sm-10">
+        <textarea wrap="off" rows="2" class="form-control" name="payment_mundipagg_recurrence_checkoutconflictmessage">{{ settings.recurrence_checkoutConflictMessage }}</textarea>
+    </div>
+</div>
+

@@ -11,7 +11,9 @@
                             class="form-control col-sm-12 mundipagg-cardNumber"
                             maxlength="19" id="cardNumber"
                             data-mundipagg-validation-element="number-{{ inputId }}"
-                            data-mundicheckout-element="number-{{ inputId }}">
+                            data-mundicheckout-element="number-{{ inputId }}"
+                            inputId="{{ inputId }}"
+                    >
                     <span class="input-group-addon" inputId="{{ inputId }}" data-mundicheckout-element="brand-{{ inputId }}" data-mundicheckout-brand data-mundicheckout-brand-image></span>
                 </div>
                 <span id="credit-card-number-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
@@ -33,7 +35,7 @@
                 <span id="new_installments-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
             </div>
 
-            <div class="col-sm-2" id="expiration-date-field ">
+            <div class="col-sm-3" id="expiration-date-field ">
                 <label class="row">{{ credit_card.valid_thru }}</label>
                 <div class="row ">
                     <select
@@ -104,4 +106,16 @@
             </div>
         {% endif %}
     </div>
+
+    {%  if isMultiBuyerEnabled %}
+        <div class="row">
+            <div class="col-sm-12">
+                <input type="checkbox" class="float-to-left multi-buyer-check" id="multi-buyer-{{ inputId }}" name="multi-buyer-status-{{ inputId }}" onChange="toogleMultiBuyerForm({{inputId}})"/>
+                <label for="multi-buyer-{{ inputId }}">{{ credit_card.multibuyer_message }}</label>
+            </div>
+        </div>
+
+        {% include multiBuyerFormTemplate %}
+    {% endif %}
+
 </div>

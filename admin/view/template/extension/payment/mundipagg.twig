@@ -30,6 +30,7 @@
                         <li><a href="#tab-boletoCreditCard" data-toggle="tab" title="{{ boletoCreditCard.label }}">{{ boletoCreditCard.label }}</a></li>
                         <li><a href="#tab-antifraud" data-toggle="tab" title="{{ antifraud.label }}">{{ antifraud.label }}</a></li>
                         <li><a href="#tab-logs" data-toggle="tab" title="{{ logs.label }}">{{ logs.label }}</a></li>
+                        <li><a href="#tab-recurrence" data-toggle="tab" title="{{ recurrence.title }}">{{ recurrence.title }}</a></li>
                     </ul>
 
 		            <div class="tab-content">
@@ -171,6 +172,25 @@
                                 {% endif %}
 			                    </div>
 			                </div>
+
+                            <div class="panel-heading">
+                                <h3>{{ general.extra_section }}</h3>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="log-enabled">{{ extra.enable_multibuyer }}</label>
+                                <div class="col-sm-10">
+                                    {% if not settings.extra_multibuyer_enabled %}
+                                        <label class="radio-inline"><input type="radio" name="payment_mundipagg_multibuyer_enabled" id="multibuyer-enabled" value="1">{{ misc.yes }}</label>
+                                        <label class="radio-inline"><input type="radio" name="payment_mundipagg_multibuyer_enabled" id="multibuyer-disabled" value="0" checked="checked">{{ misc.no }}</label>
+                                    {% elseif settings.extra_multibuyer_enabled == '0' %}
+                                        <label class="radio-inline"><input type="radio" name="payment_mundipagg_multibuyer_enabled" id="multibuyer-enabled" value="1">{{ misc.yes }}</label>
+                                        <label class="radio-inline"><input type="radio" name="payment_mundipagg_multibuyer_enabled" id="multibuyer-disabled" value="0" checked="checked">{{ misc.no }}</label>
+                                    {% elseif settings.extra_multibuyer_enabled == '1' %}
+                                        <label class="radio-inline"><input type="radio" name="payment_mundipagg_multibuyer_enabled" id="multibuyer-enabled" value="1" checked="checked">{{ misc.yes }}</label>
+                                        <label class="radio-inline"><input type="radio" name="payment_mundipagg_multibuyer_enabled" id="multibuyer-disabled" value="0">{{ misc.no }}</label>
+                                    {% endif %}
+                                </div>
+                            </div>
 		                </div> <!-- tab-general -->
 
 		                <div class="tab-pane" id="tab-credit-card">
@@ -717,6 +737,10 @@
                                 </div>
                             </div>
                         </div> <!-- tab-antifraud -->
+
+                        <div class="tab-pane" id="tab-recurrence">
+                            {% include recurrenceSettings  %}
+                        </div> <!-- tab-recurrence -->
 
                         <div class="tab-pane" id="tab-logs">
                             <div class="panel-heading">

@@ -3,31 +3,4 @@
     <code>MundiPagg</code>
     <version>1.2.9</version>
     <author>Mundipagg</author>
-    <file path="admin/controller/common/column_left.php">
-        <operation>
-            <search>
-              <![CDATA[return $this->load->view('common/column_left', $data);]]>
-            </search>
-            <add position="before">
-                <![CDATA[$data['frontlinkUrl'] = HTTPS_CATALOG;]]>
-            </add>
-        </operation>
-    </file>
-    <file path="admin/view/template/common/column_left.twig">
-        <operation>
-            <search>
-              <![CDATA[<ul id="menu">]]>
-            </search>
-            <add position="after">
-                <![CDATA[
-                    <li id="mundipagg">
-                        <a href="{{ mundipaggModuleLink }}">
-                            <img id="magepal_block" alt="" border="0" width="16" src="https://dashboard.mundipagg.com/images/logo-mundipagg-versao-reduzida.png">
-                            &nbsp;Mundipagg
-                        </a>
-                    </li>
-                ]]>
-            </add>
-        </operation>
-    </file>
 </modification>

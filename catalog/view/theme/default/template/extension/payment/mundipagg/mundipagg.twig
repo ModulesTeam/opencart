@@ -61,16 +61,3 @@
 <script src="{{ themeDirectory }}/scripts/mundipagg/transparent.js" data-mundicheckout-app-id="{{ publicKey }}"></script>
 <script src="{{ themeDirectory }}/scripts/mundipagg/mundipagg-form-validation.js"></script>
 
-<script>
-    function generate() {
-        $("#generateBoletoBtn").addClass("disabled").attr("disabled", "disabled").text("Aguarde...");
-        $.get("{{ generate_boleto_url }}").done(function(data) {
-            if (data != undefined) {
-                window.open(data, "_blank");
-                window.location = "{{ checkout_success_url }}";
-            }
-        }).fail(function () {
-            window.location = "{{ payment_failure_url }}";
-        });
-    }
-</script>

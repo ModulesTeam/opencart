@@ -9,10 +9,11 @@
         margin-right: 91px;
     }
 </style>
+
 <script>
     MundiMenu = function(element, actionsList) {
 
-        var mundipaggLogoImage = '<img src="{{ httpServer }}view/image/mundipagg/mundipagg-mini.png" alt="MundiPagg" style="width: 15px;" />';
+        var mundipaggLogoImage = '<img src="{{ httpServer }}view/image/mundipagg/mundipagg-mini-white.png" alt="MundiPagg" style="width: 15px;" />';
         var token = getURLVar('user_token');
         var href = '?route=extension/payment/mundipagg/previewChangeCharge'+ '&user_token='+ token + '&order_id=';
 
@@ -20,11 +21,7 @@
         '<div class="btn-group orderActionMenu">'+
             '<a data-toggle="tooltip" title="" class="btn btn-primary mundipaggOrderPreviewButton" data-original-title="MundiPagg">'+
                 mundipaggLogoImage +
-            '</a>'+
-            '<button type="button" data-toggle="dropdown" class="btn btn-primary dropdown-toggle" aria-expanded="false"><span class="caret"></span></button>' +
-            '<ul class="dropdown-menu dropdown-menu-right orderActionList">'+
-                actionsList +
-            '</ul>'+
+            '</a>'
         '</div>'
 
         element.prepend(menuHtml);

@@ -1,4 +1,7 @@
 <?php
+
+require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
+
 // Heading
 $_['heading_title'] = 'MundiPagg';
 $_['text_mundipagg'] = '<a href="https://github.com/mundipagg/opencart" target="_blank"><img src="/admin/view/image/mundipagg/mundipagg.png" alt="MundiPagg" title="MundiPagg" style="border: 1px solid #EEEEEE;" /></a>';
@@ -19,7 +22,8 @@ $_['general'] = [
     'api_test_mode' => 'Test mode',
     'module_section' => 'Module',
     'log_section' => 'Log',
-    'select' => 'Select'
+    'select' => 'Select',
+    'extra_section' => 'Extra'
 ];
 // -----------------------------------------------------------------
 
@@ -83,6 +87,11 @@ $_['logs'] = [
 ];
 // -----------------------------------------------------------------
 
+$_['extra'] = [
+    'enable_multibuyer' => 'Enable multi buyer'
+];
+// -----------------------------------------------------------------
+
 $_['misc'] = [
     'yes' => 'Yes',
     'no' => 'No',
@@ -92,4 +101,122 @@ $_['misc'] = [
     'button_save' => 'Save',
     'button_cancel' => 'Cancel',
     'success' => 'Mundipagg options saved!'
+];
+
+// Mundipagg Admin Menu
+$_['admin_menu'] = [
+    'Settings' => 'Settings',
+    'Subscriptions' => 'Subscriptions',
+    'Plans' => 'Plans'
+];
+// -----------------------------------------------------------------
+
+// Recurrence
+$_['recurrence'] = [
+    'Settings' => 'Settings',
+    'Subscriptions' => 'Subscriptions',
+    'Templates' => 'Templates',
+    'Plans' => 'Plans',
+    'create' => 'create',
+    'title' => 'Recurrence',
+    'subscriptionInstallment_title' => 'Enable Subscription Installment',
+    'creditcardUpdateCustomer_title' => 'Enable Credit Card update by customer',
+    'paymentUpdateCustomer_title' => 'Enable payment method update by customer',
+    'subscriptionByPlan_title' => 'Enable Subscription by plan',
+    'singleSubscription_title' => 'Enable Single Subscription',
+    'checkoutConflictMessage_title' => 'Checkout Conflict Message',
+];
+// -----------------------------------------------------------------
+
+// Charge screen
+$_['charge_screen'] = [
+    'charge' => 'Charge',
+    'charge_action' => 'Charge %s',
+    'heading_title' => 'Mundipagg Charge Actions',
+    'charge_information' => 'Charge information',
+    'order' => 'Order',
+    'product' => 'Product',
+    'model' => 'Model',
+    'quantity' => 'Quantity',
+    'unit_price' => 'Price',
+    'total' => 'Total',
+    'status' => 'Status',
+    'charge_id' => 'Charge id',
+    'payment_method' => 'Payment method',
+    'amount' => 'Amount',
+    'actions' => 'Actions',
+    'paid_amount' => 'Paid amount',
+    'canceled_amount' => 'Canceled amount',
+    'capture' => 'capture',
+    'cancel' => 'cancel',
+    'amount' => 'Amount',
+    'payment_method' => 'Payment method',
+    'how_do_you_want' => 'How do you want to %s this charge?',
+    'total_action' => 'Total %s',
+    'partial_action' => 'Partial %s',
+    'close' => 'Close',
+    'charge_capture' => 'Charge capture',
+    'charge_cancel' => 'Charge cancel',
+    'charge_action_success' => 'Charge updated successfully'
+];
+
+// Recurrence
+$_['mundipagg'] = [
+    'misc' => [
+        'of' => 'of',
+        'discount' => 'discount'
+    ],
+    'recurrence' => [
+        'template' => [
+            'due' => [
+                'type' => [
+                    \Mundipagg\Aggregates\Template\DueValueObject::TYPE_EXACT => [
+                        'label' => 'Every day %d',
+                        'name' => 'Exact day'
+                    ],
+                    \Mundipagg\Aggregates\Template\DueValueObject::TYPE_PREPAID => [
+                        'label' => 'Prepaid',
+                        'name' => 'Prepaid'
+                    ],
+                    \Mundipagg\Aggregates\Template\DueValueObject::TYPE_POSTPAID => [
+                        'label' => 'Postpaid',
+                        'name' => 'Postpaid'
+                    ]
+                ]
+            ],
+            'repetition' => [
+                'cycle' => [
+                    'label' => ['cycle','cycles']
+                ],
+                'discount' => [
+                    'type' => [
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::DISCOUNT_TYPE_FIXED => [
+                            'label' => "%s%.2f",
+                            'symbol' => "$"
+                        ],
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::DISCOUNT_TYPE_PERCENT => [
+                            'label' => "%s%.2f%%",
+                            'symbol' => "%"
+                        ]
+                    ]
+                ],
+                'interval' => [
+                    'type' => [
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_WEEKLY => [
+                            'label' => ['week','weeks'],
+                            'name' => 'Weekly'
+                        ],
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_MONTHLY => [
+                            'label' => ['month','months'],
+                            'name' => 'Monthly'
+                        ],
+                        \Mundipagg\Aggregates\Template\RepetitionValueObject::INTERVAL_TYPE_YEARLY => [
+                            'label' => ['year','years'],
+                            'name' => 'Yearly'
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
 ];

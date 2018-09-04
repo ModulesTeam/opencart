@@ -6,13 +6,13 @@ First off, thanks for taking the time to contribute!
 
 * Fork this project;
 * Make your changes / new implementatios;
-* Use the pattern for git commts; 
+* Use the pattern for git commits; 
 * Make sure that the acceptance criteria are met (tests, docs, etc);
 * Create a pull request;
 
 ### Pull Requests
 
-Template [PULLREQUEST-TEMPLATE](PULLREQUEST-TEMPLATE.md)
+Template [PULL_REQUEST_TEMPLATE](.github/PULL_REQUEST_TEMPLATE.md)
 
 ### Git Commit Messages
 

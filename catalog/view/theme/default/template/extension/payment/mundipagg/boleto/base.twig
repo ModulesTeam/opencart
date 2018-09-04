@@ -1,5 +1,8 @@
 <div class="tab-pane alert alert-info" id="boletoTab" class="boletoTab">
-    {% include infoBoletoTemplate %}
-    {% include submitBoletoTemplate %}
+    <form action="index.php?route=extension/payment/mundipagg/generateBoleto" method="post" data-mundicheckout-form>
+        {%  set inputId = 5 %}
+        {% include infoBoletoTemplate %}
+        {% include submitBoletoTemplate %}
+    </form>
 </div>
 
