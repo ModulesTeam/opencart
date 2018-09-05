@@ -4,10 +4,14 @@ admin/view/stylesheet/mundipagg admin/view/stylesheet/mundipagg
 admin/view/script/mundipagg admin/view/script/mundipagg
 
 # model
-admin/model/extension/payment/* admin/model/extension/payment/
+admin/model/extension/payment/mundipagg.php admin/model/extension/payment/mundipagg.php
+admin/model/extension/payment/mundipagg_order.php admin/model/extension/payment/mundipagg_order.php
+admin/model/extension/payment/mundipagg_product.php admin/model/extension/payment/mundipagg_product.php
 
 # view
-admin/view/template/extension/payment/* admin/view/template/extension/payment/
+admin/view/template/extension/payment/mundipagg/ admin/view/template/extension/payment/mundipagg/
+admin/view/template/extension/payment/mundipagg.twig admin/view/template/extension/payment/mundipagg.twig
+admin/view/template/extension/payment/mundipagg_previewChangeCharge.twig admin/view/template/extension/payment/mundipagg_previewChangeCharge.twig
 
 # controller
 admin/controller/extension/payment/mundipagg.php admin/controller/extension/payment/mundipagg.php
@@ -19,15 +23,28 @@ admin/language/pt-br/extension/payment/mundipagg.php admin/language/pt-br/extens
 ##Catalog
 
 # controller
-catalog/controller/extension/payment/* catalog/controller/extension/payment/
+catalog/controller/extension/payment/mundipagg.php catalog/controller/extension/payment/mundipagg.php
+catalog/controller/extension/payment/mundipagg_credit_card.php catalog/controller/extension/payment/mundipagg_credit_card.php
+catalog/controller/extension/payment/mundipagg_events.php catalog/controller/extension/payment/mundipagg_events.php
+catalog/controller/extension/payment/mundipagg_maintenance.php catalog/controller/extension/payment/mundipagg_maintenance.php
+catalog/controller/extension/payment/mundipagg_saved_creditcards.php catalog/controller/extension/payment/mundipagg_saved_creditcards.php
+catalog/controller/extension/payment/mundipagg_webhook.php catalog/controller/extension/payment/mundipagg_webhook.php
 
 # language
 catalog/language/en-gb/extension/payment/mundipagg.php catalog/language/en-gb/extension/payment/mundipagg.php
 catalog/language/pt-br/extension/payment/mundipagg.php catalog/language/pt-br/extension/payment/mundipagg.php
 
 # model
-catalog/model/extension/payment/* catalog/model/extension/payment/
-catalog/model/extension/total/* catalog/model/extension/total/
+catalog/model/extension/payment/mundipagg.php catalog/model/extension/payment/mundipagg.php
+catalog/model/extension/payment/mundipagg_credit_card.php catalog/model/extension/payment/mundipagg_credit_card.php
+catalog/model/extension/payment/mundipagg_customer.php catalog/model/extension/payment/mundipagg_customer.php
+catalog/model/extension/payment/mundipagg_events.php catalog/model/extension/payment/mundipagg_events.php
+catalog/model/extension/payment/mundipagg_order_creditcard_info.php catalog/model/extension/payment/mundipagg_order_creditcard_info.php
+catalog/model/extension/payment/mundipagg_order_boleto_info.php catalog/model/extension/payment/mundipagg_order_boleto_info.php
+catalog/model/extension/payment/mundipagg_order_processing.php catalog/model/extension/payment/mundipagg_order_processing.php
+catalog/model/extension/payment/mundipagg_webhook_logging.php catalog/model/extension/payment/mundipagg_webhook_logging.php
+
+catalog/model/extension/total/mundipagg_interest.php catalog/model/extension/total/mundipagg_interest.php
 
 # view
 catalog/view/theme/default/template/extension/payment/mundipagg/* catalog/view/theme/default/template/extension/payment/mundipagg/

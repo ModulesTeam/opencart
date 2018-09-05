@@ -14,4 +14,5 @@ class WebHookEnum
     const ACTION_UNDERPAID = 'underpaid';
     const ACTION_REFUNDED = 'refunded';
     const ACTION_PAYMENT_FAILED = 'payment_failed';
+    const ACTION_PARTIAL_CANCELED = "partial_canceled";
 }
