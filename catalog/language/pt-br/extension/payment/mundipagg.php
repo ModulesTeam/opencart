@@ -40,7 +40,8 @@ $_['order_history_update'] = [
     'chargePaymentFailed' => 'Cobrança com falha no pagamento',
     'orderPaid' => 'Pedido pago ',
     'orderCanceled' => 'Pedido cancelado ',
-    'of' => ' de '
+    'of' => ' de ',
+    'chargePartialCanceled' => 'Cobrança parcialmente cancelada'
 ];
 
 $_['misc'] = [

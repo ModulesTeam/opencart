@@ -9,6 +9,7 @@ use Mundipagg\Log;
 use Mundipagg\LogMessages;
 use Mundipagg\Model\WebHook as WebHookModel;
 use Mundipagg\Enum\OrderstatusEnum;
+use Mundipagg\Model\Charge as MundipaggChargeModel;
 
 class WebHook
 {
@@ -170,22 +171,37 @@ class WebHook
         $language = $this->openCart->load->language('extension/payment/mundipagg');
         $language = $language['order_history_update'];
         $mPOrderId = $this->data['order']['id'];
+        $amount = 0;
+        $field = "";
 
         switch ($this->action) {
             case WebHookEnum::ACTION_PAID:
                 $i18Message = $language['chargePaid'];
+                $field = 'paid_amount';
+                $amount = $this->data['amount'];
                 break;
             case WebHookEnum::ACTION_OVERPAID:
                 $i18Message = $language['chargeOverPaid'];
+                $field = 'paid_amount';
+                $amount = $this->data['paid_amount'];
                 break;
             case WebHookEnum::ACTION_UNDERPAID:
                 $i18Message = $language['chargeUnderPaid'];
+                $field = 'paid_amount';
+                $amount = $this->data['paid_amount'];
                 break;
             case WebHookEnum::ACTION_REFUNDED:
                 $i18Message = $language['chargeRefunded'];
+                $amount = $this->data['canceled_amount'];
+                $field = 'canceled_amount';
                 break;
             case WebHookEnum::ACTION_PAYMENT_FAILED:
                 $i18Message = $language['chargePaymentFailed'];
+                break;
+            case WebHookEnum::ACTION_PARTIAL_CANCELED:
+                $i18Message = $language['chargePartialCanceled'];
+                $amount = $this->data['canceled_amount'];
+                $field = 'canceled_amount';
                 break;
             case WebHookEnum::ACTION_CREATED:
                 Log::create()
@@ -203,23 +219,33 @@ class WebHook
                 return false;
         }
 
-        return $this->setChargeStatus($mPOrderId, $i18Message);
+        $charges = new MundipaggChargeModel($this->openCart);
+
+        $charges->updateAmount(
+            $field,
+            $amount,
+            $this->data['status'],
+            $this->data['id'],
+            $this->data['code']
+        );
+
+        return $this->setChargeStatus($mPOrderId, $i18Message, $amount);
     }
 
-    private function setChargeStatus($mPOrderId, $message)
+    private function setChargeStatus($mPOrderId, $message, $amount)
     {
         $orderId = $this->model->getOpenCartOrderId($mPOrderId);
 
-        $comment = $this->getChargeComment($message);
+        $comment = $this->getChargeComment($message, $amount);
         $this->addOrderHistory($orderId, OrderstatusEnum::ORDER_PROCESSING_ID, $comment, 0);
 
         return true;
     }
 
-    private function getChargeComment($message)
+    private function getChargeComment($message, $amount)
     {
         return $message .
-            $this->moneyFormat($this->data['paid_amount']) .
+            $this->moneyFormat($amount) .
             '/' .
             $this->moneyFormat($this->data['amount']);
     }
