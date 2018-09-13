@@ -22,7 +22,6 @@ class Plan
 
         $generalSettings = new GeneralSettings($this->openCart);
         $planApi = new MundiAPIClient($generalSettings->getSecretKey(), $generalSettings->getPassword());
-//        $planApi = new MundiAPIClient("teste", "t");
 
         return $planApi->getPlans()->createPlan($request->jsonSerialize());
     }
@@ -55,6 +54,11 @@ class Plan
         $request->billingType           = $plan->getTemplate()->getDueAt()->getDueApiValue();
         $request->items                 = $this->getItemsFromTemplate($plan->getSubProducts());
 
+        $installments = $plan->getTemplate()->getTemplate()->getInstallments();
+        if ($installments) {
+            $request->installments = explode(',', $installments);
+        }
+
         if ($plan->getTemplate()->getDueAt()->getType() == DueValueObject::TYPE_EXACT) {
             $request->billingDays = [ $plan->getTemplate()->getDueAt()->getValue() ];
         }
@@ -65,10 +69,6 @@ class Plan
         }
 
         return $request;
-
-//        $json['installments']         = $request->installments;
-//        $json['minimum_price']        = $request->minimumPrice;
-//        $json['quantity']             = $request->quantity;
     }
 
     private function getCurrency()

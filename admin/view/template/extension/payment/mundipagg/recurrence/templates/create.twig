@@ -27,7 +27,6 @@
 
                     {% endfor %}
                     </ul>
-
                 </div>
             {%  endif %}
         </div>
@@ -112,26 +111,22 @@
         $('#mp-tab-handler-single').click();
     });
     {% endif %}
-
-    {%  if formErrors %}
-
-    {% endif %}
     $(document).ready(function(){
         {% for name,value in formData %}
-        {% if value is not iterable %}
-        document.getElementsByName('{{ name }}').forEach(function(element){
-            element.value = '{{ value }}';
-        });
-        {% endif %}
+            {% if value is not iterable %}
+                document.getElementsByName('{{ name }}').forEach(function(element){
+                    element.value = '{{ value }}';
+            });
+            {% endif %}
         {% endfor %}
 
         {% for method in formData.payment_method %}
-        document.getElementsByName('payment_method[]')
-            .forEach(function (element) {
-                if ( '{{ method }}' == element.value) {
-                    element.checked = true;
-                }
-            });
+            document.getElementsByName('payment_method[]')
+                .forEach(function (element) {
+                    if ( '{{ method }}' == element.value) {
+                        element.checked = true;
+                    }
+                });
         {% endfor %}
 
         {% for key,interval in formData.intervals %}
@@ -154,8 +149,6 @@
             $('#discount').val(repetitions.discountValue);
             $('.btn-add-frequency').click();
         {% endfor %}
-
-
     });
 </script>
 

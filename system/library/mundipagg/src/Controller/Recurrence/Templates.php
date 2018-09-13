@@ -63,7 +63,6 @@ class Templates extends Recurrence
             $this->data['formData'] = $this->openCart->request->post;
         }
 
-
         $this->data['saveAction'] = $this->openCart->url->link(
             'extension/payment/mundipagg/templates',
             [
