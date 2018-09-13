@@ -181,8 +181,8 @@ class Order
                B.symbol_right,
                A.date_added,
                A.date_modified
-            FROM " . DB_PREFIX . ".`order` as A
-            LEFT JOIN " . DB_PREFIX . ".currency as B
+            FROM " . DB_PREFIX . "order as A
+            LEFT JOIN " . DB_PREFIX . "currency as B
                    ON B.currency_id = A.currency_id
             WHERE A.order_id = " . $orderId;
 
