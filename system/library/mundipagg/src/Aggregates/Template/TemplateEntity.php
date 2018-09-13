@@ -19,8 +19,9 @@ class TemplateEntity
     /** @var boolean */
     protected $allowInstallments;
     /** @var int */
-    /** @var int */
     protected $trial;
+    /** @var string */
+    protected $installments;
 
     public function __construct()
     {
@@ -32,6 +33,8 @@ class TemplateEntity
 
         $this->trial =
             0;
+
+        $this->installments = '';
     }
 
     /**
@@ -180,10 +183,29 @@ class TemplateEntity
 
     /**
      * @param int $trial
+     * @return TemplateEntity
      */
     public function setTrial($trial)
     {
         $this->trial = abs(intval($trial));
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInstallments()
+    {
+        return $this->installments;
+    }
+
+    /**
+     * @param string $installments
+     * @return TemplateEntity
+     */
+    public function setInstallments($installments)
+    {
+        $this->installments = $installments;
         return $this;
     }
 }

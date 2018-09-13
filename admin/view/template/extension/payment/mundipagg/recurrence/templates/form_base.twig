@@ -1,3 +1,6 @@
+
+<script type="text/javascript"  src="view/script/mundipagg/lib/bootstrap-tagsinput.js"></script>
+<link href="view/stylesheet/mundipagg/lib/bootstrap-tagsinput.css" rel="stylesheet" />
 <label class="col-sm-12 form-group">Nome</label>
 <div class="form-group required">
     <div class="col-sm-10">
@@ -47,6 +50,22 @@
         </div>
     </div>
 </div>
+
+<div class="installments-{{ formId }}">
+    <label class="col-sm-12 form-group">Parcelas</label>
+    <div class="form-group required">
+        <div class="col-sm-10">
+            <input
+                    value="{{ selectedTemplateRoot.template.installments }}"
+                    name="installments"
+                    data-role="tagsinput"
+                    id="installments"
+                    class="form-control mp-installments-{{ formId }}"
+            />
+        </div>
+    </div>
+</div>
+
 <hr>
 <div class="form-group required">
     <label class="col-sm-5">Vencimento</label>
@@ -72,13 +91,27 @@
 {% endif %}
 <script>
 
+    $('.installments-{{ formId }}').keypress( function (e) {
+        if(e.which == 13) {
+            e.preventDefault();
+        }
+    });
+
+    $('.installments-{{ formId }}').hide();
     $('.installment-{{ formId }}').hide();
     $('.mp-expiry-date-placeholder-{{ formId }}').hide();
     $('.mp-checkbox-creditcard-{{ formId }}').change(function () {
             var method = $('.mp-checkbox-creditcard-{{ formId }}').is(':checked') ?
                 'show' : 'hide';
+            $('.installments-{{ formId }}')[method]();
             return $('.installment-{{ formId }}')[method]();
     });
+
+    $('.installment-{{ formId }}').change(function () {
+        var method = $('.mp-allow-installment-{{ formId }}').val() == 1 ?
+            'show' : 'hide';
+        return $('.installments-{{ formId }}')[method]();
+    })
 
     $('.mp-expiry-type-{{ formId }}').change(function(event){
 
@@ -101,6 +134,8 @@
 
     $(document).ready(function() {
         $('.mp-checkbox-creditcard-{{ formId }}').change();
+
+
     });
 
 </script>

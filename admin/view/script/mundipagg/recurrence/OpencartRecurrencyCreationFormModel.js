@@ -97,7 +97,8 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
                 description: $('#mp-recurrency-description').val(),
                 isSingle: false,
                 name: $('#mp-recurrency-name').val(),
-                trial: $('#mp-recurrency-trial').val()
+                trial: $('#mp-recurrency-trial').val(),
+                installments: $('#installments').val()
             }
         };
         this.formController.showConfigTable(templateSnapshot);
@@ -172,6 +173,7 @@ OpencartRecurrencyCreationFormModel.prototype
     $('#checkbox-boleto').prop( "checked", templateSnapshot.template.acceptBoleto);
     $('#checkbox-creditcard').prop( "checked", templateSnapshot.template.acceptCreditCard);
     $('#allow_installment').val(templateSnapshot.template.allowInstallments ? "1" : "0");
+    $('#installments').val(templateSnapshot.template.installments);
     $('#mp-recurrency-description').val(templateSnapshot.template.description);
     $('#mp-recurrency-name').val(templateSnapshot.template.name);
     $('#mp-recurrency-trial').val(templateSnapshot.template.trial);

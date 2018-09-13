@@ -21,15 +21,14 @@
             {%  if formErrors %}
                 <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> Warning: Please check the form carefully for errors!
                     <button type="button" class="close" data-dismiss="alert">×</button>
-                </div>
-                <div class="well well-lg">
-                    <pre>
-                        {% for error in formErrors %}
-                            {{ error }} <br />
-                        {% endfor %}
-                    </pre>
-                </div>
+                    <ul>
+                    {% for error in formErrors %}
+                        <li>{{ error }} </li>
 
+                    {% endfor %}
+                    </ul>
+
+                </div>
             {%  endif %}
         </div>
     </div>
