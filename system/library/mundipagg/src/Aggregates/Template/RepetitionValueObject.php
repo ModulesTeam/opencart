@@ -142,6 +142,18 @@ class RepetitionValueObject
         }
     }
 
+    public function getIntervalTypeApiValue()
+    {
+        switch ($this->intervalType) {
+            case self::INTERVAL_TYPE_WEEKLY:
+                return "week";
+            case self::INTERVAL_TYPE_MONTHLY:
+                return "month";
+            case self::INTERVAL_TYPE_YEARLY:
+                return "year";
+        }
+    }
+
     public static function getDiscountTypesArray()
     {
         return [
@@ -186,10 +198,19 @@ class RepetitionValueObject
 
     /**
      * @param int $cycles
+     * @return RepetitionValueObject
+     * @throws Exception
      */
     public function setCycles($cycles)
     {
-        $this->cycles = abs(intval($cycles));
+        $newCycles = abs(intval($cycles));
+
+        if ($newCycles < 1) {
+            throw new Exception("The field cycles must be greater than or equal to 1 : $cycles");
+        }
+
+        $this->cycles = $newCycles;
+
         return $this;
     }
 }

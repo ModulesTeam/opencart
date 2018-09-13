@@ -81,9 +81,14 @@ class TemplateEntity
     /**
      * @param string $description
      * @return TemplateEntity
+     * @throws \Exception
      */
     public function setDescription($description)
     {
+        if (preg_match('/[^a-zA-Z0-9 ]+/i', $description)) {
+            throw new \Exception("The field description must not use special characters.");
+        }
+
         $this->description = $description;
         return $this;
     }
@@ -153,9 +158,14 @@ class TemplateEntity
     /**
      * @param string $name
      * @return TemplateEntity
+     * @throws \Exception
      */
     public function setName($name)
     {
+        if (preg_match('/[^a-zA-Z0-9 ]+/i', $name)) {
+            throw new \Exception("The field name must not use special characters.");
+        }
+
         $this->name = $name;
         return $this;
     }

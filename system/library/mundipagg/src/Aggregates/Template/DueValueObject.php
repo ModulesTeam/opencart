@@ -73,6 +73,20 @@ class DueValueObject
         }
     }
 
+    public function getDueApiValue()
+    {
+        switch ($this->type) {
+            case self::TYPE_EXACT:
+                return "exact_day";
+            case self::TYPE_PREPAID:
+                return "prepaid";
+            case self::TYPE_POSTPAID:
+                return "postpaid";
+            default:
+                return "";
+        }
+    }
+
     public static function getTypesArray()
     {
         return [

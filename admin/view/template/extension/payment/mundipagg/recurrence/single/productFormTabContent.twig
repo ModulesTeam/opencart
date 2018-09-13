@@ -82,6 +82,9 @@
     <div class="col-sm-12" id="template-snapshot-detail-panel" style="display:none">
         <hr>
         <label><h3>Configuração de assinatura</h3><br></label>
+        {% if MundipaggRecurrenceErrors['recurrency_plan_input_error'] %}
+            <div class="alert alert-danger">{{ MundipaggRecurrenceErrors['recurrency_plan_input_error'] }}</div>
+        {% endif %}
         <div class="table-responsive">
             <table id="images" class="table table-striped table-bordered table-hover">
                 <thead>

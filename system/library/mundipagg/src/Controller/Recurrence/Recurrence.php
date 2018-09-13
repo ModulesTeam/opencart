@@ -2,9 +2,9 @@
 
 namespace Mundipagg\Controller\Recurrence;
 
+use Mundipagg\Model\Api\Plan;
 use Mundipagg\Settings\Recurrence as RecurrenceSettings;
 
-use Action;
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Factories\RecurrencyProductRootFactory;
 use Mundipagg\Factories\RecurrencySubproductValueObjectFactory;
@@ -79,7 +79,6 @@ class Recurrence
             $templateSnapshotData = $this->openCart->request->post['mundipagg-template-snapshot-data'];
             $templateSnapshotData = base64_decode($templateSnapshotData);
 
-            //creating a templateRoot from json_data just to validate the input.
             $templateRootFactory = new TemplateRootFactory();
             $templateRoot = $templateRootFactory->createFromJson($templateSnapshotData);
 
@@ -117,27 +116,41 @@ class Recurrence
             }
 
             //@todo start database transaction
-            if ($isEdit) {
-                //edit base product on opencart
-                $this->openCart->model_catalog_product->editProduct(
-                    $this->openCart->request->get['product_id'],
-                    $this->openCart->request->post
-                );
-                $recurrencyProduct->setId($planId);
-            } else {
-                //save base product on opencart.
-                $opencartProductId = $this->openCart->model_catalog_product
-                    ->addProduct($this->openCart->request->post);
-                //@todo: create plan on mundipagg
-                $mundipaggPlanId = 'plan_xxxxxxxxxxxxxxxx'; //@todo this is a placeholder.
+            try {
+                if ($isEdit) {
+                    //edit base product on opencart
+                    $this->openCart->model_catalog_product->editProduct(
+                        $this->openCart->request->get['product_id'],
+                        $this->openCart->request->post
+                    );
+                    $recurrencyProduct->setId($planId);
+                } else {
+                    //save base product on opencart.
+                    $opencartProductId = $this->openCart->model_catalog_product
+                        ->addProduct($this->openCart->request->post);
+
+                    $planApi = new Plan($this->openCart);
+                    $mundipaggPlan = $planApi->createPlan($recurrencyProduct);
+                    $mundipaggPlanId = $mundipaggPlan->id;
+                }
+
+                $recurrencyProduct->setProductId($opencartProductId);
+                $recurrencyProduct->setMundipaggPlanId($mundipaggPlanId);
+
+                //save plan product
+                $recurrencyProductRepo->save($recurrencyProduct);
+
+            } catch (\Exception $error) {
+
+                $errors['recurrency_plan_api_error'] =
+                    "<strong>Mundipagg Api Error: </strong>" . $error->getMessage();
+
+                $currentErrors = $this->openCart->error;
+                $currentErrors['mundipagg_recurrency_errors'] = $errors;
+                $this->openCart->error = $currentErrors;
+
+                return $this->handleValidationError();
             }
-
-            $recurrencyProduct->setProductId($opencartProductId);
-            $recurrencyProduct->setMundipaggPlanId($mundipaggPlanId);
-
-            //save plan product
-            $recurrencyProductRepo->save($recurrencyProduct);
-
             //@todo: commit database transaction only if mundipagg plan creation was successful.
 
             //redirect to success.
@@ -162,15 +175,7 @@ class Recurrence
 
         $route = 'catalog/product/add';
 
-        $opencartReflection = new \ReflectionClass($this->openCart);
-        $registryProperty = $opencartReflection->getProperty('registry');
-        $registryProperty->setAccessible(true);
-        $registry = $registryProperty->getValue($this->openCart);
-        $registryProperty->setAccessible(false);
-
-        $file = DIR_APPLICATION . 'controller/catalog/product.php';
-        require_once($file);
-        $productController = new \ControllerCatalogProduct($registry);
+        $productController = $this->getOpencartProductController();
 
         $productControllerReflection = new \ReflectionClass($productController);
         $errorProperty = $productControllerReflection->getProperty('error');
