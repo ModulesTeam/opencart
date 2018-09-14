@@ -56,7 +56,7 @@
     <div class="form-group required">
         <div class="col-sm-10">
             <input
-                    value="{{ selectedTemplateRoot.template.installments }}"
+                    value=""
                     name="installments"
                     data-role="tagsinput"
                     id="installments"
@@ -134,6 +134,9 @@
 
     $(document).ready(function() {
         $('.mp-checkbox-creditcard-{{ formId }}').change();
+        {% for installment in selectedTemplateRoot.template.installments  %}
+            $('.mp-installments-{{ formId }}').tagsinput('add', {{ installment.value }})
+        {%  endfor %}
     });
 
 </script>

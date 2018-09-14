@@ -2,6 +2,8 @@
 
 namespace Mundipagg\Aggregates\Template;
 
+use Exception;
+
 class TemplateEntity
 {
     /** @var int */
@@ -34,7 +36,7 @@ class TemplateEntity
         $this->trial =
             0;
 
-        $this->installments = '';
+        $this->installments = [];
     }
 
     /**
@@ -192,7 +194,7 @@ class TemplateEntity
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getInstallments()
     {
@@ -200,12 +202,32 @@ class TemplateEntity
     }
 
     /**
-     * @param string $installments
+     * @param InstallmentValueObject $installment
      * @return TemplateEntity
+     * @throws Exception
      */
-    public function setInstallments($installments)
+    public function addInstallment(InstallmentValueObject $installment)
     {
-        $this->installments = $installments;
+        foreach ($this->installments as $currentInstallment) {
+            if ($installment->getValue() == $currentInstallment->getValue()) {
+                throw new Exception("This installment is already added: {$installment->getValue()}");
+            }
+        }
+        $this->installments[] = $installment;
+        return $this;
+    }
+
+    public function addInstallments($installments)
+    {
+        if (!is_array($installments)) {
+            return $this;
+        }
+
+        foreach ($installments as $installment) {
+            $installmentValueObject = new InstallmentValueObject($installment);
+            $this->addInstallment($installmentValueObject);
+        }
+
         return $this;
     }
 }

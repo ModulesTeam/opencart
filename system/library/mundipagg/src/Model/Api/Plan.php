@@ -2,6 +2,7 @@
 
 namespace Mundipagg\Model\Api;
 
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Aggregates\Template\DueValueObject;
 use Mundipagg\Settings\General as GeneralSettings;
 use MundiAPILib\MundiAPIClient;
@@ -10,25 +11,36 @@ use MundiAPILib\Models\CreatePlanRequest;
 class Plan
 {
     public $openCart;
+    protected $planApi;
 
     public function __construct($opencart)
     {
         $this->openCart = $opencart;
-    }
-
-    public function createPlan($plan)
-    {
-        $request = $this->createPlanRequest($plan);
-
         $generalSettings = new GeneralSettings($this->openCart);
-        $planApi = new MundiAPIClient($generalSettings->getSecretKey(), $generalSettings->getPassword());
-
-        return $planApi->getPlans()->createPlan($request->jsonSerialize());
+        $this->planApi = new MundiAPIClient($generalSettings->getSecretKey(), $generalSettings->getPassword());
     }
 
-    public function updatePlan($plan)
+    /**
+     * @param RecurrencyProductRoot $plan
+     */
+    public function save(RecurrencyProductRoot $plan)
     {
-        //@todo
+        if ($plan->getMundipaggPlanId() === null) {
+            return $this->createPlan($plan);
+        }
+        return $this->updatePlan($plan);
+    }
+
+    protected function createPlan(RecurrencyProductRoot $plan)
+    {
+        $request = $this->getCreatePlanRequest($plan);
+        return $this->planApi->getPlans()->createPlan($request->jsonSerialize());
+    }
+
+    protected function updatePlan(RecurrencyProductRoot $plan)
+    {
+        $request = $this->getUpdatePlanRequest($plan);
+        return $this->planApi->getPlans()->updatePlan($plan->getMundipaggPlanId(), $request->jsonSerialize());
     }
 
     public function deletePlan($plan)
@@ -36,7 +48,7 @@ class Plan
         //@todo
     }
 
-    protected function createPlanRequest($plan)
+    protected function getCreatePlanRequest($plan)
     {
         $request = new CreatePlanRequest();
 
@@ -55,8 +67,8 @@ class Plan
         $request->items                 = $this->getItemsFromTemplate($plan->getSubProducts());
 
         $installments = $plan->getTemplate()->getTemplate()->getInstallments();
-        if ($installments) {
-            $request->installments = explode(',', $installments);
+        foreach ($installments as $installment) {
+            $request->installments[] = $installment->getValue();
         }
 
         if ($plan->getTemplate()->getDueAt()->getType() == DueValueObject::TYPE_EXACT) {
@@ -67,6 +79,16 @@ class Plan
         if ($trialDays > 0) {
             $request->trialPeriodDays = $trialDays;
         }
+
+        return $request;
+    }
+
+
+    protected function getUpdatePlanRequest($plan)
+    {
+        $baseRequest = $this->getCreatePlanRequest($plan);
+        $request = new UpdatePlanRequest();
+
 
         return $request;
     }

@@ -173,10 +173,22 @@ OpencartRecurrencyCreationFormModel.prototype
     $('#checkbox-boleto').prop( "checked", templateSnapshot.template.acceptBoleto);
     $('#checkbox-creditcard').prop( "checked", templateSnapshot.template.acceptCreditCard);
     $('#allow_installment').val(templateSnapshot.template.allowInstallments ? "1" : "0");
-    $('#installments').val(templateSnapshot.template.installments);
+
+    var installments = templateSnapshot.template.installments;
+
+    if (typeof installments === "string") {
+        installments = installments.split(",");
+    }
+
+    $('#installments').val('');
+    installments.forEach(function(installment) {
+        $('#installments').tagsinput('add', installment);
+    });
+
     $('#mp-recurrency-description').val(templateSnapshot.template.description);
     $('#mp-recurrency-name').val(templateSnapshot.template.name);
     $('#mp-recurrency-trial').val(templateSnapshot.template.trial);
+    $('#checkbox-creditcard').change();
 };
 
 OpencartRecurrencyCreationFormModel.prototype

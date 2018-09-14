@@ -2,7 +2,7 @@
 
 namespace Mundipagg\Controller\Recurrence;
 
-use Mundipagg\Model\Api\Plan;
+use Mundipagg\Model\Api\Plan as PlanApi;
 use Mundipagg\Settings\Recurrence as RecurrenceSettings;
 
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
@@ -94,6 +94,7 @@ class Recurrence
                 "isSingle" => $isSingle,
                 'subProducts' => $subProducts
             ]));
+            //@todo recurrencyProduct->setDisabled($opencartProductStatus);
 
             $this->openCart->load->model('catalog/product');
             $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
@@ -123,22 +124,31 @@ class Recurrence
                         $this->openCart->request->get['product_id'],
                         $this->openCart->request->post
                     );
+
                     $recurrencyProduct->setId($planId);
                 } else {
                     //save base product on opencart.
                     $opencartProductId = $this->openCart->model_catalog_product
                         ->addProduct($this->openCart->request->post);
 
-                    $planApi = new Plan($this->openCart);
-                    $mundipaggPlan = $planApi->createPlan($recurrencyProduct);
+                    $planApi = new PlanApi($this->openCart);
+                    $mundipaggPlan = $planApi->save($recurrencyProduct);
                     $mundipaggPlanId = $mundipaggPlan->id;
                 }
+
+                /** @todo
+                if (!$recurrencyProduct->isSingle()) {
+                    $planApi = new PlanApi($this->openCart);
+                    $planApi->updatePlan($planId, $plan);
+                }
+                 */
 
                 $recurrencyProduct->setProductId($opencartProductId);
                 $recurrencyProduct->setMundipaggPlanId($mundipaggPlanId);
 
                 //save plan product
                 $recurrencyProductRepo->save($recurrencyProduct);
+
 
             } catch (\Exception $error) {
 

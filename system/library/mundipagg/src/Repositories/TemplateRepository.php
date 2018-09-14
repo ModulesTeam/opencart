@@ -38,7 +38,7 @@ class TemplateRepository extends AbstractRep
                 " . $templateRoot->getTemplate()->getTrial() . ",
                 '" . $templateRoot->getDueAt()->getType() . "',
                 " . $templateRoot->getDueAt()->getValue() . ",
-                '" . $templateRoot->getTemplate()->getInstallments() . "'
+                '" . json_encode($templateRoot->getTemplate()->getInstallments()) . "'
             )
         ";
 
@@ -67,7 +67,7 @@ class TemplateRepository extends AbstractRep
                 `trial` = " . $templateRoot->getTemplate()->getTrial() . ",
                 `due_type` = '" . $templateRoot->getDueAt()->getType() . "',
                 `due_value` = " . $templateRoot->getDueAt()->getValue() . ",
-                `installments` = '" . $templateRoot->getTemplate()->getInstallments() . "'
+                `installments` = '" . json_encode($templateRoot->getTemplate()->getInstallments()) . "'
             WHERE `id` = " . $templateRoot->getId() . "
         ";
 

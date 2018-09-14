@@ -127,7 +127,7 @@ class TemplateRoot implements IAggregateRoot
                 "isSingle" => $this->template->isSingle(),
                 "name" => $this->template->getName(),
                 "trial" => $this->template->getTrial(),
-                "installments" => $this->template->getInstallments()
+                "installments" => json_encode($this->template->getInstallments())
             ],
             "dueAt" => [
                 "type" => $this->dueAt->getType(),
