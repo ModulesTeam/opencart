@@ -115,10 +115,9 @@
                 updateChildren= "true";
             }
 
-            var id = '{{ formId }}';
-            var action = $('#' + id).attr('action');
+            var action = $('#' + '{{ formId }}').attr('action');
 
-            $('#' + id).attr('action', action + "&updateChildren=" + updateChildren);
+            $('#' + '{{ formId }}').attr('action', action + "&updateChildren=" + updateChildren);
         }
     })
 

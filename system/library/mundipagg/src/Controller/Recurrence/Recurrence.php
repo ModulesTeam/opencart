@@ -119,6 +119,11 @@ class Recurrence
 
             //@todo start database transaction
             try {
+                $mundipaggPlanStatus = $this->getPlanStatus($this->openCart->request->post['status']);
+                $recurrencyProduct->setMundipaggPlanStatus($mundipaggPlanStatus);
+
+                $planApi = new PlanApi($this->openCart);
+
                 if ($isEdit) {
                     //edit base product on opencart
                     $this->openCart->model_catalog_product->editProduct(
@@ -131,27 +136,24 @@ class Recurrence
                     //save base product on opencart.
                     $opencartProductId = $this->openCart->model_catalog_product
                         ->addProduct($this->openCart->request->post);
+
                 }
 
                 if (!$recurrencyProduct->isSingle()) {
-
-                    $mundipaggPlanStatus = $this->getPlanStatus($this->openCart->request->post['status']);
-                    $recurrencyProduct->setMundipaggPlanStatus($mundipaggPlanStatus);
-
-                    $planApi = new PlanApi($this->openCart);
                     $mundipaggPlan = $planApi->save($recurrencyProduct);
-
                     $recurrencyProduct->setMundipaggPlanId($mundipaggPlan->id);
-                    $recurrencyProduct->setMundipaggPlanStatus(
-                        new PlanStatusValueObject($mundipaggPlan->status)
-                    );
                 }
 
                 $recurrencyProduct->setProductId($opencartProductId);
-
                 //save plan product
                 $recurrencyProductRepo->save($recurrencyProduct);
 
+                if (
+                    $recurrencyProduct->getMundipaggPlanStatus() === PlanStatusValueObject::STATUS_INACTIVE
+                    && !$recurrencyProduct->isSingle()
+                ) {
+                    $planApi->save($recurrencyProduct);
+                }
 
             } catch (\Exception $error) {
 

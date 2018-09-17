@@ -92,7 +92,6 @@ class Plan
         $request = new UpdatePlanRequest();
 
         array_walk($baseRequest, function ($item, $key) use ($request) {
-
             $attr = lcfirst(ucwords(str_replace("_", " ", $key)));
             $attribute = str_replace(" ", "", $attr);
             $request->{$attribute} = $item;
