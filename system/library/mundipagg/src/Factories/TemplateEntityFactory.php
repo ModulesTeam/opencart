@@ -68,7 +68,13 @@ class TemplateEntityFactory
     public function createFromJson($jsonData)
     {
         $data = json_decode(utf8_decode($jsonData));
+
         if (json_last_error() == JSON_ERROR_NONE) {
+            $installments = json_decode($data->installments);
+            if (!is_array($installments)) {
+                $installments = explode(",", $data->installments);
+            }
+
             $templateEntity = new TemplateEntity();
             $templateEntity
                 ->setName($data->name)
@@ -78,7 +84,7 @@ class TemplateEntityFactory
                 ->setAcceptCreditCard($data->acceptCreditCard)
                 ->setAllowInstallments($data->allowInstallments)
                 ->setTrial($data->trial)
-                ->addInstallments(json_decode($data->installments))
+                ->addInstallments($installments)
             ;
 
             if (isset($data->id)) {

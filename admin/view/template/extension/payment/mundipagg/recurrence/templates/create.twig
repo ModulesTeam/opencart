@@ -6,8 +6,8 @@
     <div class="page-header">
         <div class="container-fluid">
             <div class="pull-right">
-                <button type="submit" id="submit-form" form="plans-form"
-                        data-toggle="tooltip" title="" class="btn btn-primary"
+                <button type="submit" id="submit-form" form="plans-form" data-template="{{ selectedTemplateRoot.template.id }}"
+                        data-toggle="tooltip" title="" class="btn btn-primary btn-save"
                         data-original-title="Salvar"><i class="fa fa-save"></i></button>
                 <button type="button" class="btn btn-danger" title="Cancelar"><i class="fa fa-ban"></i></button>
             </div>
@@ -106,10 +106,26 @@
             return $('.installment').toggle();
     });
 
+    $('.btn-save').on('click', function(e) {
+        var updateChildren = "false";
+        var url = window.location.href;
+        if ((url.indexOf("action=update") > 0)) {
+
+            if (confirm("Deseja atualizar os produtos deste template?")) {
+                updateChildren= "true";
+            }
+
+            var id = '{{ formId }}';
+            var action = $('#' + id).attr('action');
+
+            $('#' + id).attr('action', action + "&updateChildren=" + updateChildren);
+        }
+    })
+
     {% if selectedTemplateRoot.template.isSingle %}
-    $(document).ready(function(){
-        $('#mp-tab-handler-single').click();
-    });
+        $(document).ready(function(){
+            $('#mp-tab-handler-single').click();
+        });
     {% endif %}
     $(document).ready(function(){
         {% for name,value in formData %}

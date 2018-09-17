@@ -2,6 +2,7 @@
 
 namespace Mundipagg\Controller\Recurrence;
 
+use Mundipagg\Aggregates\Template\PlanStatusValueObject;
 use Mundipagg\Model\Api\Plan as PlanApi;
 use Mundipagg\Settings\Recurrence as RecurrenceSettings;
 
@@ -109,7 +110,7 @@ class Recurrence
                     if ($plan->getProductId() == $productId) {
                         $isEdit = true;
                         $planId = $plan->getId();
-                        $mundipaggPlanId = $plan->getMundipaggPlanId();
+                        $recurrencyProduct->setMundipaggPlanId($plan->getMundipaggPlanId());
                         $opencartProductId = $plan->getProductId();
                         break;
                     }
@@ -130,21 +131,23 @@ class Recurrence
                     //save base product on opencart.
                     $opencartProductId = $this->openCart->model_catalog_product
                         ->addProduct($this->openCart->request->post);
+                }
+
+                if (!$recurrencyProduct->isSingle()) {
+
+                    $mundipaggPlanStatus = $this->getPlanStatus($this->openCart->request->post['status']);
+                    $recurrencyProduct->setMundipaggPlanStatus($mundipaggPlanStatus);
 
                     $planApi = new PlanApi($this->openCart);
                     $mundipaggPlan = $planApi->save($recurrencyProduct);
-                    $mundipaggPlanId = $mundipaggPlan->id;
-                }
 
-                /** @todo
-                if (!$recurrencyProduct->isSingle()) {
-                    $planApi = new PlanApi($this->openCart);
-                    $planApi->updatePlan($planId, $plan);
+                    $recurrencyProduct->setMundipaggPlanId($mundipaggPlan->id);
+                    $recurrencyProduct->setMundipaggPlanStatus(
+                        new PlanStatusValueObject($mundipaggPlan->status)
+                    );
                 }
-                 */
 
                 $recurrencyProduct->setProductId($opencartProductId);
-                $recurrencyProduct->setMundipaggPlanId($mundipaggPlanId);
 
                 //save plan product
                 $recurrencyProductRepo->save($recurrencyProduct);
@@ -170,6 +173,20 @@ class Recurrence
                     'user_token=' . $this->openCart->session->data['user_token'])
             );
         }
+    }
+
+    protected function getPlanStatus($status)
+    {
+        $boolStatus = boolval($status);
+        if ($boolStatus) {
+            return new PlanStatusValueObject(
+                PlanStatusValueObject::STATUS_ACTIVE
+            );
+        }
+
+        return new PlanStatusValueObject(
+            PlanStatusValueObject::STATUS_INACTIVE
+        );
     }
 
     protected function handleValidationError()

@@ -182,6 +182,7 @@ OpencartRecurrencyCreationFormModel.prototype
 
     $('#installments').val('');
     installments.forEach(function(installment) {
+        installment = installment.replace(/\D/, '');
         $('#installments').tagsinput('add', installment);
     });
 

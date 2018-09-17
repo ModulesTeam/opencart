@@ -4,6 +4,7 @@ namespace Mundipagg\Factories;
 
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
+use Mundipagg\Aggregates\Template\PlanStatusValueObject;
 
 class RecurrencyProductRootFactory
 {
@@ -28,6 +29,11 @@ class RecurrencyProductRootFactory
         $recurrencyProduct->setSingle($data->isSingle);
         if (isset($data->mundipaggPlanId)) {
             $recurrencyProduct->setMundipaggPlanId($data->mundipaggPlanId);
+        }
+        if (isset($data->mundipaggPlanStatus)) {
+            $recurrencyProduct->setMundipaggPlanStatus(
+                new PlanStatusValueObject($data->mundipaggPlanStatus)
+            );
         }
         $recurrencyProduct->setProductId($data->productId);
         $recurrencyProduct->setTemplate(
@@ -57,6 +63,12 @@ class RecurrencyProductRootFactory
             ->setTemplate((new TemplateRootFactory())->createFromJson(
                 $dbData['template_snapshot']
             ));
+
+        if (!empty($dbData['mundipagg_plan_status'])) {
+            $productRoot->setMundipaggPlanStatus(
+                new PlanStatusValueObject($dbData['mundipagg_plan_status'])
+            );
+        }
 
         $subPproductIds = explode(',' ,$dbData['sub_product_id']);
         $subQuantities = explode(',' ,$dbData['sub_quantity']);

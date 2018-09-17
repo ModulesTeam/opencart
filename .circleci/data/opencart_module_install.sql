@@ -105,6 +105,7 @@ CREATE TABLE IF NOT EXISTS `oc_mundipagg_recurrency_product` (
             `template_snapshot` TEXT NOT NULL,
             `template_id` INT NULL,
             `mundipagg_plan_id` VARCHAR(45) NULL,
+            `mundipagg_plan_status` VARCHAR(45) NULL,
             `is_single` TINYINT NOT NULL,
             PRIMARY KEY (`id`),
             INDEX `fk_plan_template1_idx` (`template_id` ASC),

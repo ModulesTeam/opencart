@@ -7,6 +7,7 @@ use Mundipagg\Aggregates\Template\DueValueObject;
 use Mundipagg\Settings\General as GeneralSettings;
 use MundiAPILib\MundiAPIClient;
 use MundiAPILib\Models\CreatePlanRequest;
+use MundiAPILib\Models\UpdatePlanRequest;
 
 class Plan
 {
@@ -22,6 +23,7 @@ class Plan
 
     /**
      * @param RecurrencyProductRoot $plan
+     * @return mixed
      */
     public function save(RecurrencyProductRoot $plan)
     {
@@ -86,9 +88,17 @@ class Plan
 
     protected function getUpdatePlanRequest($plan)
     {
-        $baseRequest = $this->getCreatePlanRequest($plan);
+        $baseRequest = $this->getCreatePlanRequest($plan)->jsonSerialize();
         $request = new UpdatePlanRequest();
 
+        array_walk($baseRequest, function ($item, $key) use ($request) {
+
+            $attr = lcfirst(ucwords(str_replace("_", " ", $key)));
+            $attribute = str_replace(" ", "", $attr);
+            $request->{$attribute} = $item;
+        });
+
+        $request->status = $plan->getMundipaggPlanStatus();
 
         return $request;
     }
