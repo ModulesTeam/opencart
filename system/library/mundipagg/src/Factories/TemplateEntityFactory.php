@@ -35,7 +35,8 @@ class TemplateEntityFactory
                 case 'credit_card':
                     $templateEntity
                         ->setAcceptCreditCard(true)
-                        ->setAllowInstallments($postData['allow_installment']);
+                        ->setAllowInstallments($postData['allow_installment'])
+                        ->addInstallments(explode(",", $postData['installments']));
                     break;
                 case 'boleto':
                     $templateEntity->setAcceptBoleto(true);
@@ -58,7 +59,9 @@ class TemplateEntityFactory
             ->setAcceptCreditCard($dbData['accept_credit_card'])
             ->setAllowInstallments($dbData['allow_installments'])
             ->setTrial($dbData['trial'])
+            ->addInstallments(json_decode($dbData['installments'], true))
         ;
+
         return $templateEntity;
     }
 
@@ -75,6 +78,7 @@ class TemplateEntityFactory
                 ->setAcceptCreditCard($data->acceptCreditCard)
                 ->setAllowInstallments($data->allowInstallments)
                 ->setTrial($data->trial)
+                ->addInstallments(json_decode($data->installments))
             ;
 
             if (isset($data->id)) {

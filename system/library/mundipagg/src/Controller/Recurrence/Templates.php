@@ -37,7 +37,7 @@ class Templates extends Recurrence
     }
 
 
-    protected function setBaseCreationFormData()
+    protected function setBaseCreationFormData($errors = [])
     {
         $this->data['heading_title'] = $this->language['Templates'];
 
@@ -57,6 +57,11 @@ class Templates extends Recurrence
         $this->data['dueTypesArray'] = DueValueObject::getTypesArray();
         $this->data['discountTypesArray'] = RepetitionValueObject::getDiscountTypesArray();
         $this->data['intervalTypesArray'] = RepetitionValueObject::getIntervalTypesArray();
+
+        if (count($errors)) {
+            $this->data['formErrors'] = $errors['mundipagg_recurrency_errors'];
+            $this->data['formData'] = $this->openCart->request->post;
+        }
 
         $this->data['saveAction'] = $this->openCart->url->link(
             'extension/payment/mundipagg/templates',
@@ -115,6 +120,9 @@ class Templates extends Recurrence
         $postData = $this->openCart->request->post;
 
         $templateRootFactory = new TemplateRootFactory();
+        if (!$this->validatePostData($postData)) {
+            return $this->handleFormError();
+        }
         try {
             $templateRoot = $templateRootFactory->createFromPostData($postData);
 
@@ -126,10 +134,37 @@ class Templates extends Recurrence
 
             $templateRepository->save($templateRoot);
         }catch(Exception $e) {
+            $e->getMessage();
             throw $e;
         }
 
         $this->redirect($this->openCart->url->link('extension/payment/mundipagg/templates',''));
+    }
+
+    protected function handleFormError()
+    {
+        $this->setBaseCreationFormData($this->openCart->error);
+        $this->render('templates/create');
+    }
+
+    protected function validatePostData($postData)
+    {
+        $errors = [];
+        try {
+            //creating a templateRoot from json_data just to validate the input.
+            (new TemplateRootFactory)->createFromPostData($postData);
+        } catch (\Exception $exception) {
+            $errors['recurrency_plan_input_error'] = $exception->getMessage();
+        }
+
+        if (count($errors)) {
+            $currentErrors = $this->openCart->error;
+            $currentErrors['mundipagg_recurrency_errors'] = $errors;
+            $this->openCart->error = $currentErrors;
+            return false;
+        };
+
+        return true;
     }
 
     protected function info()

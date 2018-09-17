@@ -17,7 +17,18 @@
                     <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
                 {% endfor %}
             </ul>
-            <div class="well well-lg">!Cras nulla lectus, lacinia in consequat a, tristique eu diam. Curabitur dapibus ante vitae nisi fringilla vulputate. Donec luctus, nibh eget faucibus bibendum, sapien lorem efficitur lectus, a iaculis nunc ipsum ac odio. Morbi turpis augue, viverra ac euismod eu, aliquam vel nunc. Quisque justo diam, pulvinar non mattis ut, malesuada id augue. Praesent justo ipsum, sagittis tincidunt finibus eu, tempor ut tortor. Sed et porttitor enim. Ut dignissim laoreet porttitor. Aenean arcu libero, pharetra in pulvinar in, </div>
+
+            {%  if formErrors %}
+                <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> Warning: Please check the form carefully for errors!
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <ul>
+                    {% for error in formErrors %}
+                        <li>{{ error }} </li>
+
+                    {% endfor %}
+                    </ul>
+                </div>
+            {%  endif %}
         </div>
     </div>
 
@@ -89,6 +100,7 @@
     </div>
 </div>
 <script>
+
     $('.installment').hide();
     $('#checkbox-creditcard').change(function () {
             return $('.installment').toggle();
@@ -99,6 +111,45 @@
         $('#mp-tab-handler-single').click();
     });
     {% endif %}
+    $(document).ready(function(){
+        {% for name,value in formData %}
+            {% if value is not iterable %}
+                document.getElementsByName('{{ name }}').forEach(function(element){
+                    element.value = '{{ value }}';
+            });
+            {% endif %}
+        {% endfor %}
+
+        {% for method in formData.payment_method %}
+            document.getElementsByName('payment_method[]')
+                .forEach(function (element) {
+                    if ( '{{ method }}' == element.value) {
+                        element.checked = true;
+                    }
+                });
+        {% endfor %}
+
+        {% for key,interval in formData.intervals %}
+
+            var repetitions = {};
+            {% for type,value in interval %}
+                repetitions['{{ type }}'] = '{{ value }}';
+                document.getElementsByName("intervals[{{ key }}][{{ type }}]")
+                    .forEach(function (element) {
+                        element.value = '{{ value }}'
+                    });
+
+            {% endfor %}
+
+            $('#cycles').val(repetitions.cycles);
+            $('.mp-single-frequency').val(repetitions.frequency);
+            $('.mp-single-interval').val(repetitions.type);
+            $('.bs-dropdown-to-select').click();
+            $('.mp-discount-type-link[data-value="' + repetitions.discountType +'"]').click();
+            $('#discount').val(repetitions.discountValue);
+            $('.btn-add-frequency').click();
+        {% endfor %}
+    });
 </script>
 
 {{ footer }}

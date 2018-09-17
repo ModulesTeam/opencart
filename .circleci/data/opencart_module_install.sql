@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS `oc_mundipagg_order_creditcard_info` (
             `due_type` CHAR NOT NULL,
             `due_value` TINYINT NOT NULL DEFAULT 0,
             `trial` TINYINT NOT NULL DEFAULT 0,
+            `installments` VARCHAR(45) NULL,
             PRIMARY KEY (`id`));
 
 CREATE TABLE IF NOT EXISTS `oc_mundipagg_template_repetition` (

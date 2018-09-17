@@ -97,7 +97,8 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
                 description: $('#mp-recurrency-description').val(),
                 isSingle: false,
                 name: $('#mp-recurrency-name').val(),
-                trial: $('#mp-recurrency-trial').val()
+                trial: $('#mp-recurrency-trial').val(),
+                installments: $('#installments').val()
             }
         };
         this.formController.showConfigTable(templateSnapshot);
@@ -172,9 +173,22 @@ OpencartRecurrencyCreationFormModel.prototype
     $('#checkbox-boleto').prop( "checked", templateSnapshot.template.acceptBoleto);
     $('#checkbox-creditcard').prop( "checked", templateSnapshot.template.acceptCreditCard);
     $('#allow_installment').val(templateSnapshot.template.allowInstallments ? "1" : "0");
+
+    var installments = templateSnapshot.template.installments;
+
+    if (typeof installments === "string") {
+        installments = installments.split(",");
+    }
+
+    $('#installments').val('');
+    installments.forEach(function(installment) {
+        $('#installments').tagsinput('add', installment);
+    });
+
     $('#mp-recurrency-description').val(templateSnapshot.template.description);
     $('#mp-recurrency-name').val(templateSnapshot.template.name);
     $('#mp-recurrency-trial').val(templateSnapshot.template.trial);
+    $('#checkbox-creditcard').change();
 };
 
 OpencartRecurrencyCreationFormModel.prototype

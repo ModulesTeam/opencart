@@ -2,6 +2,8 @@
 
 namespace Mundipagg\Aggregates\Template;
 
+use Exception;
+
 class TemplateEntity
 {
     /** @var int */
@@ -19,8 +21,9 @@ class TemplateEntity
     /** @var boolean */
     protected $allowInstallments;
     /** @var int */
-    /** @var int */
     protected $trial;
+    /** @var string */
+    protected $installments;
 
     public function __construct()
     {
@@ -32,6 +35,8 @@ class TemplateEntity
 
         $this->trial =
             0;
+
+        $this->installments = [];
     }
 
     /**
@@ -81,9 +86,14 @@ class TemplateEntity
     /**
      * @param string $description
      * @return TemplateEntity
+     * @throws \Exception
      */
     public function setDescription($description)
     {
+        if (preg_match('/[^a-zA-Z0-9 ]+/i', $description)) {
+            throw new \Exception("The field description must not use special characters.");
+        }
+
         $this->description = $description;
         return $this;
     }
@@ -153,9 +163,14 @@ class TemplateEntity
     /**
      * @param string $name
      * @return TemplateEntity
+     * @throws \Exception
      */
     public function setName($name)
     {
+        if (preg_match('/[^a-zA-Z0-9 ]+/i', $name)) {
+            throw new \Exception("The field name must not use special characters.");
+        }
+
         $this->name = $name;
         return $this;
     }
@@ -170,10 +185,49 @@ class TemplateEntity
 
     /**
      * @param int $trial
+     * @return TemplateEntity
      */
     public function setTrial($trial)
     {
         $this->trial = abs(intval($trial));
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInstallments()
+    {
+        return $this->installments;
+    }
+
+    /**
+     * @param InstallmentValueObject $installment
+     * @return TemplateEntity
+     * @throws Exception
+     */
+    public function addInstallment(InstallmentValueObject $installment)
+    {
+        foreach ($this->installments as $currentInstallment) {
+            if ($installment->getValue() == $currentInstallment->getValue()) {
+                throw new Exception("This installment is already added: {$installment->getValue()}");
+            }
+        }
+        $this->installments[] = $installment;
+        return $this;
+    }
+
+    public function addInstallments($installments)
+    {
+        if (!is_array($installments)) {
+            return $this;
+        }
+
+        foreach ($installments as $installment) {
+            $installmentValueObject = new InstallmentValueObject($installment);
+            $this->addInstallment($installmentValueObject);
+        }
+
         return $this;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Mundipagg\Controller\Recurrence;
 
+use Mundipagg\Factories\TemplateRootFactory;
+
 class Plans extends Recurrence
 {
     public function __call($name, array $arguments)
@@ -85,9 +87,22 @@ class Plans extends Recurrence
     protected function validateConfig()
     {
         $errors = [];
-        if (!isset($this->openCart->request->post['mundipagg-template-snapshot-data'])) {
-            $errors['recurrency_plan_template_error'] = 'A plan configuration must be added.';
+        $errors['recurrency_plan_template_error'] = 'A plan configuration must be added.';
+
+        if (isset($this->openCart->request->post['mundipagg-template-snapshot-data'])) {
+            unset($errors['recurrency_plan_template_error']);
+
+            $templateSnapshotData = $this->openCart->request->post['mundipagg-template-snapshot-data'];
+            $templateSnapshotData = base64_decode($templateSnapshotData);
+
+            try {
+                //creating a templateRoot from json_data just to validate the input.
+                (new TemplateRootFactory)->createFromJson($templateSnapshotData);
+            } catch (\Exception $exception) {
+                $errors['recurrency_plan_input_error'] = $exception->getMessage();
+            }
         }
+
         if (!isset($this->openCart->request->post['mundipagg-recurrence-products'])) {
             $errors['recurrency_plan_product_error'] = 'At least one product must be added to a plan';
         }
@@ -98,6 +113,7 @@ class Plans extends Recurrence
             $this->openCart->error = $currentErrors;
             return false;
         };
+
         return true;
     }
 }

@@ -25,7 +25,8 @@ class TemplateRepository extends AbstractRep
                 `allow_installments`,
                 `trial`,
                 `due_type`,
-                `due_value`
+                `due_value`,
+                `installments`
             ) VALUES (
                 " . ($templateRoot->isDisabled()?1:0) . ",
                 " . ($templateRoot->getTemplate()->isSingle()?1:0) . ",
@@ -36,7 +37,8 @@ class TemplateRepository extends AbstractRep
                 " . ($templateRoot->getTemplate()->isAllowInstallments()?1:0) . ",                
                 " . $templateRoot->getTemplate()->getTrial() . ",
                 '" . $templateRoot->getDueAt()->getType() . "',
-                " . $templateRoot->getDueAt()->getValue() . "
+                " . $templateRoot->getDueAt()->getValue() . ",
+                '" . json_encode($templateRoot->getTemplate()->getInstallments()) . "'
             )
         ";
 
@@ -64,7 +66,8 @@ class TemplateRepository extends AbstractRep
                 `allow_installments` = " . ($templateRoot->getTemplate()->isAllowInstallments()?1:0) . ", 
                 `trial` = " . $templateRoot->getTemplate()->getTrial() . ",
                 `due_type` = '" . $templateRoot->getDueAt()->getType() . "',
-                `due_value` = " . $templateRoot->getDueAt()->getValue() . "
+                `due_value` = " . $templateRoot->getDueAt()->getValue() . ",
+                `installments` = '" . json_encode($templateRoot->getTemplate()->getInstallments()) . "'
             WHERE `id` = " . $templateRoot->getId() . "
         ";
 
