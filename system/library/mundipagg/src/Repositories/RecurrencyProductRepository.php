@@ -17,6 +17,10 @@ class RecurrencyProductRepository extends AbstractRep
     {
         $templateId = $recurrencyProduct->getTemplateId();
         $mundipaggPlanId = $recurrencyProduct->getMundipaggPlanId();
+        $mundipaggPlanStatus = "NULL";
+        if (!empty($recurrencyProduct->getMundipaggPlanStatus())) {
+            $mundipaggPlanStatus = "'" . $recurrencyProduct->getMundipaggPlanStatus() . "'";
+        }
         $query = "
             INSERT INTO `" . $this->db->getTable('RECURRENCY_PRODUCT_TABLE') . "` (
                 `is_disabled`,
@@ -24,14 +28,16 @@ class RecurrencyProductRepository extends AbstractRep
                 `product_id`,
                 `template_snapshot`,
                 `template_id`,
-                `mundipagg_plan_id`                
+                `mundipagg_plan_id`,
+                `mundipagg_plan_status`
             ) VALUES (
                 " . ($recurrencyProduct->isDisabled()?1:0) . ",
                 " . ($recurrencyProduct->isSingle()?1:0) . ",
                 " . $recurrencyProduct->getProductId() . ",
                 '" . json_encode($recurrencyProduct->getTemplate()) . "',
                 " . ($templateId ? $templateId : 'NULL')  . ",
-                " . ($mundipaggPlanId ? "'$mundipaggPlanId'" : 'NULL') . "               
+                " . ($mundipaggPlanId ? "'$mundipaggPlanId'" : 'NULL') . ",
+                " . $mundipaggPlanStatus . "
             )
         ";
 
@@ -46,6 +52,10 @@ class RecurrencyProductRepository extends AbstractRep
     {
         $templateId = intval($recurrencyProduct->getTemplateId());
         $mundipaggPlanId = $recurrencyProduct->getMundipaggPlanId();
+        $mundipaggPlanStatus = "NULL";
+        if (!empty($recurrencyProduct->getMundipaggPlanStatus())) {
+            $mundipaggPlanStatus = "'" . $recurrencyProduct->getMundipaggPlanStatus() . "'";
+        }
 
         $query = "
             UPDATE `" . $this->db->getTable('RECURRENCY_PRODUCT_TABLE') . "` SET
@@ -54,7 +64,8 @@ class RecurrencyProductRepository extends AbstractRep
                 `product_id` = " . (intval($recurrencyProduct->getProductId())) . ",
                 `template_snapshot` = '" . (json_encode($recurrencyProduct->getTemplate())) . "',
                 `template_id` = ". ($templateId ? $templateId : 'NULL')  .",
-                `mundipagg_plan_id` = " . ($mundipaggPlanId ? "'$mundipaggPlanId'" : 'NULL') . " 
+                `mundipagg_plan_id` = " . ($mundipaggPlanId ? "'$mundipaggPlanId'" : 'NULL') . ",
+                `mundipagg_plan_status` = " . $mundipaggPlanStatus . "
             WHERE `id` = " . $recurrencyProduct->getId() . "
         ";
 

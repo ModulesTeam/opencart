@@ -2,6 +2,7 @@
 namespace Mundipagg\Aggregates\RecurrencyProduct;
 
 use Mundipagg\Aggregates\IAggregateRoot;
+use Mundipagg\Aggregates\Template\PlanStatusValueObject;
 use Mundipagg\Aggregates\Template\TemplateRoot;
 
 class RecurrencyProductRoot implements IAggregateRoot
@@ -20,6 +21,8 @@ class RecurrencyProductRoot implements IAggregateRoot
     protected $subProducts;
     /** @var boolean */
     protected $isSingle;
+    /** @var PlanStatusValueObject */
+    protected $mundipaggPlanStatus;
 
     /**
      * @return bool
@@ -150,5 +153,21 @@ class RecurrencyProductRoot implements IAggregateRoot
     public function getTemplateId()
     {
         return $this->template->getId();
+    }
+
+    /**
+     * @return PlanStatusValueObject
+     */
+    public function getMundipaggPlanStatus()
+    {
+        return $this->mundipaggPlanStatus->getValue();
+    }
+
+    /**
+     * @param PlanStatusValueObject $mundipaggPlanStatus
+     */
+    public function setMundipaggPlanStatus($mundipaggPlanStatus)
+    {
+        $this->mundipaggPlanStatus = $mundipaggPlanStatus;
     }
 }

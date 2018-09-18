@@ -135,7 +135,11 @@
     $(document).ready(function() {
         $('.mp-checkbox-creditcard-{{ formId }}').change();
         {% for installment in selectedTemplateRoot.template.installments  %}
-            $('.mp-installments-{{ formId }}').tagsinput('add', {{ installment.value }})
+            var installment = {{ installment.value }};
+            if (typeof installment !== 'number') {
+                var installment = installment.replace(/\D/, "");
+            }
+            $('.mp-installments-{{ formId }}').tagsinput('add', installment);
         {%  endfor %}
     });
 

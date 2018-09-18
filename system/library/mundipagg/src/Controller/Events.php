@@ -191,6 +191,7 @@ class Events
                 /** @var RecurrencyProductRoot $product */
                 foreach ($plans as $plan) {
                     if ($plan->getProductId() == $productId) {
+
                         $plan->setDisabled(true);
                         $recurrencyProductRepo->save($plan);
                         continue;
@@ -222,6 +223,9 @@ class Events
                     ];
                     foreach ($planProducts as $planId => $discard) {
                         $plan = $this->openCart->model_catalog_product->getProduct($planId);
+                        if (empty($plan)) {
+                            continue;
+                        }
                         $cantDeleteData[$subProductId]["plans"][] = $plan["name"];
                     }
                 }
