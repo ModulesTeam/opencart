@@ -6,7 +6,10 @@ use Mundipagg\Aggregates\Template\DueValueObject;
 use Mundipagg\Aggregates\Template\RepetitionValueObject;
 use Mundipagg\Factories\TemplateRootFactory;
 use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Repositories\TemplateRepository;
+
+use Mundipagg\Model\Api\Plan as PlanApi;
 
 class Templates extends Recurrence
 {
@@ -123,6 +126,7 @@ class Templates extends Recurrence
         if (!$this->validatePostData($postData)) {
             return $this->handleFormError();
         }
+
         try {
             $templateRoot = $templateRootFactory->createFromPostData($postData);
 
@@ -130,6 +134,13 @@ class Templates extends Recurrence
 
             if (isset($postData['template-id'])) {
                 $templateRoot->getTemplate()->setId($postData['template-id']);
+
+                if (isset($this->openCart->request->get['updateChildren'])) {
+                    $this->updateTemplate(
+                        $this->openCart->request->get['updateChildren'],
+                        $templateRoot
+                    );
+                }
             }
 
             $templateRepository->save($templateRoot);
@@ -139,6 +150,48 @@ class Templates extends Recurrence
         }
 
         $this->redirect($this->openCart->url->link('extension/payment/mundipagg/templates',''));
+    }
+
+    protected function updateTemplate($updateChildren, $templateRoot)
+    {
+        if (filter_var($updateChildren, FILTER_VALIDATE_BOOLEAN)) {
+            return $this->updateChildrenProduct($templateRoot);
+        }
+        return $this->removeDependency($templateRoot);
+    }
+
+    protected function updateChildrenProduct($templateRoot)
+    {
+        if ($templateRoot->getTemplate()->isSingle()) {
+            return;
+        }
+
+        $recurrencyProductRepository = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+        $childProducts = $recurrencyProductRepository->getAllWithTemplateId(
+            $templateRoot->getTemplate()->getId(),
+            0,
+            false
+        );
+
+        foreach ($childProducts as $recurrencyProduct) {
+
+            $recurrencyProduct->setTemplate($templateRoot);
+            $recurrencyProductRepository->save($recurrencyProduct);
+
+            $planApi = new PlanApi($this->openCart);
+            $planApi->save($recurrencyProduct);
+
+        }
+    }
+
+    protected function removeDependency($templateRoot)
+    {
+        if ($templateRoot->getTemplate()->isSingle()) {
+            return;
+        }
+
+        $recurrencyProductRepository = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+        $recurrencyProductRepository->removeTemplateDependency($templateRoot);
     }
 
     protected function handleFormError()

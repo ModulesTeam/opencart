@@ -165,4 +165,60 @@ class RecurrencyProductRepository extends AbstractRep
                 `recurrency_product_id` = " . $recurrencyProduct->getId() . "
         ");
     }
+
+    /**
+     * @param TemplateRoot $template
+     */
+    public function removeTemplateDependency(IAggregateRoot $templateRoot)
+    {
+        $templateId = $templateRoot->getTemplate()->getId();
+
+        $query = "
+            UPDATE `" . $this->db->getTable('RECURRENCY_PRODUCT_TABLE') . "` SET
+                `template_id` = NULL
+                 WHERE `template_id` = {$templateId}
+        ";
+
+        $this->db->query($query);
+    }
+
+    public function getAllWithTemplateId($templateId, $limit, $listDisabled)
+    {
+        $query = "
+            SELECT p.*,
+            GROUP_CONCAT(s.product_id) as sub_product_id,
+            GROUP_CONCAT(s.cycles) as sub_cycles,
+            GROUP_CONCAT(s.cycle_type) as sub_cycle_type,
+            GROUP_CONCAT(s.quantity) as sub_quantity
+            FROM
+            `" . $this->db->getTable('RECURRENCY_PRODUCT_TABLE') . "` as p
+            LEFT JOIN `" . $this->db->getTable('RECURRENCY_SUBPRODUCT_TABLE') . "` as s
+            ON p.id = s.recurrency_product_id
+        ";
+
+        $query .= "WHERE p.template_id = " . $templateId;
+
+        if (!$listDisabled) {
+            $query .= " AND p.is_disabled = false ";
+        }
+
+        $query .= " GROUP BY p.id";
+
+        if ($limit !== 0) {
+            $limit = intval($limit);
+            $query .= " LIMIT $limit";
+        }
+
+        $result = $this->db->query($query . ";");
+
+        $recurrencyProductFactory = new RecurrencyProductRootFactory();
+        $productRoots = [];
+
+        foreach ($result->rows as $row) {
+            $productRoot = $recurrencyProductFactory->createFromDBData($row);
+            $productRoots[] = $productRoot;
+        }
+
+        return $productRoots;
+    }
 }

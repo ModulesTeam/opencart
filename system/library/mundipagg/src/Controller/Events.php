@@ -409,6 +409,12 @@ class Events
            $path . 'plans/productFormTabHeader'
        );
 
+       $isUpdate = false;
+       if (isset($this->openCart->request->get['product_id'])) {
+           $isUpdate = true;
+       }
+
+       $planform['isUpdate'] = $isUpdate;
        $planform['formPlan'] = $path . 'templates/form_plan.twig';
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';
@@ -443,7 +449,6 @@ class Events
             $planform
         );
 
-       $helper = new MundipaggHelperProductPageChanges($this->openCart);
        $data['heading_title'] = 'Plano';
        $data['text_form'] = 'Criar plano';
 

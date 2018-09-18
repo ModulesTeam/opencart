@@ -99,6 +99,11 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript" src="view/script/mundipagg/lib/jquery-ui.min.js"></script>
+<style>@import "view/stylesheet/mundipagg/lib/jquery-ui.min.css"; </style>
+
+<div id="dialog-confirm" title="Deseja atualizar os produtos deste template?"></div>
 <script>
 
     $('.installment').hide();
@@ -107,16 +112,36 @@
     });
 
     $('.btn-save').on('click', function(e) {
-        var updateChildren = "false";
+        e.preventDefault();
         var url = window.location.href;
+        var action = $('#' + '{{ formId }}').attr('action');
+        var updateChildren = "false";
+        var selected = false;
         if ((url.indexOf("action=update") > 0)) {
-            if (confirm("Deseja atualizar os produtos deste template?")) {
-                updateChildren= "true";
-            }
-
-            var action = $('#' + '{{ formId }}').attr('action');
-
-            $('#' + '{{ formId }}').attr('action', action + "&updateChildren=" + updateChildren);
+            jQuery( "#dialog-confirm" ).dialog({
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Sim": function() {
+                        selected = true;
+                        updateChildren = "true";
+                        console.log($('#' + '{{ formId }}'));
+                        $( this ).dialog( "close" );
+                    },
+                    'Não': function() {
+                        selected = true;
+                        $( this ).dialog( "close" );
+                    }
+                },
+                close: function() {
+                    if (selected) {
+                        $('#' + '{{ formId }}').attr('action', action + "&updateChildren=" + updateChildren);
+                        $('#' + '{{ formId }}').submit();
+                    }
+                }
+            });
         }
     })
 
