@@ -149,8 +149,8 @@ class Recurrence
                 $recurrencyProductRepo->save($recurrencyProduct);
 
                 if (
-                    $recurrencyProduct->getMundipaggPlanStatus() === PlanStatusValueObject::STATUS_INACTIVE
-                    && !$recurrencyProduct->isSingle()
+                    $recurrencyProduct->getMundipaggPlanStatus() === PlanStatusValueObject::STATUS_INACTIVE &&
+                    !$recurrencyProduct->isSingle()
                 ) {
                     $planApi->save($recurrencyProduct);
                 }
