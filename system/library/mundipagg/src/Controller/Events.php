@@ -409,12 +409,12 @@ class Events
            $path . 'plans/productFormTabHeader'
        );
 
-       $isEdition = false;
+       $isUpdate = false;
        if (isset($this->openCart->request->get['product_id'])) {
-           $isEdition = true;
+           $isUpdate = true;
        }
 
-       $planform['isEdition'] = $isEdition;
+       $planform['isUpdate'] = $isUpdate;
        $planform['formPlan'] = $path . 'templates/form_plan.twig';
        $planform['panelPlanFrequency'] = $path . 'templates/panelPlanFrequency.twig';
        $planform['formBase'] = $path . 'templates/form_base.twig';

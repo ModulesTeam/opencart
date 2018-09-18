@@ -10,7 +10,7 @@
         <h3>Adicionar produtos ao plano</h3>
     </div>
         <br>
-    {% if isEdition == '0' %}
+    {% if isUpdate == '0' %}
         <div class="form-group required {% if MundipaggRecurrenceErrors['recurrency_plan_product_error'] %} has-error {% endif %}">
             <label class="col-sm-2 control-label" for="">Nome do produto</label>
             <div class="col-sm-8 mp-search">
@@ -31,7 +31,7 @@
                 <td class="text-left">Produto</td>
                 <td>Quantidade</td>
                 <td class="text-center">Ciclos</td>
-                {% if isEdition == '0' %}
+                {% if isUpdate == '0' %}
                     <td></td>
                 {% endif %}
             </tr>
@@ -53,22 +53,24 @@
         </td>
 
         <td class="text-left">
-            {% if isEdition == '1' %}
+            {% if isUpdate == '1' %}
                 <span class="label label-default">{product_quantity}</span>
+                <input type="hidden" id="mundipagg-recurrence-products[quantity][]" name="mundipagg-recurrence-products[quantity][]" value="{product_quantity}"/>
             {% else %}
                 <input type="number" min='1' placeholder="Quantidade de Produto" value="{product_quantity}" id="mundipagg-recurrence-products[quantity][]" name="mundipagg-recurrence-products[quantity][]" class="form-control">
             {% endif %}
         </td>
 
         <td>
-            {% if isEdition == '1' %}
+            {% if isUpdate == '1' %}
                 <span class="label label-default">{product_cycles}</span>
+                <input type="hidden" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" value="{product_cycles}"/>
             {% else %}
                 <input type="number" min='1'  placeholder="Numero de Ciclos" value="{product_cycles}" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" class="form-control">
             {% endif %}
         </td>
 
-        {% if isEdition == '0' %}
+        {% if isUpdate == '0' %}
             <td>
                 <button
                         type="button"
