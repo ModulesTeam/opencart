@@ -17,6 +17,7 @@ class Plan
     public function __construct($opencart)
     {
         $this->openCart = $opencart;
+        $this->openCart->load->model('catalog/product');
         $generalSettings = new GeneralSettings($this->openCart);
         $this->planApi = new MundiAPIClient($generalSettings->getSecretKey(), $generalSettings->getPassword());
     }
