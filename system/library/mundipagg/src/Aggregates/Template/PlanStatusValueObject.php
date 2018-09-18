@@ -42,6 +42,6 @@ class PlanStatusValueObject
             throw new Exception("'$value' is not a valid value!");
         }
 
-        $this->value = $value;
+        $this->value = $newStatus;
     }
 }
