@@ -48,7 +48,7 @@ class Plan
 
     public function deletePlan($plan)
     {
-        //@todo
+        return $this->planApi->getPlans()->deletePlan($plan->getMundipaggPlanId());
     }
 
     protected function getCreatePlanRequest($plan)

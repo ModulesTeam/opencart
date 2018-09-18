@@ -3,12 +3,13 @@ namespace Mundipagg\Controller;
 
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
+use Mundipagg\Aggregates\Template\PlanStatusValueObject;
 use Mundipagg\Model\Order;
 use Mundipagg\Helper\AdminMenu as MundipaggHelperAdminMenu;
-use Mundipagg\Helper\ProductPageChanges as MundipaggHelperProductPageChanges;
 use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Repositories\TemplateRepository;
+use Mundipagg\Model\Api\Plan as PlanApi;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
@@ -191,9 +192,18 @@ class Events
                 /** @var RecurrencyProductRoot $product */
                 foreach ($plans as $plan) {
                     if ($plan->getProductId() == $productId) {
-
                         $plan->setDisabled(true);
+                        $plan->setMundipaggPlanStatus(
+                            new PlanStatusValueObject(
+                                PlanStatusValueObject::STATUS_DELETED
+                            )
+                        );
                         $recurrencyProductRepo->save($plan);
+
+                        if (!$plan->isSingle()) {
+                            $planApi = new PlanApi($this->openCart);
+                            $planApi->deletePlan($plan);
+                        }
                         continue;
                     }
                     $subProducts = $plan->getSubProducts();
