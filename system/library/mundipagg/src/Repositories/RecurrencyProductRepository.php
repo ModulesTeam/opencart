@@ -221,4 +221,41 @@ class RecurrencyProductRepository extends AbstractRep
 
         return $productRoots;
     }
+
+    public function getByProductId($productId, $listDisabled = false)
+    {
+        $query = "
+            SELECT p.*,
+            GROUP_CONCAT(s.product_id) as sub_product_id,
+            GROUP_CONCAT(s.cycles) as sub_cycles,
+            GROUP_CONCAT(s.cycle_type) as sub_cycle_type,
+            GROUP_CONCAT(s.quantity) as sub_quantity
+            FROM
+            `" . $this->db->getTable('RECURRENCY_PRODUCT_TABLE') . "` as p
+            LEFT JOIN `" . $this->db->getTable('RECURRENCY_SUBPRODUCT_TABLE') . "` as s
+            ON p.id = s.recurrency_product_id
+        ";
+
+        $query .= "WHERE p.product_id = " . $productId;
+
+        if (!$listDisabled) {
+            $query .= " AND p.is_disabled = false ";
+        }
+
+        $query .= " GROUP BY p.id";
+
+        $query .= " LIMIT 1";
+
+        $result = $this->db->query($query . ";");
+
+        $recurrencyProductFactory = new RecurrencyProductRootFactory();
+        $productRoot = null;
+
+        foreach ($result->rows as $row) {
+            $productRoot = $recurrencyProductFactory->createFromDBData($row);
+            break;
+        }
+
+        return $productRoot;
+    }
 }

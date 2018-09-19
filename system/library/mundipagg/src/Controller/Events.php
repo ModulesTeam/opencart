@@ -332,59 +332,54 @@ class Events
             $productId = intval($this->openCart->request->get['product_id']);
 
             $planRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
-            $plans = $planRepo->listEntities(0, false);
             /** @var RecurrencyProductRoot $plan */
-            foreach ($plans as $plan) {
-                if ($plan->getProductId() == $productId) {
+            $plan = $planRepo->getByProductId($productId);
+            if ($plan !== null) {
+                $session = $this->openCart->session->data;
+                $session['mundipagg-template-snapshot-data'] =
+                    base64_encode(json_encode($plan->getTemplate()));
 
-                    $session = $this->openCart->session->data;
-                    $session['mundipagg-template-snapshot-data'] =
-                        base64_encode(json_encode($plan->getTemplate()));
+                $this->openCart->load->model('catalog/product');
 
-                    $this->openCart->load->model('catalog/product');
+                $subProductsToSession = [
+                    'cycles' => [],
+                    'cycleType' => [],
+                    'id' => [],
+                    'name' => [],
+                    'quantity' => [],
+                    'thumb' => []
+                ];
+                $subProducts = $plan->getSubProducts();
 
-                    $subProductsToSession = [
-                        'cycles' => [],
-                        'cycleType' => [],
-                        'id' => [],
-                        'name' => [],
-                        'quantity' => [],
-                        'thumb' => []
-                    ];
-                    $subProducts = $plan->getSubProducts();
+                $this->fillMundipaggRequestData($subProducts);
 
-                    $this->fillMundipaggRequestData($subProducts);
+                /** @var RecurrencySubproductValueObject $subProduct */
+                foreach ($subProducts as $index => $subProduct) {
+                    $subProductsToSession['cycles'][$index] = $subProduct->getCycles();
+                    $subProductsToSession['cycleType'][$index] = $subProduct->getCycleType();
+                    $subProductsToSession['quantity'][$index] = $subProduct->getQuantity();
+                    $subProductsToSession['id'][$index] = $subProduct->getProductId();
 
-                    /** @var RecurrencySubproductValueObject $subProduct */
-                    foreach ($subProducts as $index => $subProduct) {
-                        $subProductsToSession['cycles'][$index] = $subProduct->getCycles();
-                        $subProductsToSession['cycleType'][$index] = $subProduct->getCycleType();
-                        $subProductsToSession['quantity'][$index] = $subProduct->getQuantity();
-                        $subProductsToSession['id'][$index] = $subProduct->getProductId();
+                    $product = $this->openCart->model_catalog_product->getProduct(
+                        $subProduct->getProductId()
+                    );
+                    $subProductsToSession['name'][$index] = $product['name'];
 
-                        $product = $this->openCart->model_catalog_product->getProduct(
-                            $subProduct->getProductId()
-                        );
-                        $subProductsToSession['name'][$index] = $product['name'];
-
-                        if (is_file(DIR_IMAGE . $product['image'])) {
-                            $subProductsToSession['thumb'][$index] =
-                                $this->openCart->model_tool_image->resize($product['image'], 40, 40);
-                        } else {
-                            $subProductsToSession['thumb'][$index] =
-                                $this->openCart->model_tool_image->resize('no_image.png', 40, 40);
-                        }
+                    if (is_file(DIR_IMAGE . $product['image'])) {
+                        $subProductsToSession['thumb'][$index] =
+                            $this->openCart->model_tool_image->resize($product['image'], 40, 40);
+                    } else {
+                        $subProductsToSession['thumb'][$index] =
+                            $this->openCart->model_tool_image->resize('no_image.png', 40, 40);
                     }
-
-                    if (count($subProductsToSession['id'])) {
-                        $session['mundipagg-recurrence-products'] =
-                            base64_encode(json_encode($subProductsToSession));
-                    }
-
-                    $this->openCart->session->data = $session;
-
-                    break;
                 }
+
+                if (count($subProductsToSession['id'])) {
+                    $session['mundipagg-recurrence-products'] =
+                        base64_encode(json_encode($subProductsToSession));
+                }
+
+                $this->openCart->session->data = $session;
             }
         }
 
