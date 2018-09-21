@@ -3,6 +3,11 @@ namespace Mundipagg;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
+use DateTime;
+use MundiAPILib\Models\CreatePlanRequest;
+use MundiAPILib\Models\CreatePricingSchemeRequest;
+use MundiAPILib\Models\CreateSubscriptionItemRequest;
+use MundiAPILib\Models\CreateSubscriptionRequest;
 use MundiAPILib\Models\GetOrderResponse;
 use MundiAPILib\MundiAPIClient;
 use MundiAPILib\Exceptions\ErrorException;
@@ -11,6 +16,8 @@ use MundiAPILib\Models\CreateAddressRequest;
 use MundiAPILib\Models\CreateCustomerRequest;
 use MundiAPILib\Models\CreateShippingRequest;
 
+use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Settings\AntiFraud as AntiFraudSettings;
 use Mundipagg\Settings\Boleto as BoletoSettings;
 use Mundipagg\Settings\General as GeneralSettings;
@@ -73,6 +80,30 @@ class Order
         $this->orderInstallments = $installments;
     }
 
+    private function getRecurrenceProduct($cart)
+    {
+        //filter products
+        $items = $cart->getProducts();
+
+        $plans = [];
+        $recurrenceProductRepo = new RecurrencyProductRepository(
+            new OpencartDatabaseBridge()
+        );
+
+        foreach ($items as $item) {
+            $product = $recurrenceProductRepo->getByProductId($item['product_id']);
+            if ($product !== null) {
+                $plans[] = $product;
+            }
+        }
+
+        if (count($plans) == 1 && count($items) == 1) {
+            return $plans[0];
+        }
+
+        return null;
+    }
+
     /**
      * Create a MundiPagg order
      * @param array $orderData
@@ -116,16 +147,37 @@ class Order
         $payments = $this->preparePayments($paymentMethod, $cardToken, $totalOrderAmount, $cardId, $multiBuyer);
 
         try {
-            $CreateOrderRequest = $this->createOrderRequest(
-                $items,
-                $createCustomerRequest,
-                $payments,
-                $orderData['order_id'],
-                $this->getMundipaggCustomerId($orderData['customer_id']),
-                $createShippingRequest,
-                $this->generalSettings->getModuleMetaData(),
-                $isAntiFraudEnabled
-            );
+
+            $recurrenceProduct = $this->getRecurrenceProduct($cart);
+
+            $orderType = 'Order';
+
+            if ($recurrenceProduct !== null) {
+                $orderType = 'Subscription';
+                $CreateOrderRequest = $this->createSubscriptionRequest(
+                    $orderData['order_id'],
+                    $recurrenceProduct->getMundipaggPlanId(),
+                    $payments,
+                    $items,
+                    $createCustomerRequest,
+                    $createShippingRequest,
+                    $this->generalSettings->getModuleMetaData(),
+                    $isAntiFraudEnabled
+                );
+            }
+            else {
+                $CreateOrderRequest = $this->createOrderRequest(
+                    $items,
+                    $createCustomerRequest,
+                    $payments,
+                    $orderData['order_id'],
+                    $this->getMundipaggCustomerId($orderData['customer_id']),
+                    $createShippingRequest,
+                    $this->generalSettings->getModuleMetaData(),
+                    $isAntiFraudEnabled
+                );
+            }
+
 
         } catch (\Exception $e) {
             Log::create()
@@ -139,11 +191,13 @@ class Order
             ->withOrderId($orderData['order_id'])
             ->withRequest(json_encode($CreateOrderRequest, JSON_PRETTY_PRINT));
 
-        if (!$CreateOrderRequest->items) {
+        if (!$CreateOrderRequest->items && $orderType == 'Order') {
             return false;
         }
 
-        $order = $this->getOrders()->createOrder($CreateOrderRequest);
+        $base = 'get' . $orderType . 's';
+        $create = 'create' . $orderType;
+        $order = $this->$base()->$create($CreateOrderRequest);
         $this->createOrUpdateCharge($orderData, $order);
 
         $this->createCustomerIfNotExists(
@@ -308,7 +362,7 @@ class Order
                     $data['paid_amount'] = $mundipaggOrder->amount;
                 }
                 if ($data) {
-                    $data+=array(
+                    $data += array(
                         'opencart_id'     => $mundipaggOrder->code,
                         'charge_id'       => $mundipaggOrder->id,
                         'payment_method'  => $mundipaggOrder->paymentMethod,
@@ -363,6 +417,56 @@ class Order
         $createOrderRequest->antifraudEnabled = $isAntiFraudEnabled;
 
         return $createOrderRequest;
+    }
+
+    /**
+     * @param $code
+     * @param $planId
+     * @param $payments
+     * @param $items
+     * @param $customer
+     * @param $shipping
+     * @param null $metadata
+     * @param bool $isAntiFraudEnabled
+     * @param $
+     */
+    private function createSubscriptionRequest(
+        $code,
+        $planId,
+        $payments,
+        $items,
+        $customer,
+        $shipping,
+        $metadata = null,
+        $isAntiFraudEnabled = false
+    ) {
+        $createSubscriptionRequest = new CreateSubscriptionRequest();
+
+        $payment = $payments[0];
+
+
+        $createSubscriptionRequest->code = $code;
+        $createSubscriptionRequest->planId = $planId;
+        $createSubscriptionRequest->paymentMethod = $payment['payment_method'];
+        /*$createSubscriptionRequest->startAt = new DateTime();
+
+        $createSubscriptionRequest->items = new CreateSubscriptionItemRequest();
+        $createSubscriptionRequest->items->pricingScheme = new CreatePricingSchemeRequest();
+        $createSubscriptionRequest->items->pricingScheme->price = $items[0]['amount'];
+        $createSubscriptionRequest->items->pricingScheme->schemeType = "unit";
+
+        $createSubscriptionRequest->items->description = $items[0]['description'];
+*/
+        $createSubscriptionRequest->customer = $customer;
+        if ($createSubscriptionRequest->paymentMethod == 'credit_card') {
+            $createSubscriptionRequest->cardToken = $payment['credit_card']['card_token'];
+            $createSubscriptionRequest->installments = $payment['credit_card']['installments'];
+        }
+        $createSubscriptionRequest->shipping = $shipping;
+        $createSubscriptionRequest->metadata = $metadata;
+        $createSubscriptionRequest->antifraudEnabled = $isAntiFraudEnabled;
+
+        return $createSubscriptionRequest;
     }
 
     /**

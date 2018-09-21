@@ -492,6 +492,10 @@ class ControllerExtensionPaymentMundipagg extends Controller
      */
     public function processCreditCard()
     {
+        //create platformOrder by orderId;
+        //$platformOrder = new PlatformOrderFactory(new OpencartOrderDataSourceBridge);
+
+
         $this->load();
 
         $multiBuyer = new MultiBuyer($this->request, [self::INDEX_CREDIT_CARD]);
