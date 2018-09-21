@@ -236,6 +236,13 @@ class ModelExtensionPaymentMundipagg extends Model
             'catalog/controller/checkout/success/before',
             'extension/payment/mundipagg_events/prepareCheckoutOrderInfo'
         );
+
+        //add checkout payment method interceptor
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_recurrence_product_checkout_handler',
+            'catalog/view/checkout/payment_method/after',
+            'extension/payment/mundipagg/callEvents'
+        );
     }
 
     /***

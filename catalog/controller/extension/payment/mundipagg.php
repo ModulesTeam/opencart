@@ -17,8 +17,8 @@ use Mundipagg\Settings\Boleto as BoletoSettings;
 use Mundipagg\Settings\CreditCard as CreditCardSettings;
 use Mundipagg\Settings\BoletoCreditCard as BoletoCreditCardSettings;
 use Mundipagg\Settings\General as GeneralSettings;
-use MundiAPILib\Models\CreateCustomerRequest;
-use MundiAPILib\Models\CreateAddressRequest;
+use Mundipagg\Controller\Events as MundipaggEvents;
+use Mundipagg\Helper\Common as MundipaggHelperCommon;
 
 class ControllerExtensionPaymentMundipagg extends Controller
 {
@@ -937,4 +937,40 @@ class ControllerExtensionPaymentMundipagg extends Controller
             $charge->lastTransaction->installments
         );
     }
+
+    /**
+     * @param string $route
+     * @param array $data
+     * @param $template
+     * @return mixed
+     * @throws Exception
+     */
+    public function callEvents($route, $data = array(), $template = null)
+    {
+        $mundipaggEvents = new MundipaggEvents(
+            $this,
+            new Template($this->registry->get('config')->get('template_engine'))
+        );
+
+        $helper = new MundipaggHelperCommon($this);
+        $method =
+            $helper->fromSnakeToCamel(explode('/', $route)[1]) . "Entry";
+        $template = $mundipaggEvents->$method($data);
+
+        if ($template) {
+
+            if (is_string($template)) {
+                return $template;
+            }
+
+            return $template->render(
+                $this->config->get('template_directory') . $route,
+                $this->config->get('template_cache')
+            );
+        }
+    }
+
+
+
+
 }

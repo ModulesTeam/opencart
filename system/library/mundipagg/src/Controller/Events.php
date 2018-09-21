@@ -519,4 +519,48 @@ class Events
 
         return $this->template;
     }
+
+    public function paymentMethodEntry($data)
+    {
+        if (isset($data['mundipagg_already_filtered_payment_methods'])) {
+            return;
+        }
+        $data['mundipagg_already_filtered_payment_methods'] = true;
+
+        //filter products
+        $items = $this->openCart->cart->getProducts();
+
+        $plans = [];
+        $recurrenceProductRepo = new RecurrencyProductRepository(
+            new OpencartDatabaseBridge()
+        );
+
+        foreach ($items as $item) {
+            $product = $recurrenceProductRepo->getByProductId($item['product_id']);
+            if ($product !== null) {
+                $plans[] = $product;
+            }
+        }
+
+//there is a single item and it's a plan.
+        if (count($plans) == 1 && count($items) == 1) {
+
+            $data['payment_methods'] = array_filter(
+                $data['payment_methods'],
+                function($paymentMethod) {
+                    return $paymentMethod['code'] == 'mundipagg';
+                }
+            );
+
+            return $this->openCart->load->view('checkout/payment_method', $data);
+        }
+
+        //@todo check cart conflict
+    }
+
+    public function checkoutEntry($data)
+    {
+        $a = 1;
+    }
+
 }
