@@ -558,7 +558,7 @@ class Events
         //@todo check cart conflict
     }
 
-    public function checkoutEntry($data)
+    public function confirmEntry($data)
     {
         $a = 1;
     }

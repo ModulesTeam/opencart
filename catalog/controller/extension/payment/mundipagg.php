@@ -6,6 +6,7 @@
  */
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Controller\Api;
 use Mundipagg\Controller\SavedCreditCard;
 use Mundipagg\Controller\TwoCreditCards;
@@ -13,6 +14,8 @@ use Mundipagg\Log;
 use Mundipagg\LogMessages;
 use Mundipagg\Order;
 use Mundipagg\MultiBuyer;
+use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Settings\Boleto as BoletoSettings;
 use Mundipagg\Settings\CreditCard as CreditCardSettings;
 use Mundipagg\Settings\BoletoCreditCard as BoletoCreditCardSettings;
@@ -103,6 +106,35 @@ class ControllerExtensionPaymentMundipagg extends Controller
         }
     }
 
+    private function isRecurrenceProduct()
+    {
+        return $this->getRecurrenceProduct() !== null;
+    }
+
+    private function getRecurrenceProduct()
+    {
+        //filter products
+        $items = $this->cart->getProducts();
+
+        $plans = [];
+        $recurrenceProductRepo = new RecurrencyProductRepository(
+            new OpencartDatabaseBridge()
+        );
+
+        foreach ($items as $item) {
+            $product = $recurrenceProductRepo->getByProductId($item['product_id']);
+            if ($product !== null) {
+                $plans[] = $product;
+            }
+        }
+
+        if (count($plans) == 1 && count($items) == 1) {
+            return $plans[0];
+        }
+
+        return null;
+    }
+
     /**
      * This method is called when user has to choose between the installed payment methods.
      *
@@ -121,21 +153,39 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $this->getDirectories();
         $this->loadUrls();
 
-        if ($creditCardSettings->isEnabled()) {
+        $isRecurrenceProduct = $this->isRecurrenceProduct();
+
+        $isCreditCardEnabled = $creditCardSettings->isEnabled();
+        $isBoletoEnabled = $boletoSettings->isEnabled();
+
+        if ($isRecurrenceProduct) {
+            /** @var RecurrencyProductRoot $recurrenceProduct */
+            $recurrenceProduct = $this->getRecurrenceProduct();
+            //check if creditcard is enabled to product.
+            $isCreditCardEnabled = $recurrenceProduct
+                ->getTemplate()->getTemplate()
+                ->isAcceptCreditCard();
+            //check if boleto is enabled to product.
+            $isBoletoEnabled =  $recurrenceProduct
+                ->getTemplate()->getTemplate()
+                ->isAcceptBoleto();
+        }
+
+        if ($isCreditCardEnabled) {
             $this->data = array_merge($this->data, $creditCardSettings->getCreditCardPageInfo());
         }
 
         // check if payment with two credit cards is enabled
-        if ($creditCardSettings->isTwoCreditCardsEnabled()) {
+        if ($creditCardSettings->isTwoCreditCardsEnabled() && !$isRecurrenceProduct) {
             $this->data = array_merge($this->data, $creditCardSettings->getTwoCreditCardsPageInfo());
             $this->data['twoCreditCardsPaymentTitle'] = $creditCardSettings->getTwoCreditCardsPaymentTitle();
         }
 
-        if ($boletoSettings->isEnabled()) {
+        if ($isBoletoEnabled) {
             $this->data = array_merge($this->data, $boletoSettings->getBoletoPageInfo());
         }
 
-        if ($boletoCreditCardSettings->isEnabled()) {
+        if ($boletoCreditCardSettings->isEnabled() && !$isRecurrenceProduct) {
             $this->data = array_merge($this->data, $boletoCreditCardSettings->getBoletoCreditCardPageInfo());
         }
 
