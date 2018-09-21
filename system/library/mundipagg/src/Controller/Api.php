@@ -4,12 +4,15 @@ namespace Mundipagg\Controller;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Enum\WebHookEnum;
 use Mundipagg\Log;
 use Mundipagg\LogMessages;
 use Mundipagg\Model\WebHook as WebHookModel;
 use Mundipagg\Model\Installments;
 use Mundipagg\Enum\OrderstatusEnum;
+use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 
 
 class Api
@@ -51,6 +54,31 @@ class Api
         ];
     }
 
+
+    private function getRecurrenceProduct()
+    {
+        //filter products
+        $items = $this->openCart->cart->getProducts();
+
+        $plans = [];
+        $recurrenceProductRepo = new RecurrencyProductRepository(
+            new OpencartDatabaseBridge()
+        );
+
+        foreach ($items as $item) {
+            $product = $recurrenceProductRepo->getByProductId($item['product_id']);
+            if ($product !== null) {
+                $plans[] = $product;
+            }
+        }
+
+        if (count($plans) == 1 && count($items) == 1) {
+            return $plans[0];
+        }
+
+        return null;
+    }
+
     private function getInstallments($arguments)
     {
         $brand = $arguments['brand'];
@@ -65,6 +93,23 @@ class Api
         if (!$installments) {
             return $this->notFoundResponse('wrong request');
         }
+
+        /** @var RecurrencyProductRoot $recurrenceProducty **/
+        $recurrenceProduct = $this->getRecurrenceProduct();
+
+        if ($recurrenceProduct !== null) {
+            $allowedInstallments = $recurrenceProduct
+                ->getTemplate()->getTemplate()
+                ->getInstallments();
+            array_walk($allowedInstallments, function(&$installment) {
+                $installment = $installment->getValue();
+            });
+        }
+
+        $installments = array_filter($installments, function($installment)
+            use ($allowedInstallments){
+           return in_array($installment['times'], $allowedInstallments);
+        });
 
         return [
             'status_code' => 200,
