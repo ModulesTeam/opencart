@@ -6,7 +6,7 @@ use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
 use Mundipagg\Aggregates\Template\PlanStatusValueObject;
 use Mundipagg\Model\Order;
 use Mundipagg\Helper\AdminMenu as MundipaggHelperAdminMenu;
-use Mundipagg\Repositories\Adapters\OpencartPlatformDatabaseDecorator;
+use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Repositories\TemplateRepository;
 use Mundipagg\Model\Api\Plan as PlanApi;
@@ -179,7 +179,7 @@ class Events
         //verify if there is plan products on delete command
         $post = $this->openCart->request->post;
         if (isset($post['selected'])) {
-            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator());
+            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
             $selected = array_map(function($element){
                 return intval($element);
             },$post['selected']);
@@ -331,7 +331,7 @@ class Events
         if (isset($this->openCart->request->get['product_id'])) {
             $productId = intval($this->openCart->request->get['product_id']);
 
-            $planRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator());
+            $planRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
             /** @var RecurrencyProductRoot $plan */
             $plan = $planRepo->getByProductId($productId);
             if ($plan !== null) {
@@ -438,7 +438,7 @@ class Events
             $planform['MundipaggRecurrenceErrors'] = $this->openCart->error['mundipagg_recurrency_errors'];
         }
 
-        $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseDecorator());
+        $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
         $plans = $templateRepository->listEntities(0, false);
         $planform['plans'] = array_filter($plans, function($templateRoot){
             return !$templateRoot->getTemplate()->isSingle();
@@ -490,7 +490,7 @@ class Events
             $planform['MundipaggRecurrenceErrors'] = $this->openCart->error['mundipagg_recurrency_errors'];
         }
 
-        $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseDecorator());
+        $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
         $plans = $templateRepository->listEntities(0, false);
         $planform['templates'] = array_filter($plans, function($templateRoot) {
             return $templateRoot->getTemplate()->isSingle();
@@ -532,7 +532,7 @@ class Events
 
         $plans = [];
         $recurrenceProductRepo = new RecurrencyProductRepository(
-            new OpencartPlatformDatabaseDecorator()
+            new OpencartPlatformDatabaseDecorator($this->openCart->db)
         );
 
         foreach ($items as $item) {

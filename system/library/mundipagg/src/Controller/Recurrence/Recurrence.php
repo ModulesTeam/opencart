@@ -98,7 +98,7 @@ class Recurrence
             //@todo recurrencyProduct->setDisabled($opencartProductStatus);
 
             $this->openCart->load->model('catalog/product');
-            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator());
+            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
 
             $isEdit = false;
             //check if is edit

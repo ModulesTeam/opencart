@@ -3,7 +3,7 @@
 namespace Mundipagg\Repositories;
 
 use Mundipagg\Aggregates\IAggregateRoot;
-use Mundipagg\Repositories\Adapters\AbstractPlatformDatabaseDecorator;
+use Mundipagg\Repositories\Decorators\AbstractPlatformDatabaseDecorator;
 
 abstract class AbstractRep
 {

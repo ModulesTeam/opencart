@@ -6,10 +6,12 @@ use Exception;
 
 abstract class AbstractPlatformDatabaseDecorator
 {
+    protected $db;
+    protected $tableArray;
 
-    public function __construct()
+    public function __construct($dbObject)
     {
-        $this->db = $this->getDatabaseAccessObject();
+        $this->db = $dbObject;
         $this->setTableArray();
     }
 
@@ -24,5 +26,4 @@ abstract class AbstractPlatformDatabaseDecorator
     abstract public function query($query);
     abstract public function getLastId();
     abstract protected function setTableArray();
-    abstract protected function getDatabaseAccessObject();
 }

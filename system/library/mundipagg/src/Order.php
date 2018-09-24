@@ -87,7 +87,7 @@ class Order
 
         $plans = [];
         $recurrenceProductRepo = new RecurrencyProductRepository(
-            new OpencartPlatformDatabaseDecorator()
+            new OpencartPlatformDatabaseDecorator($this->openCart->db)
         );
 
         foreach ($items as $item) {

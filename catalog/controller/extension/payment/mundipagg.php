@@ -118,7 +118,7 @@ class ControllerExtensionPaymentMundipagg extends Controller
 
         $plans = [];
         $recurrenceProductRepo = new RecurrencyProductRepository(
-            new OpencartPlatformDatabaseDecorator()
+            new OpencartPlatformDatabaseDecorator($this->db)
         );
 
         foreach ($items as $item) {
