@@ -823,17 +823,19 @@ class Order
             case 'paid':
                 $status = $statusModel->getOrderStatus(2)['order_status_id'];
                 break;
-            case 'pending':
-                $status = $statusModel->getOrderStatus(1)['order_status_id'];
-                break;
             case 'canceled':
                 $status = $statusModel->getOrderStatus(7)['order_status_id'];
                 break;
             case 'failed':
                 $status = $statusModel->getOrderStatus(10)['order_status_id'];
                 break;
-            default:
-                $status = false;
+            default: //handles future and active subscriptions.
+            case 'pending':
+                $status = $statusModel->getOrderStatus(1)['order_status_id'];
+                break;
+            /*default:
+                $status = false;*/
+
         }
 
         return $status;
