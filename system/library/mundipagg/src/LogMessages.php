@@ -41,6 +41,9 @@ class LogMessages
     const UPDATE_CHARGE_MUNDIPAGG_RESPONSE = 'Response from Mundipagg';
     const ORDER_CREATED = 'Received an order created';
 
+    const CREATE_PLAN_MUNDIPAGG_REQUEST = 'Create a Mundipagg plan';
+    const CREATE_PLAN_MUNDIPAGG_RESPONSE = 'Plan creation response from Mundipagg';
+
     /** Warning Messages */
     const UNABLE_TO_SAVE_TRANSACTION = 'Unable to save transaction into mundipagg_transaction table';
 
