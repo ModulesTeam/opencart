@@ -10,7 +10,7 @@ use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Factories\RecurrencyProductRootFactory;
 use Mundipagg\Factories\RecurrencySubproductValueObjectFactory;
 use Mundipagg\Factories\TemplateRootFactory;
-use Mundipagg\Repositories\Adapters\OpencartPlatformDatabaseAdapter;
+use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 
 class Recurrence
@@ -98,7 +98,7 @@ class Recurrence
             //@todo recurrencyProduct->setDisabled($opencartProductStatus);
 
             $this->openCart->load->model('catalog/product');
-            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseAdapter());
+            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator());
 
             $isEdit = false;
             //check if is edit

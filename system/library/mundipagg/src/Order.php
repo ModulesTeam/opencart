@@ -16,7 +16,7 @@ use MundiAPILib\Models\CreateAddressRequest;
 use MundiAPILib\Models\CreateCustomerRequest;
 use MundiAPILib\Models\CreateShippingRequest;
 
-use Mundipagg\Repositories\Adapters\OpencartPlatformDatabaseAdapter;
+use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Settings\AntiFraud as AntiFraudSettings;
 use Mundipagg\Settings\Boleto as BoletoSettings;
@@ -87,7 +87,7 @@ class Order
 
         $plans = [];
         $recurrenceProductRepo = new RecurrencyProductRepository(
-            new OpencartPlatformDatabaseAdapter()
+            new OpencartPlatformDatabaseDecorator()
         );
 
         foreach ($items as $item) {

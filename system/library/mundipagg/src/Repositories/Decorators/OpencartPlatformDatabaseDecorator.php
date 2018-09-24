@@ -1,10 +1,10 @@
 <?php
 
-namespace Mundipagg\Repositories\Adapters;
+namespace Mundipagg\Repositories\Decorators;
 
 use DB;
 
-class OpencartPlatformDatabaseAdapter extends AbstractPlatformDatabaseAdapter
+class OpencartPlatformDatabaseDecorator extends AbstractPlatformDatabaseDecorator
 {
     protected $db;
     protected $tableArray;

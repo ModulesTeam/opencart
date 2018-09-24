@@ -1,10 +1,10 @@
 <?php
 
-namespace Mundipagg\Repositories\Adapters;
+namespace Mundipagg\Repositories\Decorators;
 
 use Exception;
 
-abstract class AbstractPlatformDatabaseAdapter
+abstract class AbstractPlatformDatabaseDecorator
 {
 
     public function __construct()
