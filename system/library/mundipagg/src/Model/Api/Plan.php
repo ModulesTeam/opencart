@@ -148,7 +148,7 @@ class Plan
             $item['name'] = $product['name'];
             $item['quantity'] = $subProduct->getQuantity();
             $item['cycles'] = $subProduct->getCycles();
-            $item['pricing_scheme'] = ['price' => (float) $product['price']];
+            $item['pricing_scheme'] = ['price' => ((float) $product['price']) * 100];
 
             $items[] = $item;
         }

@@ -449,20 +449,13 @@ class Order
         $createSubscriptionRequest->code = $code;
         $createSubscriptionRequest->planId = $planId;
         $createSubscriptionRequest->paymentMethod = $payment['payment_method'];
-        /*$createSubscriptionRequest->startAt = new DateTime();
-
-        $createSubscriptionRequest->items = new CreateSubscriptionItemRequest();
-        $createSubscriptionRequest->items->pricingScheme = new CreatePricingSchemeRequest();
-        $createSubscriptionRequest->items->pricingScheme->price = $items[0]['amount'];
-        $createSubscriptionRequest->items->pricingScheme->schemeType = "unit";
-
-        $createSubscriptionRequest->items->description = $items[0]['description'];
-*/
         $createSubscriptionRequest->customer = $customer;
+
         if ($createSubscriptionRequest->paymentMethod == 'credit_card') {
             $createSubscriptionRequest->cardToken = $payment['credit_card']['card_token'];
             $createSubscriptionRequest->installments = $payment['credit_card']['installments'];
         }
+
         $createSubscriptionRequest->shipping = $shipping;
         $createSubscriptionRequest->metadata = $metadata;
         $createSubscriptionRequest->antifraudEnabled = $isAntiFraudEnabled;
