@@ -198,6 +198,7 @@ class Order
         $base = 'get' . $orderType . 's';
         $create = 'create' . $orderType;
         $order = $this->$base()->$create($CreateOrderRequest);
+        /** @todo This breaks if the order is a subscription */
         $this->createOrUpdateCharge($orderData, $order);
 
         $this->createCustomerIfNotExists(
