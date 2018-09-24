@@ -224,6 +224,9 @@ class TemplateEntity
         }
 
         foreach ($installments as $installment) {
+            if(empty($installment)) {
+                continue;
+            }
             $installmentValueObject = new InstallmentValueObject($installment);
             $this->addInstallment($installmentValueObject);
         }

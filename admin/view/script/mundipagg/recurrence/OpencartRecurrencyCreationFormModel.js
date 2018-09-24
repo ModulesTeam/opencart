@@ -190,6 +190,8 @@ OpencartRecurrencyCreationFormModel.prototype
     $('#mp-recurrency-name').val(templateSnapshot.template.name);
     $('#mp-recurrency-trial').val(templateSnapshot.template.trial);
     $('#checkbox-creditcard').change();
+    $('#allow_installment').change();
+    $('#expiry_type').change();
 };
 
 OpencartRecurrencyCreationFormModel.prototype

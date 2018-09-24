@@ -4,7 +4,7 @@
 <label class="col-sm-12 form-group">Nome</label>
 <div class="form-group required">
     <div class="col-sm-10">
-        <input type="text" name="name" value="{{ selectedTemplateRoot.template.name }}" placeholder="" id="mp-recurrency-name" class="form-control">
+        <input type="text" name="name" value="{{ selectedTemplateRoot.template.name }}" placeholder="" id="mp-recurrency-name" class="form-control" >
     </div>
 </div>
 
@@ -90,26 +90,37 @@
     <input type="hidden" name="template-id" value="{{ selectedTemplateRoot.template.id }}" />
 {% endif %}
 <script>
-
     $('.installments-{{ formId }}').keypress( function (e) {
         if(e.which == 13) {
             e.preventDefault();
         }
     });
+    $('.mp-installments-{{ formId }}').on('beforeItemAdd', function(event) {
+        if (typeof event.item == "string") {
+            var value = event.item.match(/[\D*]/g);
+            if (value != null) {
+                event.cancel = true;
+            }
+        }
+    });
 
-    $('.installments-{{ formId }}').hide();
-    $('.installment-{{ formId }}').hide();
     $('.mp-expiry-date-placeholder-{{ formId }}').hide();
     $('.mp-checkbox-creditcard-{{ formId }}').change(function () {
             var method = $('.mp-checkbox-creditcard-{{ formId }}').is(':checked') ?
                 'show' : 'hide';
-            $('.installments-{{ formId }}')[method]();
-            return $('.installment-{{ formId }}')[method]();
+            $('.installment-{{ formId }}')[method]();
+            return $('.installment-{{ formId }}').change();
     });
 
     $('.installment-{{ formId }}').change(function () {
-        var method = $('.mp-allow-installment-{{ formId }}').val() == 1 ?
-            'show' : 'hide';
+        var method = 'hide';
+        if (
+            $('.mp-checkbox-creditcard-{{ formId }}').is(':checked') &&
+            $('.mp-allow-installment-{{ formId }}').val() == 1
+        ) {
+            method = 'show';
+        }
+        console.log(method);
         return $('.installments-{{ formId }}')[method]();
     })
 
@@ -129,11 +140,12 @@
             (!!'{{ selectedTemplateRoot.template.allowInstallments }}') ? '1' : '0'
         );
         $('.mp-expiry-type-{{ formId }}').val('{{ selectedTemplateRoot.dueAt.type }}');
-        $('.mp-expiry-type-{{ formId }}').change();
+        $('#expiry_type').change();
     {% endif %}
 
     $(document).ready(function() {
         $('.mp-checkbox-creditcard-{{ formId }}').change();
+        $('#installments').change();
         {% for installment in selectedTemplateRoot.template.installments  %}
             var installment = {{ installment.value }};
             if (typeof installment !== 'number') {

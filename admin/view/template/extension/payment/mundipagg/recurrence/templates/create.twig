@@ -41,10 +41,10 @@
             <div class="panel-body">
 		       <ul class="nav nav-tabs">
                    {% if recurrenceSettings.recurrence_subscriptionByPlan == '1' and (not selectedTemplateRoot or (selectedTemplateRoot and not selectedTemplateRoot.template.isSingle)) %}
-		               <li class="active"><a href="#tab-plans" data-toggle="tab" title="{{ general.label }}">Plans</a></li>
+		               <li data-tab-handler="plans" class="active"><a href="#tab-plans" data-toggle="tab" title="{{ general.label }}">Plans</a></li>
                    {% endif %}
                    {% if recurrenceSettings.recurrence_singleSubscription == '1' and (not selectedTemplateRoot or (selectedTemplateRoot and selectedTemplateRoot.template.isSingle)) %}
-		               <li 
+		               <li data-tab-handler="single"
                            {% if recurrenceSettings.recurrence_singleSubscription == '1' and recurrenceSettings.recurrence_subscriptionByPlan != '1' %}
                            class="active"
                            {% endif %}
@@ -106,15 +106,23 @@
 <div id="dialog-confirm" title="Deseja atualizar os produtos deste template?"></div>
 <script>
 
-    $('.installment').hide();
     $('#checkbox-creditcard').change(function () {
             return $('.installment').toggle();
     });
 
+    $("li[data-tab-handler]").on('click', function(){
+        window.mundipagg_template_form_type = $(this).attr("data-tab-handler");
+    });
+
     $('.btn-save').on('click', function(e) {
         e.preventDefault();
+        var formId = '#' + window.mundipagg_template_form_type + '-form';
+        if (window.mundipagg_template_form_type == 'single') {
+            $(formId).submit();
+            return;
+        }
         var url = window.location.href;
-        var action = $('#' + '{{ formId }}').attr('action');
+        var action = $(formId).attr('action');
         var updateChildren = "false";
         var selected = false;
         if ((url.indexOf("action=update") > 0)) {
@@ -127,7 +135,6 @@
                     "Sim": function() {
                         selected = true;
                         updateChildren = "true";
-                        console.log($('#' + '{{ formId }}'));
                         $( this ).dialog( "close" );
                     },
                     'Não': function() {
@@ -137,12 +144,14 @@
                 },
                 close: function() {
                     if (selected) {
-                        $('#' + '{{ formId }}').attr('action', action + "&updateChildren=" + updateChildren);
-                        $('#' + '{{ formId }}').submit();
+                        $(formId).attr('action', action + "&updateChildren=" + updateChildren);
+                        $(formId).submit();
                     }
                 }
             });
+            return;
         }
+        $(formId).submit();
     })
 
     {% if selectedTemplateRoot.template.isSingle %}
@@ -151,6 +160,9 @@
         });
     {% endif %}
     $(document).ready(function(){
+
+        $("li[data-tab-handler].active").click();
+
         {% for name,value in formData %}
             {% if value is not iterable %}
                 document.getElementsByName('{{ name }}').forEach(function(element){
