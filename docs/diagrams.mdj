@@ -173,7 +173,7 @@
 											"top": 726,
 											"width": 255,
 											"height": 13,
-											"text": "Bridges"
+											"text": "Adapters"
 										},
 										{
 											"_type": "LabelView",
@@ -5046,7 +5046,7 @@
 											"top": 374,
 											"width": 342.17041015625,
 											"height": 13,
-											"text": "#db: AbstractDatabaseBridge",
+											"text": "#db: AbstractPlatformDatabaseAdapter",
 											"horizontalAlignment": 0
 										}
 									],
@@ -5275,7 +5275,7 @@
 											},
 											"visible": false,
 											"font": "Arial;13;0",
-											"left": -1008,
+											"left": -1040,
 											"top": -432,
 											"height": 13
 										},
@@ -5286,11 +5286,11 @@
 												"$ref": "AAAAAAFkgGFd44WSPzY="
 											},
 											"font": "Arial;13;3",
-											"left": 1157,
+											"left": 1141,
 											"top": 759,
-											"width": 210.99609375,
+											"width": 212.392578125,
 											"height": 13,
-											"text": "AbstractDatabaseBridge"
+											"text": "AbstractPlatformDatabaseAdapter"
 										},
 										{
 											"_type": "LabelView",
@@ -5300,11 +5300,11 @@
 											},
 											"visible": false,
 											"font": "Arial;13;0",
-											"left": -1008,
+											"left": -1040,
 											"top": -432,
 											"width": 110.525390625,
 											"height": 13,
-											"text": "(from Bridges)"
+											"text": "(from Adapters)"
 										},
 										{
 											"_type": "LabelView",
@@ -5314,16 +5314,16 @@
 											},
 											"visible": false,
 											"font": "Arial;13;0",
-											"left": -1008,
+											"left": -1040,
 											"top": -432,
 											"height": 13,
 											"horizontalAlignment": 1
 										}
 									],
 									"font": "Arial;13;0",
-									"left": 1152,
+									"left": 1136,
 									"top": 752,
-									"width": 220.99609375,
+									"width": 222.392578125,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFkgGFd44WT9Fo="
@@ -5348,9 +5348,9 @@
 										"$ref": "AAAAAAFkgGFd44WPyqY="
 									},
 									"font": "Arial;13;0",
-									"left": 1152,
+									"left": 1136,
 									"top": 777,
-									"width": 220.99609375,
+									"width": 222.392578125,
 									"height": 10
 								},
 								{
@@ -5373,9 +5373,9 @@
 												"$ref": "AAAAAAFkgGWajapccjE="
 											},
 											"font": "Arial;13;0",
-											"left": 1157,
+											"left": 1141,
 											"top": 792,
-											"width": 210.99609375,
+											"width": 212.392578125,
 											"height": 13,
 											"text": "+__construct()",
 											"horizontalAlignment": 0
@@ -5390,9 +5390,9 @@
 												"$ref": "AAAAAAFkgGHGNY/sxco="
 											},
 											"font": "Arial;13;0",
-											"left": 1157,
+											"left": 1141,
 											"top": 807,
-											"width": 210.99609375,
+											"width": 212.392578125,
 											"height": 13,
 											"text": "+getTable(string): string",
 											"horizontalAlignment": 0
@@ -5407,9 +5407,9 @@
 												"$ref": "AAAAAAFkgGI/rJG55lE="
 											},
 											"font": "Arial;13;2",
-											"left": 1157,
+											"left": 1141,
 											"top": 822,
-											"width": 210.99609375,
+											"width": 212.392578125,
 											"height": 13,
 											"text": "+query(string): mixed",
 											"horizontalAlignment": 0
@@ -5424,9 +5424,9 @@
 												"$ref": "AAAAAAFkgGJvA5LSHQQ="
 											},
 											"font": "Arial;13;2",
-											"left": 1157,
+											"left": 1141,
 											"top": 837,
-											"width": 210.99609375,
+											"width": 212.392578125,
 											"height": 13,
 											"text": "+getLastId(): int",
 											"horizontalAlignment": 0
@@ -5441,9 +5441,9 @@
 												"$ref": "AAAAAAFkgGKE7ZPL9Zg="
 											},
 											"font": "Arial;13;2",
-											"left": 1157,
+											"left": 1141,
 											"top": 852,
-											"width": 210.99609375,
+											"width": 212.392578125,
 											"height": 13,
 											"text": "#setTableArray(): void",
 											"horizontalAlignment": 0
@@ -5458,18 +5458,18 @@
 												"$ref": "AAAAAAFkgGV+A6iTRCk="
 											},
 											"font": "Arial;13;2",
-											"left": 1157,
+											"left": 1141,
 											"top": 867,
-											"width": 210.99609375,
+											"width": 212.392578125,
 											"height": 13,
 											"text": "#getDatabaseAccessObject(): object",
 											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
-									"left": 1152,
+									"left": 1136,
 									"top": 787,
-									"width": 220.99609375,
+									"width": 222.392578125,
 									"height": 98
 								},
 								{
@@ -5483,7 +5483,7 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 1152,
+									"left": 1136,
 									"top": 855,
 									"width": 161.71533203125,
 									"height": 10
@@ -5499,7 +5499,7 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": -504,
+									"left": -520,
 									"top": -216,
 									"width": 10,
 									"height": 10
@@ -5507,9 +5507,9 @@
 							],
 							"font": "Arial;13;0",
 							"containerChangeable": true,
-							"left": 1152,
+							"left": 1136,
 							"top": 752,
-							"width": 220.99609375,
+							"width": 222.392578125,
 							"height": 133,
 							"nameCompartment": {
 								"$ref": "AAAAAAFkgGFd44WSPzY="
@@ -5568,9 +5568,9 @@
 											"font": "Arial;13;1",
 											"left": 1157,
 											"top": 935,
-											"width": 210.99609375,
+											"width": 216.72802734375,
 											"height": 13,
-											"text": "OpencartDatabaseBridge"
+											"text": "OpencartPlatformDatabaseAdapter"
 										},
 										{
 											"_type": "LabelView",
@@ -5584,7 +5584,7 @@
 											"top": -112,
 											"width": 110.525390625,
 											"height": 13,
-											"text": "(from Bridges)"
+											"text": "(from Adapters)"
 										},
 										{
 											"_type": "LabelView",
@@ -5603,7 +5603,7 @@
 									"font": "Arial;13;0",
 									"left": 1152,
 									"top": 928,
-									"width": 220.99609375,
+									"width": 226.72802734375,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFkgGXmOK939TU="
@@ -5630,7 +5630,7 @@
 									"font": "Arial;13;0",
 									"left": 1152,
 									"top": 953,
-									"width": 220.99609375,
+									"width": 226.72802734375,
 									"height": 10
 								},
 								{
@@ -5655,7 +5655,7 @@
 											"font": "Arial;13;0",
 											"left": 1157,
 											"top": 968,
-											"width": 210.99609375,
+											"width": 216.72802734375,
 											"height": 13,
 											"text": "+getTable(string): string",
 											"horizontalAlignment": 0
@@ -5672,7 +5672,7 @@
 											"font": "Arial;13;0",
 											"left": 1157,
 											"top": 983,
-											"width": 210.99609375,
+											"width": 216.72802734375,
 											"height": 13,
 											"text": "+query(string): mixed",
 											"horizontalAlignment": 0
@@ -5689,7 +5689,7 @@
 											"font": "Arial;13;0",
 											"left": 1157,
 											"top": 998,
-											"width": 210.99609375,
+											"width": 216.72802734375,
 											"height": 13,
 											"text": "+getLastId(): int",
 											"horizontalAlignment": 0
@@ -5706,7 +5706,7 @@
 											"font": "Arial;13;0",
 											"left": 1157,
 											"top": 1013,
-											"width": 210.99609375,
+											"width": 216.72802734375,
 											"height": 13,
 											"text": "#setTableArray(): void",
 											"horizontalAlignment": 0
@@ -5723,7 +5723,7 @@
 											"font": "Arial;13;0",
 											"left": 1157,
 											"top": 1028,
-											"width": 210.99609375,
+											"width": 216.72802734375,
 											"height": 13,
 											"text": "#getDatabaseAccessObject(): object",
 											"horizontalAlignment": 0
@@ -5732,7 +5732,7 @@
 									"font": "Arial;13;0",
 									"left": 1152,
 									"top": 963,
-									"width": 220.99609375,
+									"width": 226.72802734375,
 									"height": 83
 								},
 								{
@@ -5772,7 +5772,7 @@
 							"containerChangeable": true,
 							"left": 1152,
 							"top": 928,
-							"width": 220.99609375,
+							"width": 226.72802734375,
 							"height": 118,
 							"nameCompartment": {
 								"$ref": "AAAAAAFkgGXmOK92sYA="
@@ -6365,7 +6365,7 @@
 							"tail": {
 								"$ref": "AAAAAAFkYNTXoh0M6WI="
 							},
-							"points": "1456:504;1456:824;1372:824",
+							"points": "1456:504;1456:824;1357:824",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAFkgOi3MRnVnYA="
@@ -7159,7 +7159,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFkZyscsbUsSsk="
 							},
-							"name": "Bridges",
+							"name": "Adapters",
 							"ownedElements": [
 								{
 									"_type": "UMLClass",
@@ -7167,7 +7167,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFkgGhMP8YxZk8="
 									},
-									"name": "OpencartDatabaseBridge",
+									"name": "OpencartPlatformDatabaseAdapter",
 									"ownedElements": [
 										{
 											"_type": "UMLGeneralization",
@@ -7307,7 +7307,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFkgGhMP8YxZk8="
 									},
-									"name": "AbstractDatabaseBridge",
+									"name": "AbstractPlatformDatabaseAdapter",
 									"ownedElements": [
 										{
 											"_type": "UMLAssociation",
@@ -15309,7 +15309,8 @@
 									"_parent": {
 										"$ref": "AAAAAAFl/eaxo3tV/BY="
 									},
-									"name": "MundipaggAbstractPayment"
+									"name": "MundipaggAbstractPayment",
+									"type": ""
 								}
 							],
 							"isAbstract": true
@@ -15354,7 +15355,8 @@
 									"_parent": {
 										"$ref": "AAAAAAFl/eetxHv7G1w="
 									},
-									"name": "MundipaggAbstractPayment"
+									"name": "MundipaggAbstractPayment",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -15406,7 +15408,8 @@
 									"_parent": {
 										"$ref": "AAAAAAFl/egxen3Db0I="
 									},
-									"name": "MundipaggAbstractPayment"
+									"name": "MundipaggAbstractPayment",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",

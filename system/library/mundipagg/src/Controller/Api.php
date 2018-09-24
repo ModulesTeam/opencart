@@ -11,7 +11,7 @@ use Mundipagg\LogMessages;
 use Mundipagg\Model\WebHook as WebHookModel;
 use Mundipagg\Model\Installments;
 use Mundipagg\Enum\OrderstatusEnum;
-use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\Adapters\OpencartPlatformDatabaseAdapter;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 
 
@@ -62,7 +62,7 @@ class Api
 
         $plans = [];
         $recurrenceProductRepo = new RecurrencyProductRepository(
-            new OpencartDatabaseBridge()
+            new OpencartPlatformDatabaseAdapter()
         );
 
         foreach ($items as $item) {

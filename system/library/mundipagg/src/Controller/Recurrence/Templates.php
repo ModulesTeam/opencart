@@ -5,7 +5,7 @@ namespace Mundipagg\Controller\Recurrence;
 use Mundipagg\Aggregates\Template\DueValueObject;
 use Mundipagg\Aggregates\Template\RepetitionValueObject;
 use Mundipagg\Factories\TemplateRootFactory;
-use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\Adapters\OpencartPlatformDatabaseAdapter;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Repositories\TemplateRepository;
 
@@ -24,7 +24,7 @@ class Templates extends Recurrence
 
     public function index()
     {
-        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+        $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseAdapter());
 
         $templateRoots = $templateRepository->listEntities(0, false);
         $this->data['templateRoots'] = $templateRoots;
@@ -83,7 +83,7 @@ class Templates extends Recurrence
             return $this->create();
         }
 
-        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+        $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseAdapter());
         $templateRoot = $templateRepository->find($getData['templateId']);
         if ($templateRoot === null) {
             return $this->create();
@@ -99,7 +99,7 @@ class Templates extends Recurrence
     {
         $getData = $this->openCart->request->get;
         if (isset($getData['templateId'])) {
-            $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+            $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseAdapter());
             $templateRoot = $templateRepository->find($getData['templateId']);
             if ($templateRoot !== null) {
                 $templateRepository->delete($templateRoot);
@@ -130,7 +130,7 @@ class Templates extends Recurrence
         try {
             $templateRoot = $templateRootFactory->createFromPostData($postData);
 
-            $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+            $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseAdapter());
 
             if (isset($postData['template-id'])) {
                 $templateRoot->getTemplate()->setId($postData['template-id']);
@@ -166,7 +166,7 @@ class Templates extends Recurrence
             return;
         }
 
-        $recurrencyProductRepository = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+        $recurrencyProductRepository = new RecurrencyProductRepository(new OpencartPlatformDatabaseAdapter());
         $childProducts = $recurrencyProductRepository->getAllWithTemplateId(
             $templateRoot->getTemplate()->getId(),
             0,
@@ -190,7 +190,7 @@ class Templates extends Recurrence
             return;
         }
 
-        $recurrencyProductRepository = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+        $recurrencyProductRepository = new RecurrencyProductRepository(new OpencartPlatformDatabaseAdapter());
         $recurrencyProductRepository->removeTemplateDependency($templateRoot);
     }
 
@@ -227,7 +227,7 @@ class Templates extends Recurrence
         $templateId = isset($getData['template_id']) ? $getData['template_id'] : null;
         if ($templateId) {
             $templateId = filter_var($templateId, FILTER_SANITIZE_NUMBER_INT);
-            $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+            $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseAdapter());
             $template = $templateRepository->find($templateId);
             if($template) {
                 $templateJson = json_encode($template);

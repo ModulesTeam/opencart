@@ -1,10 +1,10 @@
 <?php
 
-namespace Mundipagg\Repositories\Bridges;
+namespace Mundipagg\Repositories\Adapters;
 
 use Exception;
 
-abstract class AbstractDatabaseBridge
+abstract class AbstractPlatformDatabaseAdapter
 {
 
     public function __construct()

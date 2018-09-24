@@ -1,10 +1,10 @@
 <?php
 
-namespace Mundipagg\Repositories\Bridges;
+namespace Mundipagg\Repositories\Adapters;
 
 use DB;
 
-class OpencartDatabaseBridge extends AbstractDatabaseBridge
+class OpencartPlatformDatabaseAdapter extends AbstractPlatformDatabaseAdapter
 {
     protected $db;
     protected $tableArray;

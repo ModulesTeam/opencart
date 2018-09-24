@@ -14,7 +14,7 @@ use Mundipagg\Log;
 use Mundipagg\LogMessages;
 use Mundipagg\Order;
 use Mundipagg\MultiBuyer;
-use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\Adapters\OpencartPlatformDatabaseAdapter;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Settings\Boleto as BoletoSettings;
 use Mundipagg\Settings\CreditCard as CreditCardSettings;
@@ -118,7 +118,7 @@ class ControllerExtensionPaymentMundipagg extends Controller
 
         $plans = [];
         $recurrenceProductRepo = new RecurrencyProductRepository(
-            new OpencartDatabaseBridge()
+            new OpencartPlatformDatabaseAdapter()
         );
 
         foreach ($items as $item) {
@@ -493,7 +493,7 @@ class ControllerExtensionPaymentMundipagg extends Controller
     public function processCreditCard()
     {
         //create platformOrder by orderId;
-        //$platformOrder = new PlatformOrderFactory(new OpencartOrderDataSourceBridge);
+        //$platformOrder = new PlatformOrderFactory(new OpencartOrderDataSourceAdapter);
 
 
         $this->load();
