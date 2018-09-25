@@ -142,8 +142,7 @@ class Order
                     $this->generalSettings->getModuleMetaData(),
                     $isAntiFraudEnabled
                 );
-            }
-            else {
+            } else {
                 $CreateOrderRequest = $this->createOrderRequest(
                     $items,
                     $createCustomerRequest,

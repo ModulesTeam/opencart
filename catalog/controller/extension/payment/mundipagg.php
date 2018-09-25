@@ -1005,8 +1005,4 @@ class ControllerExtensionPaymentMundipagg extends Controller
             );
         }
     }
-
-
-
-
 }

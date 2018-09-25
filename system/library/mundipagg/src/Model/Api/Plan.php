@@ -48,7 +48,6 @@ class Plan
             ->info(LogMessages::CREATE_PLAN_MUNDIPAGG_REQUEST, __METHOD__)
             ->withRequest(json_encode($request, JSON_PRETTY_PRINT));
 
-
         return $this->planApi->getPlans()->createPlan($request->jsonSerialize());
     }
 
