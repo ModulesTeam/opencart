@@ -51,6 +51,11 @@ class Boleto
         return $this->openCart->config->get('payment_mundipagg_boleto_instructions');
     }
 
+    public function getCheckoutInstructions()
+    {
+        return $this->openCart->config->get('payment_mundipagg_boleto_checkout_instructions');
+    }
+
     public function getDueDate()
     {
         return date(
@@ -70,11 +75,19 @@ class Boleto
     {
         $this->openCart->load->language('extension/payment/mundipagg');
 
-        return array(
-            'boletoStatus' => $this->getStatus(),
-            'boletoText' => $this->openCart->language->get('boleto')
+        $boletoText =  $this->openCart->language->get('boleto');
 
+        $checkoutInstructions  = $this->getCheckoutInstructions();
+        if ($checkoutInstructions) {
+            $boletoText['instructions'] = $checkoutInstructions;
+        }
+
+        $info = array(
+            'boletoStatus' => $this->getStatus(),
+            'boletoText' => $boletoText
         );
+
+        return $info;
     }
 
     public function getAllSettings()

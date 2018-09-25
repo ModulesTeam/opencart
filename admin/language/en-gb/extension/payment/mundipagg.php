@@ -57,7 +57,8 @@ $_['boleto'] = [
     'configure_name' => "Name",
     'configure_select_bank' => 'Select bank',
     'configure_due_at' => 'Due at',
-    'configure_instructions' => 'Instructions'
+    'configure_instructions' => 'Instructions',
+    'configure_checkout_instructions' => 'Checkout instructions'
 ];
 // -----------------------------------------------------------------
 
@@ -68,7 +69,8 @@ $_['boletoCreditCard'] = [
     'configure_name' => "Name",
     'configure_select_bank' => 'Select bank',
     'configure_due_at' => 'Due at',
-    'configure_instructions' => 'Instructions'
+    'configure_instructions' => 'Instructions',
+    'configure_checkout_instructions' => 'Checkout instructions'
 ];
 // -----------------------------------------------------------------
 
