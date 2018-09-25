@@ -4,6 +4,8 @@ namespace Mundipagg\Helper;
 
 use Mundipagg\Integrity\AbstractOrderInfo;
 use Mundipagg\Model\Order;
+use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 
 class OpencartOrderInfo extends AbstractOrderInfo
 {
@@ -47,5 +49,29 @@ class OpencartOrderInfo extends AbstractOrderInfo
     protected function _getOrderInfo()
     {
         return $this->getOrder();
+    }
+
+    public function getRecurrenceProduct($cart)
+    {
+        //filter products
+        $items = $cart->getProducts();
+
+        $plans = [];
+        $recurrenceProductRepo = new RecurrencyProductRepository(
+            new OpencartPlatformDatabaseDecorator($this->openCart->db)
+        );
+
+        foreach ($items as $item) {
+            $product = $recurrenceProductRepo->getByProductId($item['product_id']);
+            if ($product !== null) {
+                $plans[] = $product;
+            }
+        }
+
+        if (count($plans) == 1 && count($items) == 1) {
+            return $plans[0];
+        }
+
+        return null;
     }
 }

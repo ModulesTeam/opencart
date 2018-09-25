@@ -21,6 +21,70 @@ class Order
         }
     }
 
+    public function saveSubscription(array $data) {
+        $subscription = $this->getSubscription($data['opencart_id'], $data['charge_id']);
+        if ($subscription->num_rows) {
+            $this->updateSubscription($data);
+        } else {
+            $this->insertSubscription($data);
+        }
+    }
+
+    public function getSubscription($opencart_id, $charge_id)
+    {
+        $query = "
+            SELECT * from `" . DB_PREFIX . "mundipagg_subscription` 
+            WHERE 
+                subscription_id = '$charge_id' AND
+                order_id = $opencart_id
+        ";
+
+        return $this->openCart->db->query($query);
+    }
+
+    public function insertSubscription($data)
+    {
+        $canceledAmount = $data['canceled_amount'];
+        $canceledAmount = $canceledAmount != null ? $canceledAmount : "NULL";
+
+        $query = "
+         INSERT INTO `" . DB_PREFIX . "mundipagg_subscription` (             
+            `subscription_id`, 
+            `order_id`, 
+            `payment_method`, 
+            `status`, 
+            `canceled_amount`
+         ) VALUES
+         (
+            '{$data['charge_id']}',
+            {$data['opencart_id']},
+            '{$data['payment_method']}',
+            '{$data['status']}',
+            $canceledAmount
+         )
+        ";
+        $this->openCart->db->query($query);
+    }
+
+    public function updateSubscription($data)
+    {
+        $canceledAmount = $data['canceled_amount'];
+        $canceledAmount = $canceledAmount != null ? $canceledAmount : "NULL";
+
+        $query = "
+            UPDATE `" . DB_PREFIX . "mundipagg_subscription` SET
+                `subscription_id` = '{$data['charge_id']}', 
+                `order_id` = {$data['opencart_id']}, 
+                `payment_method` = '{$data['payment_method']}', 
+                `status` = '{$data['status']}', 
+                `canceled_amount` = $canceledAmount
+            WHERE 
+            `subscription_id` = '{$data['charge_id']}' AND
+            `order_id` = {$data['opencart_id']}
+        ";
+        $this->openCart->db->query($query);
+    }
+
     public function getOrders($data, $fields)
     {
         $where = [];

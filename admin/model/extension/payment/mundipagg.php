@@ -26,6 +26,7 @@ class ModelExtensionPaymentMundipagg extends Model
         $this->createCreditCardTable();
         $this->createOrderBoletoInfoTable();
         $this->createOrderCardInfoTable();
+        $this->createSubscriptionTable();
 
         //aggregates
         $this->createTemplateAggregateTables();
@@ -50,6 +51,7 @@ class ModelExtensionPaymentMundipagg extends Model
         $this->dropCreditCardTable();
         $this->dropOrderBoletoInfoTable();
         $this->dropOrderCardInfoTable();
+        $this->dropSubscriptionTable();
 
         //aggregates
         $this->dropTemplateAggregateTables();
@@ -122,6 +124,7 @@ class ModelExtensionPaymentMundipagg extends Model
             `mundipagg_plan_id` VARCHAR(45) NULL,
             `mundipagg_plan_status` VARCHAR(45) NULL,
             `is_single` TINYINT NOT NULL,
+            `price` INT NOT NULL DEFAULT 0,
             PRIMARY KEY (`id`),
             INDEX `fk_plan_template1_idx` (`template_id` ASC),
             CONSTRAINT `fk_plan_template1`
@@ -161,6 +164,28 @@ class ModelExtensionPaymentMundipagg extends Model
         ");
     }
 
+    private function createSubscriptionTable()
+    {
+        $this->db->query("        
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_subscription`
+            (
+              id              int auto_increment
+                primary key,
+              subscription_id varchar(45) not null,
+              order_id        int         not null,
+              payment_method  varchar(45) not null,
+              status          varchar(45) not null,
+              canceled_amount int         null
+            );
+        ");
+    }
+
+    private function dropSubscriptionTable()
+    {
+        $this->db->query("
+            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_subscription` CASCADE;
+        ");
+    }
     /**
      * Install opencart event handlers
      *
@@ -235,6 +260,13 @@ class ModelExtensionPaymentMundipagg extends Model
             'payment_mundipagg_prepare_checkout_order_info',
             'catalog/controller/checkout/success/before',
             'extension/payment/mundipagg_events/prepareCheckoutOrderInfo'
+        );
+
+        //add checkout payment method interceptor
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_recurrence_product_checkout_handler',
+            'catalog/view/checkout/payment_method/after',
+            'extension/payment/mundipagg/callEvents'
         );
     }
 

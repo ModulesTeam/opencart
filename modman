@@ -43,6 +43,7 @@ catalog/model/extension/payment/mundipagg_order_creditcard_info.php catalog/mode
 catalog/model/extension/payment/mundipagg_order_boleto_info.php catalog/model/extension/payment/mundipagg_order_boleto_info.php
 catalog/model/extension/payment/mundipagg_order_processing.php catalog/model/extension/payment/mundipagg_order_processing.php
 catalog/model/extension/payment/mundipagg_webhook_logging.php catalog/model/extension/payment/mundipagg_webhook_logging.php
+catalog/model/extension/payment/mundipagg_orderdata_update.php catalog/model/extension/payment/mundipagg_orderdata_update.php
 
 catalog/model/extension/total/mundipagg_interest.php catalog/model/extension/total/mundipagg_interest.php
 

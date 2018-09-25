@@ -8,7 +8,6 @@ class Customer
 {
     public function createPhoneRequest($rawPhoneNumber)
     {
-
         $cleanPhone = preg_replace( '/[^0-9]/', '', $rawPhoneNumber);
         $cleanPhone = ltrim($cleanPhone, '0');
 

@@ -6,7 +6,7 @@ use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
 use Mundipagg\Aggregates\Template\PlanStatusValueObject;
 use Mundipagg\Model\Order;
 use Mundipagg\Helper\AdminMenu as MundipaggHelperAdminMenu;
-use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Repositories\TemplateRepository;
 use Mundipagg\Model\Api\Plan as PlanApi;
@@ -179,7 +179,7 @@ class Events
         //verify if there is plan products on delete command
         $post = $this->openCart->request->post;
         if (isset($post['selected'])) {
-            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
             $selected = array_map(function($element){
                 return intval($element);
             },$post['selected']);
@@ -331,60 +331,55 @@ class Events
         if (isset($this->openCart->request->get['product_id'])) {
             $productId = intval($this->openCart->request->get['product_id']);
 
-            $planRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
-            $plans = $planRepo->listEntities(0, false);
+            $planRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
             /** @var RecurrencyProductRoot $plan */
-            foreach ($plans as $plan) {
-                if ($plan->getProductId() == $productId) {
+            $plan = $planRepo->getByProductId($productId);
+            if ($plan !== null) {
+                $session = $this->openCart->session->data;
+                $session['mundipagg-template-snapshot-data'] =
+                    base64_encode(json_encode($plan->getTemplate()));
 
-                    $session = $this->openCart->session->data;
-                    $session['mundipagg-template-snapshot-data'] =
-                        base64_encode(json_encode($plan->getTemplate()));
+                $this->openCart->load->model('catalog/product');
 
-                    $this->openCart->load->model('catalog/product');
+                $subProductsToSession = [
+                    'cycles' => [],
+                    'cycleType' => [],
+                    'id' => [],
+                    'name' => [],
+                    'quantity' => [],
+                    'thumb' => []
+                ];
+                $subProducts = $plan->getSubProducts();
 
-                    $subProductsToSession = [
-                        'cycles' => [],
-                        'cycleType' => [],
-                        'id' => [],
-                        'name' => [],
-                        'quantity' => [],
-                        'thumb' => []
-                    ];
-                    $subProducts = $plan->getSubProducts();
+                $this->fillMundipaggRequestData($subProducts);
 
-                    $this->fillMundipaggRequestData($subProducts);
+                /** @var RecurrencySubproductValueObject $subProduct */
+                foreach ($subProducts as $index => $subProduct) {
+                    $subProductsToSession['cycles'][$index] = $subProduct->getCycles();
+                    $subProductsToSession['cycleType'][$index] = $subProduct->getCycleType();
+                    $subProductsToSession['quantity'][$index] = $subProduct->getQuantity();
+                    $subProductsToSession['id'][$index] = $subProduct->getProductId();
 
-                    /** @var RecurrencySubproductValueObject $subProduct */
-                    foreach ($subProducts as $index => $subProduct) {
-                        $subProductsToSession['cycles'][$index] = $subProduct->getCycles();
-                        $subProductsToSession['cycleType'][$index] = $subProduct->getCycleType();
-                        $subProductsToSession['quantity'][$index] = $subProduct->getQuantity();
-                        $subProductsToSession['id'][$index] = $subProduct->getProductId();
+                    $product = $this->openCart->model_catalog_product->getProduct(
+                        $subProduct->getProductId()
+                    );
+                    $subProductsToSession['name'][$index] = $product['name'];
 
-                        $product = $this->openCart->model_catalog_product->getProduct(
-                            $subProduct->getProductId()
-                        );
-                        $subProductsToSession['name'][$index] = $product['name'];
-
-                        if (is_file(DIR_IMAGE . $product['image'])) {
-                            $subProductsToSession['thumb'][$index] =
-                                $this->openCart->model_tool_image->resize($product['image'], 40, 40);
-                        } else {
-                            $subProductsToSession['thumb'][$index] =
-                                $this->openCart->model_tool_image->resize('no_image.png', 40, 40);
-                        }
+                    if (is_file(DIR_IMAGE . $product['image'])) {
+                        $subProductsToSession['thumb'][$index] =
+                            $this->openCart->model_tool_image->resize($product['image'], 40, 40);
+                    } else {
+                        $subProductsToSession['thumb'][$index] =
+                            $this->openCart->model_tool_image->resize('no_image.png', 40, 40);
                     }
-
-                    if (count($subProductsToSession['id'])) {
-                        $session['mundipagg-recurrence-products'] =
-                            base64_encode(json_encode($subProductsToSession));
-                    }
-
-                    $this->openCart->session->data = $session;
-
-                    break;
                 }
+
+                if (count($subProductsToSession['id'])) {
+                    $session['mundipagg-recurrence-products'] =
+                        base64_encode(json_encode($subProductsToSession));
+                }
+
+                $this->openCart->session->data = $session;
             }
         }
 
@@ -443,7 +438,7 @@ class Events
             $planform['MundipaggRecurrenceErrors'] = $this->openCart->error['mundipagg_recurrency_errors'];
         }
 
-        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+        $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
         $plans = $templateRepository->listEntities(0, false);
         $planform['plans'] = array_filter($plans, function($templateRoot){
             return !$templateRoot->getTemplate()->isSingle();
@@ -495,7 +490,7 @@ class Events
             $planform['MundipaggRecurrenceErrors'] = $this->openCart->error['mundipagg_recurrency_errors'];
         }
 
-        $templateRepository = new TemplateRepository(new OpencartDatabaseBridge());
+        $templateRepository = new TemplateRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
         $plans = $templateRepository->listEntities(0, false);
         $planform['templates'] = array_filter($plans, function($templateRoot) {
             return $templateRoot->getTemplate()->isSingle();
@@ -524,4 +519,48 @@ class Events
 
         return $this->template;
     }
+
+    public function paymentMethodEntry($data)
+    {
+        if (isset($data['mundipagg_already_filtered_payment_methods'])) {
+            return;
+        }
+        $data['mundipagg_already_filtered_payment_methods'] = true;
+
+        //filter products
+        $items = $this->openCart->cart->getProducts();
+
+        $plans = [];
+        $recurrenceProductRepo = new RecurrencyProductRepository(
+            new OpencartPlatformDatabaseDecorator($this->openCart->db)
+        );
+
+        foreach ($items as $item) {
+            $product = $recurrenceProductRepo->getByProductId($item['product_id']);
+            if ($product !== null) {
+                $plans[] = $product;
+            }
+        }
+
+//there is a single item and it's a plan.
+        if (count($plans) == 1 && count($items) == 1) {
+
+            $data['payment_methods'] = array_filter(
+                $data['payment_methods'],
+                function($paymentMethod) {
+                    return $paymentMethod['code'] == 'mundipagg';
+                }
+            );
+
+            return $this->openCart->load->view('checkout/payment_method', $data);
+        }
+
+        //@todo check cart conflict
+    }
+
+    public function confirmEntry($data)
+    {
+        $a = 1;
+    }
+
 }

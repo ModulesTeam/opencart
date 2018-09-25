@@ -70,7 +70,10 @@ class TemplateEntityFactory
         $data = json_decode(utf8_decode($jsonData));
 
         if (json_last_error() == JSON_ERROR_NONE) {
-            $installments = json_decode($data->installments);
+            $installments = [];
+            if (isset($data->installments)) {
+                $installments = json_decode($data->installments);
+            }
             if (!is_array($installments)) {
                 $installments = explode(",", $data->installments);
             }

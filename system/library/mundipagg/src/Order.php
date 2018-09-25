@@ -3,15 +3,17 @@ namespace Mundipagg;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
+use MundiAPILib\Models\CreateSubscriptionRequest;
 use MundiAPILib\Models\GetOrderResponse;
+use MundiAPILib\Models\GetSubscriptionResponse;
 use MundiAPILib\MundiAPIClient;
 use MundiAPILib\Exceptions\ErrorException;
 use MundiAPILib\Models\CreateOrderRequest;
 use MundiAPILib\Models\CreateAddressRequest;
 use MundiAPILib\Models\CreateCustomerRequest;
 use MundiAPILib\Models\CreateShippingRequest;
-
 use Mundipagg\Helper\Customer as CustomerHelper;
+use Mundipagg\Helper\OpencartOrderInfo;
 use Mundipagg\Settings\AntiFraud as AntiFraudSettings;
 use Mundipagg\Settings\Boleto as BoletoSettings;
 use Mundipagg\Settings\General as GeneralSettings;
@@ -117,16 +119,36 @@ class Order
         $payments = $this->preparePayments($paymentMethod, $cardToken, $totalOrderAmount, $cardId, $multiBuyer);
 
         try {
-            $CreateOrderRequest = $this->createOrderRequest(
-                $items,
-                $createCustomerRequest,
-                $payments,
-                $orderData['order_id'],
-                $this->getMundipaggCustomerId($orderData['customer_id']),
-                $createShippingRequest,
-                $this->generalSettings->getModuleMetaData(),
-                $isAntiFraudEnabled
-            );
+            $orderInfoHelper = new OpencartOrderInfo($this->openCart);
+            $recurrenceProduct = $orderInfoHelper->getRecurrenceProduct($cart);
+
+            $orderType = 'Order';
+
+            if ($recurrenceProduct !== null) {
+                $orderType = 'Subscription';
+                $CreateOrderRequest = $this->createSubscriptionRequest(
+                    $orderData['order_id'],
+                    $recurrenceProduct->getMundipaggPlanId(),
+                    $payments,
+                    $items,
+                    $createCustomerRequest,
+                    $createShippingRequest,
+                    $this->generalSettings->getModuleMetaData(),
+                    $isAntiFraudEnabled
+                );
+            } else {
+                $CreateOrderRequest = $this->createOrderRequest(
+                    $items,
+                    $createCustomerRequest,
+                    $payments,
+                    $orderData['order_id'],
+                    $this->getMundipaggCustomerId($orderData['customer_id']),
+                    $createShippingRequest,
+                    $this->generalSettings->getModuleMetaData(),
+                    $isAntiFraudEnabled
+                );
+            }
+
 
         } catch (\Exception $e) {
             Log::create()
@@ -140,11 +162,14 @@ class Order
             ->withOrderId($orderData['order_id'])
             ->withRequest(json_encode($CreateOrderRequest, JSON_PRETTY_PRINT));
 
-        if (!$CreateOrderRequest->items) {
+        if (!$CreateOrderRequest->items && $orderType == 'Order') {
             return false;
         }
 
-        $order = $this->getOrders()->createOrder($CreateOrderRequest);
+        $base = 'get' . $orderType . 's';
+        $create = 'create' . $orderType;
+        $order = $this->$base()->$create($CreateOrderRequest);
+
         $this->createOrUpdateCharge($orderData, $order);
 
         $this->createCustomerIfNotExists(
@@ -309,13 +334,18 @@ class Order
                     $data['paid_amount'] = $mundipaggOrder->amount;
                 }
                 if ($data) {
-                    $data+=array(
+                    $data += array(
                         'opencart_id'     => $mundipaggOrder->code,
                         'charge_id'       => $mundipaggOrder->id,
                         'payment_method'  => $mundipaggOrder->paymentMethod,
                         'status'          => $mundipaggOrder->status,
                     );
-                    $ModelOrder->saveCharge($data);
+                    if (is_a($mundipaggOrder,GetSubscriptionResponse::class)) {
+                        $ModelOrder->saveSubscription($data);
+                    }
+                    else {
+                        $ModelOrder->saveCharge($data);
+                    }
                     $orderStatusId = $this->translateStatusFromMP($mundipaggOrder);
                     $ModelOrder->updateOrderStatus($mundipaggOrder->code, $orderStatusId);
                 }
@@ -364,6 +394,50 @@ class Order
         $createOrderRequest->antifraudEnabled = $isAntiFraudEnabled;
 
         return $createOrderRequest;
+    }
+
+    /**
+     * @param $code
+     * @param $planId
+     * @param $payments
+     * @param $items
+     * @param $customer
+     * @param $shipping
+     * @param null $metadata
+     * @param bool $isAntiFraudEnabled
+     * @param $
+     */
+    private function createSubscriptionRequest(
+        $code,
+        $planId,
+        $payments,
+        $items,
+        $customer,
+        $shipping,
+        $metadata = null,
+        $isAntiFraudEnabled = false
+    ) {
+        $createSubscriptionRequest = new CreateSubscriptionRequest();
+
+        $payment = $payments[0];
+
+
+        $createSubscriptionRequest->code = $code;
+        $createSubscriptionRequest->planId = $planId;
+        $createSubscriptionRequest->paymentMethod = $payment['payment_method'];
+        $createSubscriptionRequest->customer = $customer;
+        $createSubscriptionRequest->installments = 1;
+
+        if ($createSubscriptionRequest->paymentMethod == 'credit_card') {
+            $createSubscriptionRequest->cardToken = $payment['credit_card']['card_token'];
+            $createSubscriptionRequest->installments = $payment['credit_card']['installments'];
+        }
+
+        $createSubscriptionRequest->shipping = $shipping;
+        $createSubscriptionRequest->metadata = $metadata;
+        $createSubscriptionRequest->antifraudEnabled = $isAntiFraudEnabled;
+
+        return $createSubscriptionRequest;
     }
 
     /**
@@ -722,17 +796,19 @@ class Order
             case 'paid':
                 $status = $statusModel->getOrderStatus(2)['order_status_id'];
                 break;
-            case 'pending':
-                $status = $statusModel->getOrderStatus(1)['order_status_id'];
-                break;
             case 'canceled':
                 $status = $statusModel->getOrderStatus(7)['order_status_id'];
                 break;
             case 'failed':
                 $status = $statusModel->getOrderStatus(10)['order_status_id'];
                 break;
-            default:
-                $status = false;
+            default: //handles future and active subscriptions.
+            case 'pending':
+                $status = $statusModel->getOrderStatus(1)['order_status_id'];
+                break;
+            /*default:
+                $status = false;*/
+
         }
 
         return $status;

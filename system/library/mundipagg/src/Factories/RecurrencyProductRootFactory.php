@@ -36,6 +36,7 @@ class RecurrencyProductRootFactory
             );
         }
         $recurrencyProduct->setProductId($data->productId);
+        $recurrencyProduct->setPrice($data->price);
         $recurrencyProduct->setTemplate(
             (new TemplateRootFactory())->createFromJson(json_encode($data->template))
         );
@@ -60,6 +61,7 @@ class RecurrencyProductRootFactory
             ->setSingle($dbData['is_single'])
             ->setMundipaggPlanId($dbData['mundipagg_plan_id'])
             ->setProductId($dbData['product_id'])
+            ->setPrice($dbData['price'])
             ->setTemplate((new TemplateRootFactory())->createFromJson(
                 $dbData['template_snapshot']
             ));
