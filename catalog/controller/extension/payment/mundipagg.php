@@ -495,7 +495,6 @@ class ControllerExtensionPaymentMundipagg extends Controller
         //create platformOrder by orderId;
         //$platformOrder = new PlatformOrderFactory(new OpencartOrderDataSourceAdapter);
 
-
         $this->load();
 
         $multiBuyer = new MultiBuyer($this->request, [self::INDEX_CREDIT_CARD]);

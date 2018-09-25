@@ -93,7 +93,8 @@ class Recurrence
                 "productId" => null,
                 "template" => $templateRoot,
                 "isSingle" => $isSingle,
-                'subProducts' => $subProducts
+                'subProducts' => $subProducts,
+                'price' => floatval($this->openCart->request->post['price']) * 100
             ]));
             //@todo recurrencyProduct->setDisabled($opencartProductStatus);
 
@@ -139,12 +140,12 @@ class Recurrence
 
                 }
 
+                $recurrencyProduct->setProductId($opencartProductId);
                 if (!$recurrencyProduct->isSingle()) {
                     $mundipaggPlan = $planApi->save($recurrencyProduct);
                     $recurrencyProduct->setMundipaggPlanId($mundipaggPlan->id);
                 }
 
-                $recurrencyProduct->setProductId($opencartProductId);
                 //save plan product
                 $recurrencyProductRepo->save($recurrencyProduct);
 

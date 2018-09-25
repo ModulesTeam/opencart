@@ -4,6 +4,7 @@ namespace Mundipagg\Aggregates\RecurrencyProduct;
 use Mundipagg\Aggregates\IAggregateRoot;
 use Mundipagg\Aggregates\Template\PlanStatusValueObject;
 use Mundipagg\Aggregates\Template\TemplateRoot;
+use Unirest\Exception;
 
 class RecurrencyProductRoot implements IAggregateRoot
 {
@@ -23,6 +24,8 @@ class RecurrencyProductRoot implements IAggregateRoot
     protected $isSingle;
     /** @var PlanStatusValueObject */
     protected $mundipaggPlanStatus;
+    /** @var int */
+    protected $price;
 
     /**
      * @return bool
@@ -169,5 +172,28 @@ class RecurrencyProductRoot implements IAggregateRoot
     public function setMundipaggPlanStatus($mundipaggPlanStatus)
     {
         $this->mundipaggPlanStatus = $mundipaggPlanStatus;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param int $price
+     * @return RecurrencyProductRoot
+     */
+    public function setPrice($price)
+    {
+        $newPrice = intval($price);
+        if ($newPrice < 0) {
+            throw new Exception("The recurrence product price should be at least 0! $price");
+        }
+
+        $this->price = $newPrice;
+        return $this;
     }
 }

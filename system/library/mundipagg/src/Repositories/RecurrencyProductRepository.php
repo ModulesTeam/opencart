@@ -29,7 +29,8 @@ class RecurrencyProductRepository extends AbstractRep
                 `template_snapshot`,
                 `template_id`,
                 `mundipagg_plan_id`,
-                `mundipagg_plan_status`
+                `mundipagg_plan_status`,
+                `price`
             ) VALUES (
                 " . ($recurrencyProduct->isDisabled()?1:0) . ",
                 " . ($recurrencyProduct->isSingle()?1:0) . ",
@@ -37,7 +38,8 @@ class RecurrencyProductRepository extends AbstractRep
                 '" . json_encode($recurrencyProduct->getTemplate()) . "',
                 " . ($templateId ? $templateId : 'NULL')  . ",
                 " . ($mundipaggPlanId ? "'$mundipaggPlanId'" : 'NULL') . ",
-                " . $mundipaggPlanStatus . "
+                " . $mundipaggPlanStatus . ",
+                " . $recurrencyProduct->getPrice() . "
             )
         ";
 
@@ -66,6 +68,7 @@ class RecurrencyProductRepository extends AbstractRep
                 `template_id` = ". ($templateId ? $templateId : 'NULL')  .",
                 `mundipagg_plan_id` = " . ($mundipaggPlanId ? "'$mundipaggPlanId'" : 'NULL') . ",
                 `mundipagg_plan_status` = " . $mundipaggPlanStatus . "
+                `price` = " . $recurrencyProduct->getPrice() . "
             WHERE `id` = " . $recurrencyProduct->getId() . "
         ";
 
