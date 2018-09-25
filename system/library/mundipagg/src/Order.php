@@ -456,6 +456,7 @@ class Order
         $createSubscriptionRequest->planId = $planId;
         $createSubscriptionRequest->paymentMethod = $payment['payment_method'];
         $createSubscriptionRequest->customer = $customer;
+        $createSubscriptionRequest->installments = 1;
 
         if ($createSubscriptionRequest->paymentMethod == 'credit_card') {
             $createSubscriptionRequest->cardToken = $payment['credit_card']['card_token'];

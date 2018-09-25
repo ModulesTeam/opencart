@@ -6,6 +6,7 @@
  */
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
+use MundiAPILib\Models\GetSubscriptionResponse;
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Controller\Api;
 use Mundipagg\Controller\SavedCreditCard;
@@ -457,6 +458,14 @@ class ControllerExtensionPaymentMundipagg extends Controller
                         null,
                         $multiBuyerBoleto
                     );
+
+                    if (is_a($response, GetSubscriptionResponse::class)) {
+                        $this->load->model('extension/payment/mundipagg_order_processing');
+                        $model = $this->model_extension_payment_mundipagg_order_processing;
+                        $model->setOrderStatus($orderData['order_id'], 1);
+                        $this->response->redirect($this->url->link('checkout/success', '', true));
+                        return;
+                    }
 
                     if (isset($response->charges[0]->lastTransaction->success)) {
 
