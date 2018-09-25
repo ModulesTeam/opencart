@@ -55,7 +55,8 @@ $_['boleto'] = [
     'configure_name' => "Nome",
     'configure_select_bank' => 'Banco',
     'configure_due_at' => 'Número de dias do vencimento do boleto após a data da compra',
-    'configure_instructions' => 'Instruções de pagamento'
+    'configure_instructions' => 'Instruções de pagamento',
+    'configure_checkout_instructions' => 'Instruções de checkout'
 ];
 // -----------------------------------------------------------------
 
@@ -66,7 +67,8 @@ $_['boletoCreditCard'] = [
     'configure_name' => "Nome",
     'configure_select_bank' => 'Banco',
     'configure_due_at' => 'Número de dias do vencimento do boleto após a data da compra',
-    'configure_instructions' => 'Instruções de pagamento'
+    'configure_instructions' => 'Instruções de pagamento',
+    'configure_checkout_instructions' => 'Instruções de checkout'
 ];
 // -----------------------------------------------------------------
 
