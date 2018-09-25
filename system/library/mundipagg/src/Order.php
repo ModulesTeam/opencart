@@ -3,10 +3,6 @@ namespace Mundipagg;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
-use DateTime;
-use MundiAPILib\Models\CreatePlanRequest;
-use MundiAPILib\Models\CreatePricingSchemeRequest;
-use MundiAPILib\Models\CreateSubscriptionItemRequest;
 use MundiAPILib\Models\CreateSubscriptionRequest;
 use MundiAPILib\Models\GetOrderResponse;
 use MundiAPILib\Models\GetSubscriptionResponse;
@@ -16,10 +12,8 @@ use MundiAPILib\Models\CreateOrderRequest;
 use MundiAPILib\Models\CreateAddressRequest;
 use MundiAPILib\Models\CreateCustomerRequest;
 use MundiAPILib\Models\CreateShippingRequest;
-
+use Mundipagg\Helper\Customer as CustomerHelper;
 use Mundipagg\Helper\OpencartOrderInfo;
-use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
-use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Settings\AntiFraud as AntiFraudSettings;
 use Mundipagg\Settings\Boleto as BoletoSettings;
 use Mundipagg\Settings\General as GeneralSettings;
@@ -502,10 +496,13 @@ class Order
      */
     private function createCustomerRequest($orderData, $createAddressRequest)
     {
+        $customerHelper = new CustomerHelper();
+        $phoneRequest = $customerHelper->createPhoneRequest($orderData['telephone']);
+
         return array(
             'name'     => $orderData['payment_firstname']." ".$orderData['payment_lastname'],
             'email'    => $orderData['email'],
-            'phone'    => $orderData['telephone'],
+            'phone'    => $phoneRequest,
             'document' => null,
             'type'     => "individual",
             'address'   => $createAddressRequest,
