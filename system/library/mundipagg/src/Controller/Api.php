@@ -6,6 +6,7 @@ require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Enum\WebHookEnum;
+use Mundipagg\Helper\OpencartOrderInfo;
 use Mundipagg\Log;
 use Mundipagg\LogMessages;
 use Mundipagg\Model\WebHook as WebHookModel;
@@ -55,30 +56,6 @@ class Api
     }
 
 
-    private function getRecurrenceProduct()
-    {
-        //filter products
-        $items = $this->openCart->cart->getProducts();
-
-        $plans = [];
-        $recurrenceProductRepo = new RecurrencyProductRepository(
-            new OpencartPlatformDatabaseDecorator($this->openCart->db)
-        );
-
-        foreach ($items as $item) {
-            $product = $recurrenceProductRepo->getByProductId($item['product_id']);
-            if ($product !== null) {
-                $plans[] = $product;
-            }
-        }
-
-        if (count($plans) == 1 && count($items) == 1) {
-            return $plans[0];
-        }
-
-        return null;
-    }
-
     private function getInstallments($arguments)
     {
         $brand = $arguments['brand'];
@@ -94,8 +71,10 @@ class Api
             return $this->notFoundResponse('wrong request');
         }
 
+
+        $orderInfoHelper = new OpencartOrderInfo($this->openCart);
         /** @var RecurrencyProductRoot $recurrenceProducty **/
-        $recurrenceProduct = $this->getRecurrenceProduct();
+        $recurrenceProduct = $orderInfoHelper->getRecurrenceProduct($this->openCart->cart);
 
         if ($recurrenceProduct !== null) {
             $allowedInstallments = $recurrenceProduct

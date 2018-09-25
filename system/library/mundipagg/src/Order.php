@@ -17,6 +17,7 @@ use MundiAPILib\Models\CreateAddressRequest;
 use MundiAPILib\Models\CreateCustomerRequest;
 use MundiAPILib\Models\CreateShippingRequest;
 
+use Mundipagg\Helper\OpencartOrderInfo;
 use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Settings\AntiFraud as AntiFraudSettings;
@@ -81,30 +82,6 @@ class Order
         $this->orderInstallments = $installments;
     }
 
-    private function getRecurrenceProduct($cart)
-    {
-        //filter products
-        $items = $cart->getProducts();
-
-        $plans = [];
-        $recurrenceProductRepo = new RecurrencyProductRepository(
-            new OpencartPlatformDatabaseDecorator($this->openCart->db)
-        );
-
-        foreach ($items as $item) {
-            $product = $recurrenceProductRepo->getByProductId($item['product_id']);
-            if ($product !== null) {
-                $plans[] = $product;
-            }
-        }
-
-        if (count($plans) == 1 && count($items) == 1) {
-            return $plans[0];
-        }
-
-        return null;
-    }
-
     /**
      * Create a MundiPagg order
      * @param array $orderData
@@ -148,8 +125,8 @@ class Order
         $payments = $this->preparePayments($paymentMethod, $cardToken, $totalOrderAmount, $cardId, $multiBuyer);
 
         try {
-
-            $recurrenceProduct = $this->getRecurrenceProduct($cart);
+            $orderInfoHelper = new OpencartOrderInfo($this->openCart);
+            $recurrenceProduct = $orderInfoHelper->getRecurrenceProduct($cart);
 
             $orderType = 'Order';
 

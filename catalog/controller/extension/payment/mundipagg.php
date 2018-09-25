@@ -11,6 +11,7 @@ use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Controller\Api;
 use Mundipagg\Controller\SavedCreditCard;
 use Mundipagg\Controller\TwoCreditCards;
+use Mundipagg\Helper\OpencartOrderInfo;
 use Mundipagg\Log;
 use Mundipagg\LogMessages;
 use Mundipagg\Order;
@@ -107,35 +108,6 @@ class ControllerExtensionPaymentMundipagg extends Controller
         }
     }
 
-    private function isRecurrenceProduct()
-    {
-        return $this->getRecurrenceProduct() !== null;
-    }
-
-    private function getRecurrenceProduct()
-    {
-        //filter products
-        $items = $this->cart->getProducts();
-
-        $plans = [];
-        $recurrenceProductRepo = new RecurrencyProductRepository(
-            new OpencartPlatformDatabaseDecorator($this->db)
-        );
-
-        foreach ($items as $item) {
-            $product = $recurrenceProductRepo->getByProductId($item['product_id']);
-            if ($product !== null) {
-                $plans[] = $product;
-            }
-        }
-
-        if (count($plans) == 1 && count($items) == 1) {
-            return $plans[0];
-        }
-
-        return null;
-    }
-
     /**
      * This method is called when user has to choose between the installed payment methods.
      *
@@ -154,14 +126,16 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $this->getDirectories();
         $this->loadUrls();
 
-        $isRecurrenceProduct = $this->isRecurrenceProduct();
+        $orderInfoHelper = new OpencartOrderInfo($this);
+        /** @var RecurrencyProductRoot $recurrenceProducty **/
+        $recurrenceProduct = $orderInfoHelper->getRecurrenceProduct($this->cart);
+
+        $isRecurrenceProduct = $recurrenceProduct !== null;
 
         $isCreditCardEnabled = $creditCardSettings->isEnabled();
         $isBoletoEnabled = $boletoSettings->isEnabled();
 
-        if ($isRecurrenceProduct) {
-            /** @var RecurrencyProductRoot $recurrenceProduct */
-            $recurrenceProduct = $this->getRecurrenceProduct();
+        if ($recurrenceProduct !== null) {
             //check if creditcard is enabled to product.
             $isCreditCardEnabled = $recurrenceProduct
                 ->getTemplate()->getTemplate()
