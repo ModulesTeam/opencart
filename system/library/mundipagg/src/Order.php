@@ -11,6 +11,7 @@ use MundiAPILib\Models\CreateAddressRequest;
 use MundiAPILib\Models\CreateCustomerRequest;
 use MundiAPILib\Models\CreateShippingRequest;
 
+use Mundipagg\Helper\Customer as CustomerHelper;
 use Mundipagg\Settings\AntiFraud as AntiFraudSettings;
 use Mundipagg\Settings\Boleto as BoletoSettings;
 use Mundipagg\Settings\General as GeneralSettings;
@@ -421,10 +422,13 @@ class Order
      */
     private function createCustomerRequest($orderData, $createAddressRequest)
     {
+        $customerHelper = new CustomerHelper();
+        $phoneRequest = $customerHelper->createPhoneRequest($orderData['telephone']);
+
         return array(
             'name'     => $orderData['payment_firstname']." ".$orderData['payment_lastname'],
             'email'    => $orderData['email'],
-            'phone'    => $orderData['telephone'],
+            'phone'    => $phoneRequest,
             'document' => null,
             'type'     => "individual",
             'address'   => $createAddressRequest,
