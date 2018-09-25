@@ -1,14 +1,11 @@
 <?php
 
-namespace Mundipagg\Repositories\Bridges;
+namespace Mundipagg\Repositories\Decorators;
 
 use DB;
 
-class OpencartDatabaseBridge extends AbstractDatabaseBridge
+class OpencartPlatformDatabaseDecorator extends AbstractPlatformDatabaseDecorator
 {
-    protected $db;
-    protected $tableArray;
-
     protected function setTableArray()
     {
         $this->tableArray = [
@@ -17,16 +14,6 @@ class OpencartDatabaseBridge extends AbstractDatabaseBridge
             "RECURRENCY_PRODUCT_TABLE" => DB_PREFIX . "mundipagg_recurrency_product",
             "RECURRENCY_SUBPRODUCT_TABLE" => DB_PREFIX . "mundipagg_recurrency_subproduct",
         ];
-    }
-
-    protected function getDatabaseAccessObject()
-    {
-        return new DB(
-            DB_DRIVER,
-            DB_HOSTNAME,
-            DB_USERNAME,
-            DB_PASSWORD,
-            DB_DATABASE);
     }
 
     public function query($query)

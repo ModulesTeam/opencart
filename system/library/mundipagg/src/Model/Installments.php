@@ -47,7 +47,14 @@ class Installments
             $incrementalInterest
         );
 
-        return array_merge($installmentsWithoutInterest, $installmentsWithInterest);
+        $installments = array_merge($installmentsWithoutInterest, $installmentsWithInterest);
+
+        $installments = array_filter($installments, function($installment)
+            use ($maxInstallments) {
+            return $installment['times'] <= $maxInstallments;
+        });
+
+        return $installments;
     }
 
     private function getInstallmentsRulesPerBrand($brandName)

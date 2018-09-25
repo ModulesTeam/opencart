@@ -6,19 +6,24 @@
  */
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
+use MundiAPILib\Models\GetSubscriptionResponse;
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Controller\Api;
 use Mundipagg\Controller\SavedCreditCard;
 use Mundipagg\Controller\TwoCreditCards;
+use Mundipagg\Helper\OpencartOrderInfo;
 use Mundipagg\Log;
 use Mundipagg\LogMessages;
 use Mundipagg\Order;
 use Mundipagg\MultiBuyer;
+use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Settings\Boleto as BoletoSettings;
 use Mundipagg\Settings\CreditCard as CreditCardSettings;
 use Mundipagg\Settings\BoletoCreditCard as BoletoCreditCardSettings;
 use Mundipagg\Settings\General as GeneralSettings;
-use MundiAPILib\Models\CreateCustomerRequest;
-use MundiAPILib\Models\CreateAddressRequest;
+use Mundipagg\Controller\Events as MundipaggEvents;
+use Mundipagg\Helper\Common as MundipaggHelperCommon;
 
 class ControllerExtensionPaymentMundipagg extends Controller
 {
@@ -121,21 +126,41 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $this->getDirectories();
         $this->loadUrls();
 
-        if ($creditCardSettings->isEnabled()) {
+        $orderInfoHelper = new OpencartOrderInfo($this);
+        /** @var RecurrencyProductRoot $recurrenceProducty **/
+        $recurrenceProduct = $orderInfoHelper->getRecurrenceProduct($this->cart);
+
+        $isRecurrenceProduct = $recurrenceProduct !== null;
+
+        $isCreditCardEnabled = $creditCardSettings->isEnabled();
+        $isBoletoEnabled = $boletoSettings->isEnabled();
+
+        if ($recurrenceProduct !== null) {
+            //check if creditcard is enabled to product.
+            $isCreditCardEnabled = $recurrenceProduct
+                ->getTemplate()->getTemplate()
+                ->isAcceptCreditCard();
+            //check if boleto is enabled to product.
+            $isBoletoEnabled =  $recurrenceProduct
+                ->getTemplate()->getTemplate()
+                ->isAcceptBoleto();
+        }
+
+        if ($isCreditCardEnabled) {
             $this->data = array_merge($this->data, $creditCardSettings->getCreditCardPageInfo());
         }
 
         // check if payment with two credit cards is enabled
-        if ($creditCardSettings->isTwoCreditCardsEnabled()) {
+        if ($creditCardSettings->isTwoCreditCardsEnabled() && !$isRecurrenceProduct) {
             $this->data = array_merge($this->data, $creditCardSettings->getTwoCreditCardsPageInfo());
             $this->data['twoCreditCardsPaymentTitle'] = $creditCardSettings->getTwoCreditCardsPaymentTitle();
         }
 
-        if ($boletoSettings->isEnabled()) {
+        if ($isBoletoEnabled) {
             $this->data = array_merge($this->data, $boletoSettings->getBoletoPageInfo());
         }
 
-        if ($boletoCreditCardSettings->isEnabled()) {
+        if ($boletoCreditCardSettings->isEnabled() && !$isRecurrenceProduct) {
             $this->data = array_merge($this->data, $boletoCreditCardSettings->getBoletoCreditCardPageInfo());
         }
 
@@ -408,6 +433,14 @@ class ControllerExtensionPaymentMundipagg extends Controller
                         $multiBuyerBoleto
                     );
 
+                    if (is_a($response, GetSubscriptionResponse::class)) {
+                        $this->load->model('extension/payment/mundipagg_order_processing');
+                        $model = $this->model_extension_payment_mundipagg_order_processing;
+                        $model->setOrderStatus($orderData['order_id'], 1);
+                        $this->response->redirect($this->url->link('checkout/success', '', true));
+                        return;
+                    }
+
                     if (isset($response->charges[0]->lastTransaction->success)) {
 
                         $this->load->model('extension/payment/mundipagg_order_processing');
@@ -442,6 +475,9 @@ class ControllerExtensionPaymentMundipagg extends Controller
      */
     public function processCreditCard()
     {
+        //create platformOrder by orderId;
+        //$platformOrder = new PlatformOrderFactory(new OpencartOrderDataSourceAdapter);
+
         $this->load();
 
         $multiBuyer = new MultiBuyer($this->request, [self::INDEX_CREDIT_CARD]);
@@ -936,5 +972,37 @@ class ControllerExtensionPaymentMundipagg extends Controller
             $charge->lastTransaction->card->lastFourDigits,
             $charge->lastTransaction->installments
         );
+    }
+
+    /**
+     * @param string $route
+     * @param array $data
+     * @param $template
+     * @return mixed
+     * @throws Exception
+     */
+    public function callEvents($route, $data = array(), $template = null)
+    {
+        $mundipaggEvents = new MundipaggEvents(
+            $this,
+            new Template($this->registry->get('config')->get('template_engine'))
+        );
+
+        $helper = new MundipaggHelperCommon($this);
+        $method =
+            $helper->fromSnakeToCamel(explode('/', $route)[1]) . "Entry";
+        $template = $mundipaggEvents->$method($data);
+
+        if ($template) {
+
+            if (is_string($template)) {
+                return $template;
+            }
+
+            return $template->render(
+                $this->config->get('template_directory') . $route,
+                $this->config->get('template_cache')
+            );
+        }
     }
 }

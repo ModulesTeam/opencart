@@ -3,18 +3,18 @@
 namespace Mundipagg\Repositories;
 
 use Mundipagg\Aggregates\IAggregateRoot;
-use Mundipagg\Repositories\Bridges\AbstractDatabaseBridge;
+use Mundipagg\Repositories\Decorators\AbstractPlatformDatabaseDecorator;
 
 abstract class AbstractRep
 {
-    /** @var AbstractDatabaseBridge */
+    /** @var AbstractPlatformDatabaseDecorator */
     protected $db;
 
     /**
      * AbstractRep constructor.
-     * @param AbstractDatabaseBridge $db
+     * @param AbstractPlatformDatabaseDecorator $db
      */
-    public function __construct(AbstractDatabaseBridge $db)
+    public function __construct(AbstractPlatformDatabaseDecorator $db)
     {
         $this->db = $db;
     }

@@ -4,6 +4,8 @@ namespace Mundipagg\Model\Api;
 
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Aggregates\Template\DueValueObject;
+use Mundipagg\Log;
+use Mundipagg\LogMessages;
 use Mundipagg\Settings\General as GeneralSettings;
 use MundiAPILib\MundiAPIClient;
 use MundiAPILib\Models\CreatePlanRequest;
@@ -28,15 +30,24 @@ class Plan
      */
     public function save(RecurrencyProductRoot $plan)
     {
+        $method = 'updatePlan';
         if ($plan->getMundipaggPlanId() === null) {
-            return $this->createPlan($plan);
+            $method = 'createPlan';
         }
-        return $this->updatePlan($plan);
+        $response = $this->$method($plan);
+        Log::create()
+            ->info(LogMessages::CREATE_PLAN_MUNDIPAGG_RESPONSE, __METHOD__)
+            ->withResponse(json_encode($response, JSON_PRETTY_PRINT));
+        return $response;
     }
 
     protected function createPlan(RecurrencyProductRoot $plan)
     {
         $request = $this->getCreatePlanRequest($plan);
+        Log::create()
+            ->info(LogMessages::CREATE_PLAN_MUNDIPAGG_REQUEST, __METHOD__)
+            ->withRequest(json_encode($request, JSON_PRETTY_PRINT));
+
         return $this->planApi->getPlans()->createPlan($request->jsonSerialize());
     }
 
@@ -68,6 +79,7 @@ class Plan
         $request->intervalCount         = $plan->getTemplate()->getRepetitions()[0]->getFrequency();
         $request->billingType           = $plan->getTemplate()->getDueAt()->getDueApiValue();
         $request->items                 = $this->getItemsFromTemplate($plan->getSubProducts());
+        $request->minimumPrice          = $plan->getPrice();
 
         $installments = $plan->getTemplate()->getTemplate()->getInstallments();
         foreach ($installments as $installment) {
@@ -136,7 +148,8 @@ class Plan
             $item['name'] = $product['name'];
             $item['quantity'] = $subProduct->getQuantity();
             $item['cycles'] = $subProduct->getCycles();
-            $item['pricing_scheme'] = ['price' => (float) $product['price']];
+            /** 0 price is for setting minimum price on the plan itself. */
+            $item['pricing_scheme'] = ['price' => 0];
 
             $items[] = $item;
         }

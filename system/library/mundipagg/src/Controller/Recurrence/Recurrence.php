@@ -10,7 +10,7 @@ use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Factories\RecurrencyProductRootFactory;
 use Mundipagg\Factories\RecurrencySubproductValueObjectFactory;
 use Mundipagg\Factories\TemplateRootFactory;
-use Mundipagg\Repositories\Bridges\OpencartDatabaseBridge;
+use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 
 class Recurrence
@@ -93,12 +93,13 @@ class Recurrence
                 "productId" => null,
                 "template" => $templateRoot,
                 "isSingle" => $isSingle,
-                'subProducts' => $subProducts
+                'subProducts' => $subProducts,
+                'price' => floatval($this->openCart->request->post['price']) * 100
             ]));
             //@todo recurrencyProduct->setDisabled($opencartProductStatus);
 
             $this->openCart->load->model('catalog/product');
-            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartDatabaseBridge());
+            $recurrencyProductRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
 
             $isEdit = false;
             //check if is edit
@@ -139,12 +140,12 @@ class Recurrence
 
                 }
 
+                $recurrencyProduct->setProductId($opencartProductId);
                 if (!$recurrencyProduct->isSingle()) {
                     $mundipaggPlan = $planApi->save($recurrencyProduct);
                     $recurrencyProduct->setMundipaggPlanId($mundipaggPlan->id);
                 }
 
-                $recurrencyProduct->setProductId($opencartProductId);
                 //save plan product
                 $recurrencyProductRepo->save($recurrencyProduct);
 

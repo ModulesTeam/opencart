@@ -4,12 +4,16 @@ namespace Mundipagg\Controller;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
+use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Enum\WebHookEnum;
+use Mundipagg\Helper\OpencartOrderInfo;
 use Mundipagg\Log;
 use Mundipagg\LogMessages;
 use Mundipagg\Model\WebHook as WebHookModel;
 use Mundipagg\Model\Installments;
 use Mundipagg\Enum\OrderstatusEnum;
+use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 
 
 class Api
@@ -51,6 +55,7 @@ class Api
         ];
     }
 
+
     private function getInstallments($arguments)
     {
         $brand = $arguments['brand'];
@@ -65,6 +70,25 @@ class Api
         if (!$installments) {
             return $this->notFoundResponse('wrong request');
         }
+
+
+        $orderInfoHelper = new OpencartOrderInfo($this->openCart);
+        /** @var RecurrencyProductRoot $recurrenceProducty **/
+        $recurrenceProduct = $orderInfoHelper->getRecurrenceProduct($this->openCart->cart);
+
+        if ($recurrenceProduct !== null) {
+            $allowedInstallments = $recurrenceProduct
+                ->getTemplate()->getTemplate()
+                ->getInstallments();
+            array_walk($allowedInstallments, function(&$installment) {
+                $installment = $installment->getValue();
+            });
+        }
+
+        $installments = array_filter($installments, function($installment)
+            use ($allowedInstallments){
+           return in_array($installment['times'], $allowedInstallments);
+        });
 
         return [
             'status_code' => 200,
