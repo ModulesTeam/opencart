@@ -9,6 +9,7 @@ use MundiAPILib\Models\CreatePricingSchemeRequest;
 use MundiAPILib\Models\CreateSubscriptionItemRequest;
 use MundiAPILib\Models\CreateSubscriptionRequest;
 use MundiAPILib\Models\GetOrderResponse;
+use MundiAPILib\Models\GetSubscriptionResponse;
 use MundiAPILib\MundiAPIClient;
 use MundiAPILib\Exceptions\ErrorException;
 use MundiAPILib\Models\CreateOrderRequest;
@@ -198,7 +199,7 @@ class Order
         $base = 'get' . $orderType . 's';
         $create = 'create' . $orderType;
         $order = $this->$base()->$create($CreateOrderRequest);
-        /** @todo This breaks if the order is a subscription */
+
         $this->createOrUpdateCharge($orderData, $order);
 
         $this->createCustomerIfNotExists(
@@ -369,7 +370,12 @@ class Order
                         'payment_method'  => $mundipaggOrder->paymentMethod,
                         'status'          => $mundipaggOrder->status,
                     );
-                    $ModelOrder->saveCharge($data);
+                    if (is_a($mundipaggOrder,GetSubscriptionResponse::class)) {
+                        $ModelOrder->saveSubscription($data);
+                    }
+                    else {
+                        $ModelOrder->saveCharge($data);
+                    }
                     $orderStatusId = $this->translateStatusFromMP($mundipaggOrder);
                     $ModelOrder->updateOrderStatus($mundipaggOrder->code, $orderStatusId);
                 }
