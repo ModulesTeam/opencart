@@ -16,6 +16,37 @@ class DueValueObject
     protected $value;
 
     /**
+     * @TODO to respect the immutability of a value object, this block of code
+     * @TODO should be uncommented, and the system should be adapted to it.
+     *
+     * Examples of use:
+     *
+     * $foo = DueValueObject::exact(20);
+     * $bar = DueValueObject::prePaid();
+     * $baz = DueValueObject::postPaid();
+     */
+    /*protected function __construct($type, $value)
+    {
+        $this->setType($type);
+        $this->setValue($value);
+    }
+
+    public static function exact($day)
+    {
+        return new DueValueObject(self::TYPE_EXACT, $day);
+    }
+
+    public static function prePaid()
+    {
+        return new DueValueObject(self::TYPE_PREPAID, 0);
+    }
+
+    public static function postPaid()
+    {
+        return new DueValueObject(self::TYPE_POSTPAID, 0);
+    }*/
+
+    /**
      * @return string
      */
     public function getType()

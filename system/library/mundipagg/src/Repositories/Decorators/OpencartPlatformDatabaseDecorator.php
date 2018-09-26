@@ -2,8 +2,6 @@
 
 namespace Mundipagg\Repositories\Decorators;
 
-use DB;
-
 class OpencartPlatformDatabaseDecorator extends AbstractPlatformDatabaseDecorator
 {
     protected function setTableArray()
