@@ -3,13 +3,13 @@
         <div class="col-sm-12">
             <br>
             <div class="col-sm-3 clear-left-padding" style="padding-left: 0;">
-                <label for="cardNumber">{{ credit_card.credit_card_number }}</label>
+                <label for="cardNumber-{{ inputId }}">{{ credit_card.credit_card_number }}</label>
                 <div class="input-group input-group ">
                     <input
                             name="card-number-{{ inputId }}"
                             type="text"
                             class="form-control col-sm-12 mundipagg-cardNumber"
-                            maxlength="19" id="cardNumber"
+                            maxlength="19" id="cardNumber-{{ inputId }}"
                             data-mundipagg-validation-element="number-{{ inputId }}"
                             data-mundicheckout-element="number-{{ inputId }}"
                             inputId="{{ inputId }}"
@@ -40,7 +40,7 @@
                 <div class="row ">
                     <select
                             name="card-exp-month"
-                            id="cardExpMonth"
+                            id="cardExpMonth-{{ inputId }}"
                             class="form-control col-sm-6"
                             style="width: 40%;"
                             data-mundipagg-validation-element="exp_month-{{ inputId }}"
@@ -53,7 +53,7 @@
                     </select>
                     <select
                             name="card-exp-year"
-                            id="cardExpYear"
+                            id="cardExpYear-{{ inputId }}"
                             class="form-control col-sm-6"
                             style="width: 60%"
                             data-mundipagg-validation-element="exp_year-{{ inputId }}"
@@ -70,26 +70,26 @@
 
     <div class="row">
         <div class="col-sm-5" id="holdername-field">
-            <label for="cardName">{{ credit_card.holder_name }}</label>
+            <label for="cardName-{{ inputId }}">{{ credit_card.holder_name }}</label>
             <input
                     name="holder-name"
                     type="text"
                     class="form-control mundipagg-cardName"
                     maxlength="50"
-                    id="cardName"
+                    id="cardName-{{ inputId }}"
                     data-mundipagg-validation-element="holder_name-{{ inputId }}"
                     data-mundicheckout-element="holder_name-{{ inputId }}">
             <span  id="holder-name-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
         </div>
 
         <div class="col-sm-2" id="cvv-field">
-            <label for="cardCVV">CVV</label>
+            <label for="cardCVV-{{ inputId }}">CVV</label>
             <input
                     name="cvv"
                     type="text"
                     class="form-control mundipagg-cardCVV"
                     maxlength="4"
-                    id="cardCVV"
+                    id="cardCVV-{{ inputId }}"
                     data-mundipagg-validation-element="cvv-{{ inputId }}"
                     data-mundicheckout-element="cvv-{{ inputId }}">
             <span id="cvv-message-{{ inputId }}" class="text-danger form-validation-error-message"></span>
