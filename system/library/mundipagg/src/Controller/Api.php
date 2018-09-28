@@ -83,12 +83,15 @@ class Api
             array_walk($allowedInstallments, function(&$installment) {
                 $installment = $installment->getValue();
             });
+            $installments = array_filter(
+                $installments,
+                function($installment) use (
+                    $allowedInstallments
+                ) {
+                    return in_array($installment['times'], $allowedInstallments);
+                }
+            );
         }
-
-        $installments = array_filter($installments, function($installment)
-            use ($allowedInstallments){
-           return in_array($installment['times'], $allowedInstallments);
-        });
 
         return [
             'status_code' => 200,

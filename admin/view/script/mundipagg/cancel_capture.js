@@ -47,7 +47,6 @@ function sendData(chargeId, action, orderId, url, callback, postData) {
     ).success(function(data) {
         var data = jQuery.parseJSON(data);
 
-        console.log(data);
         if(data.charge_id){
             callback(action, data);
             $(".loader").hide();
@@ -58,7 +57,6 @@ function sendData(chargeId, action, orderId, url, callback, postData) {
             $('#orderActionsModal').modal('hide');
         }
     }).fail(function() {
-        console.log(data);
         alert('Não foi possível carregar as informações dessa cobrança');
         $('#orderActionsModal').modal('hide');
     });
