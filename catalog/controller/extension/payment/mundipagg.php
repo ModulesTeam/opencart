@@ -875,37 +875,34 @@ class ControllerExtensionPaymentMundipagg extends Controller
      */
     private function setInterestToOrder($orderData, $interest)
     {
-        if ($interest > 0) {
-            $total = $orderData['total'];
-            if (isset($orderData['boletoCreditCard'])) {
-                $total = $orderData['creditCardAmount'];
-            }
-            
-            $amountWithInterest = $this->setInterestToAmount($total, $interest);
-            $interestAmount = $amountWithInterest - $total;
-            $totalAmountWithInterest = $orderData['total'] + $interestAmount;
-
-            $this->mundipaggOrderUpdateModel->
-                updateOrderAmountInOrder(
-                    $orderData['order_id'],
-                    $totalAmountWithInterest
-                );
-
-            $this->mundipaggOrderUpdateModel->
-                updateOrderAmountInOrderTotals(
-                    $orderData['order_id'],
-                    $totalAmountWithInterest
-                );
-
-            $this->mundipaggOrderUpdateModel->
-                insertInterestInOrderTotals(
-                    $orderData['order_id'],
-                    $interestAmount
-                );
-
-            return $amountWithInterest;
+        $total = $orderData['total'];
+        if (isset($orderData['boletoCreditCard'])) {
+            $total = $orderData['creditCardAmount'];
         }
-        return false;
+
+        $amountWithInterest = $this->setInterestToAmount($total, $interest);
+        $interestAmount = $amountWithInterest - $total;
+        $totalAmountWithInterest = $orderData['total'] + $interestAmount;
+
+        $this->mundipaggOrderUpdateModel->
+            updateOrderAmountInOrder(
+                $orderData['order_id'],
+                $totalAmountWithInterest
+            );
+
+        $this->mundipaggOrderUpdateModel->
+            updateOrderAmountInOrderTotals(
+                $orderData['order_id'],
+                $totalAmountWithInterest
+            );
+
+        $this->mundipaggOrderUpdateModel->
+            insertInterestInOrderTotals(
+                $orderData['order_id'],
+                $interestAmount
+            );
+
+        return $amountWithInterest;
     }
 
     private function setInterestToAmount($amount, $interest)
