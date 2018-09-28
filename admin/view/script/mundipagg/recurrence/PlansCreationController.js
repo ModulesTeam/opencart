@@ -79,7 +79,7 @@ PlansCreationController.prototype.addTemplateFromSelect = function() {
         url: templateInfoUrl + "&template_id=" + selectedElementId,
         success: this.showConfigTable.bind(this),
         error: function(result) {
-            console.log("error", result);
+            //console.log("error", result);
         },
         complete: function() {
             removeLoadingAnimation(this);

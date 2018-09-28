@@ -348,7 +348,7 @@ MundiPagg.Form = function() {
             // listener to show/hide installments
             this.cardBrand.addEventListener('DOMSubtreeModified', function(event) {
                 var brandUrl = this.cardBrand.getElementsByTagName('img')[0];
-                    console.log(brandUrl);
+                    //console.log(brandUrl);
                 this.hideAll();
 
                 if (brandUrl) {
@@ -493,7 +493,7 @@ MundiPagg.Form = function() {
         },
 
         showSpecific: function(brand, amount, inputId) {
-            console.log(brand, amount, inputId);
+            //console.log(brand, amount, inputId);
 
             if (typeof brand === 'undefined' && amount > 0) {
                 this.hideAll();
@@ -519,13 +519,13 @@ $("#mundipaggCheckout").ready(function () {
     //Call checkout.js methods
     MundiCheckout.init(
         function(data) {
-            console.log('success');
-            console.log(data);
+            //console.log('success');
+            //console.log(data);
             return true;
         },
         function(error) {
-            console.log('error');
-            console.log(error);
+            //console.log('error');
+            //console.log(error);
             $('#token-error-message').text('Ocorreu um erro, verifique as informações fornecidas');
         }
     );
@@ -605,7 +605,7 @@ function getCountries(obj) {
         $("#multi-buyer-country-" + whichBuyerForm).html(html);
     }).fail(function (err) {
         $("#multi-buyer-country-" + whichBuyerForm).html("");
-        console.log(err);
+        //console.log(err);
     });
 }
 
@@ -622,7 +622,7 @@ function getState(obj) {
         $("#multi-buyer-state-" + whichBuyerForm).prop("disabled", false);
     }).fail(function (err) {
         $("#multi-buyer-state-" + whichBuyerForm).html("");
-        console.log(err);
+        //console.log(err);
     });
 }
 
@@ -677,7 +677,7 @@ function getInstallments(brand, amount, inputId, newSaved) {
             $("#" + newSaved + "-creditcard-installments-" + inputId).html(html);
         }).fail(function () {
             $("#" + newSaved + "-creditcard-installments-" + inputId).html("");
-            console.log('Get installments fail');
+            //console.log('Get installments fail');
         });
     }
 }
