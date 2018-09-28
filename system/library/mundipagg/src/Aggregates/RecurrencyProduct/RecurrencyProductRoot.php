@@ -189,8 +189,8 @@ class RecurrencyProductRoot implements IAggregateRoot
     public function setPrice($price)
     {
         $newPrice = intval($price);
-        if ($newPrice < 0) {
-            throw new Exception("The recurrence product price should be at least 0! $price");
+        if ($newPrice < 1) {
+            throw new Exception("The recurrence product price should be at least 1! $price");
         }
 
         $this->price = $newPrice;
