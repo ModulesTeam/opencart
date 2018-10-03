@@ -31,6 +31,7 @@
                 <td class="text-left">Produto</td>
                 <td>Quantidade</td>
                 <td class="text-center">Ciclos</td>
+                <td class="text-center">Preço do produto dentro no plano</td>
                 {% if isUpdate == '0' %}
                     <td></td>
                 {% endif %}
@@ -42,6 +43,7 @@
 </div>
 
 <script id="mp-recurrence-product-row-template" type="text/template">
+
     <tr>
         <td>
             <img src="{product_thumb}" alt="{product_name}" />
@@ -67,6 +69,32 @@
                 <input type="hidden" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" value="{product_cycles}"/>
             {% else %}
                 <input type="number" min='1'  placeholder="Numero de Ciclos" value="{product_cycles}" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" class="form-control">
+            {% endif %}
+        </td>
+
+        <td>
+            {% if isUpdate == '1' %}
+                <span class="label label-default">{product_price}</span>
+                <input
+                    type="hidden"
+                    id="mundipagg-recurrence-products[price][]"
+                    name="mundipagg-recurrence-products[price][]"
+                    value="{product_price}"
+                />
+            {% else %}
+                <div class="input-group">
+                    <span class="input-group-addon currency-symbol">{{ currency_symbol }}</span>
+                    <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="Preço do produto no plano"
+                            value="{product_price}"
+                            id="mundipagg-recurrence-products[price][]"
+                            name="mundipagg-recurrence-products[price][]"
+                            class="form-control"
+                    >
+                </div>
             {% endif %}
         </td>
 
