@@ -54,8 +54,8 @@ class ModelExtensionPaymentMundipagg extends Model
         $this->dropSubscriptionTable();
 
         //aggregates
-        $this->dropTemplateAggregateTables();
         $this->dropRecurrencyProductAggregateTables();
+        $this->dropTemplateAggregateTables();
 
         $this->uninstallEvents();
     }
@@ -63,8 +63,9 @@ class ModelExtensionPaymentMundipagg extends Model
     private function createTemplateAggregateTables()
     {
         //template table
-        $this->db->query("
-            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_template` (
+        $createTemplate = "
+            CREATE TABLE IF NOT EXISTS 
+            `" . DB_PREFIX . "mundipagg_template` (
             `id` INT NOT NULL AUTO_INCREMENT,
             `is_disabled` TINYINT NOT NULL DEFAULT 0,
             `is_single` TINYINT NOT NULL DEFAULT 0,
@@ -78,11 +79,13 @@ class ModelExtensionPaymentMundipagg extends Model
             `trial` TINYINT NOT NULL DEFAULT 0,
             `installments` VARCHAR(45) NULL,
             PRIMARY KEY (`id`))   
-        ");
+        ";
+        $this->db->query($createTemplate);
 
         //template_repetition table
-        $this->db->query("
-            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_template_repetition` (
+        $createTemplateRepetition = "
+            CREATE TABLE IF NOT EXISTS 
+            `" . DB_PREFIX . "mundipagg_template_repetition` (
             `id` INT NOT NULL AUTO_INCREMENT,
             `template_id` INT NOT NULL,
             `cycles` INT NOT NULL,
@@ -97,25 +100,33 @@ class ModelExtensionPaymentMundipagg extends Model
               REFERENCES `" . DB_PREFIX . "mundipagg_template` (`id`)
               ON DELETE NO ACTION
               ON UPDATE NO ACTION)
-        ");
+        ";
+        $this->db->query($createTemplateRepetition);
     }
 
     private function dropTemplateAggregateTables()
     {
-        $this->db->query("
-            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_template_repetition` CASCADE;
-        ");
+        $dropTemplateRepetition = "
+            DROP TABLE IF EXISTS 
+            `" . DB_PREFIX . "mundipagg_template_repetition`
+             CASCADE;
+        ";
+        $this->db->query($dropTemplateRepetition);
 
-        $this->db->query("
-            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_template` CASCADE;
-        ");
+        $dropTemplate = "
+            DROP TABLE IF EXISTS 
+            `" . DB_PREFIX . "mundipagg_template` 
+            CASCADE;
+        ";
+        $this->db->query($dropTemplate);
     }
 
     private function createRecurrencyProductAggregateTables()
     {
         //recurrency product table
-        $this->db->query("
-            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_recurrency_product` (
+        $createProductTable = "
+            CREATE TABLE IF NOT EXISTS 
+            `" . DB_PREFIX . "mundipagg_recurrency_product` (
             `id` INT NOT NULL AUTO_INCREMENT,
             `is_disabled` TINYINT NOT NULL DEFAULT 0,
             `product_id` INT NOT NULL,
@@ -132,10 +143,11 @@ class ModelExtensionPaymentMundipagg extends Model
               REFERENCES `" . DB_PREFIX . "mundipagg_template` (`id`)
               ON DELETE NO ACTION
               ON UPDATE NO ACTION)
-        ");
+        ";
+        $this->db->query($createProductTable);
 
         //recurrency sub product table
-        $this->db->query("
+        $createSubProduct = "
             CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_recurrency_subproduct` (
             `id` INT NOT NULL AUTO_INCREMENT,
             `recurrency_product_id` INT NOT NULL,
@@ -143,6 +155,7 @@ class ModelExtensionPaymentMundipagg extends Model
             `quantity` INT NOT NULL,
             `cycles` INT NOT NULL,
             `cycle_type` CHAR NOT NULL,
+            `price_in_cents` INT NOT NULL,
             PRIMARY KEY (`id`),
             INDEX `fk_recurrency_subproduct_recurrency_product1_idx` (`recurrency_product_id` ASC),
             CONSTRAINT `fk_recurrency_subproduct_recurrency_product1`
@@ -150,23 +163,30 @@ class ModelExtensionPaymentMundipagg extends Model
             REFERENCES `" . DB_PREFIX . "mundipagg_recurrency_product` (`id`)
             ON DELETE NO ACTION
             ON UPDATE NO ACTION)
-        ");
+        ";
+        $this->db->query($createSubProduct);
     }
 
     private function dropRecurrencyProductAggregateTables()
     {
-        $this->db->query("
-            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_recurrency_subproduct` CASCADE;
-        ");
+        $dropSubProduct = "
+            DROP TABLE IF EXISTS 
+            `" . DB_PREFIX . "mundipagg_recurrency_subproduct` 
+            CASCADE;
+        ";
+        $this->db->query($dropSubProduct);
 
-        $this->db->query("
-            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_recurrency_product` CASCADE;
-        ");
+        $dropRecurrencyProduct = "
+            DROP TABLE IF EXISTS 
+            `" . DB_PREFIX . "mundipagg_recurrency_product` 
+            CASCADE;
+        ";
+        $this->db->query($dropRecurrencyProduct);
     }
 
     private function createSubscriptionTable()
     {
-        $this->db->query("        
+        $createSubscription = "        
             CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_subscription`
             (
               id              int auto_increment
@@ -177,14 +197,18 @@ class ModelExtensionPaymentMundipagg extends Model
               status          varchar(45) not null,
               canceled_amount int         null
             );
-        ");
+        ";
+        $this->db->query($createSubscription);
     }
 
     private function dropSubscriptionTable()
     {
-        $this->db->query("
-            DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_subscription` CASCADE;
-        ");
+        $dropSubscription = "
+            DROP TABLE IF EXISTS 
+            `" . DB_PREFIX . "mundipagg_subscription` 
+            CASCADE;
+        ";
+        $this->db->query($dropSubscription);
     }
     /**
      * Install opencart event handlers
@@ -293,8 +317,8 @@ class ModelExtensionPaymentMundipagg extends Model
      */
     private function createPaymentTable()
     {
-        $this->db->query(
-            "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_payments` (
+        $createPayment = "
+            CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "mundipagg_payments` (
                 `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `brand_name` VARCHAR(20),
                 `is_enabled` TINYINT(1),
@@ -302,31 +326,34 @@ class ModelExtensionPaymentMundipagg extends Model
                 `installments_without_interest` TINYINT,
                 `interest` DOUBLE,
                 `incremental_interest` DOUBLE
-            );"
-        );
+            );
+        ";
+        $this->db->query($createPayment);
     }
 
     private function createChargeTable()
     {
-        $this->db->query(
-            'CREATE TABLE IF NOT EXISTS `' . DB_PREFIX . 'mundipagg_charge` (
-                `opencart_id` INT NOT NULL,
-                `charge_id` VARCHAR(30) NOT NULL,
-                `payment_method` VARCHAR(45) NOT NULL,
-                `status` VARCHAR(45) NOT NULL,
-                `paid_amount` INT NOT NULL,
-                `amount` INT NOT NULL,
-                `canceled_amount` INT NULL,
-                PRIMARY KEY (`opencart_id`, `charge_id`),
-                UNIQUE INDEX `charge_id_UNIQUE` (`charge_id` ASC));'
-        );
+        $createCharge = '
+          CREATE TABLE IF NOT EXISTS `' . DB_PREFIX . 'mundipagg_charge` (
+            `opencart_id` INT NOT NULL,
+            `charge_id` VARCHAR(30) NOT NULL,
+            `payment_method` VARCHAR(45) NOT NULL,
+            `status` VARCHAR(45) NOT NULL,
+            `paid_amount` INT NOT NULL,
+            `amount` INT NOT NULL,
+            `canceled_amount` INT NULL,
+            PRIMARY KEY (`opencart_id`, `charge_id`),
+            UNIQUE INDEX `charge_id_UNIQUE` (`charge_id` ASC));';
+        $this->db->query($createCharge);
     }
 
     private function dropChargeTable()
     {
-        $this->db->query(
-            'DROP TABLE IF EXISTS `' . DB_PREFIX . 'mundipagg_charge` CASCADE;'
-        );
+        $dropCharge = '
+          DROP TABLE IF EXISTS 
+          `' . DB_PREFIX . 'mundipagg_charge` CASCADE;'
+        ;
+        $this->db->query($dropCharge);
     }
 
     /**
@@ -336,9 +363,11 @@ class ModelExtensionPaymentMundipagg extends Model
      */
     private function dropPaymentTable()
     {
-        $this->db->query(
-            "DROP TABLE IF EXISTS `" . DB_PREFIX . "mundipagg_payments`;"
-        );
+        $dropPayment =
+            "DROP TABLE IF EXISTS 
+            `" . DB_PREFIX . "mundipagg_payments`;";
+
+        $this->db->query($dropPayment);
     }
 
     /**
