@@ -79,20 +79,23 @@
                     type="hidden"
                     id="mundipagg-recurrence-products[price][]"
                     name="mundipagg-recurrence-products[price][]"
-                    value="{product_price}"
+                    value="{{ product_price }}"
                 />
             {% else %}
                 <div class="input-group">
                     <span class="input-group-addon currency-symbol">{{ currency_symbol }}</span>
                     <input
                             type="number"
-                            min="0"
+                            min="0.00"
+                            max="999999999"
                             step="0.01"
                             placeholder="Preço do produto no plano"
                             value="{product_price}"
                             id="mundipagg-recurrence-products[price][]"
                             name="mundipagg-recurrence-products[price][]"
                             class="form-control"
+                            onkeyup="toMonetary($(this))"
+                            onchange="toMonetary($(this))"
                     >
                 </div>
             {% endif %}

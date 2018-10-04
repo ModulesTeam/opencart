@@ -132,6 +132,7 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
             _self.addProductToPlan({
                 name: ui.item.label,
                 id: ui.item.value,
+                price: ui.item.price,
                 thumb: ui.item.thumb
             });
             $('#mp-recurrence-product-search').val('');
@@ -142,9 +143,11 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
 
 OpencartRecurrencyCreationFormModel.prototype
     .addProductToPlan = function(productData) {
+
     var html = $('#mp-recurrence-product-row-template').html();
     html = html.replace(/\{product_id\}/g,productData.id);
     html = html.replace(/\{product_name\}/g,productData.name);
+    html = html.replace(/\{product_price\}/g, productData.price);
     html = html.replace(/\{product_thumb\}/g,productData.thumb);
     html = html.replace(
         /\{product_cycles\}/g,
