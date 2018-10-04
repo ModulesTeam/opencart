@@ -444,10 +444,12 @@ class Events
             return !$templateRoot->getTemplate()->isSingle();
         });
 
-       $productFormTabContentTemplate = $this->openCart->load->view(
-           $path . 'plans/productFormTabContent',
-           $planform
-       );
+        $planform['currency_symbol'] = $this->getCurrencySymbol();
+
+        $productFormTabContentTemplate = $this->openCart->load->view(
+            $path . 'plans/productFormTabContent',
+            $planform
+        );
 
         $planCreationScript = $this->openCart->load->view(
             $path . 'creationScripts',
@@ -561,6 +563,16 @@ class Events
     public function confirmEntry($data)
     {
         $a = 1;
+    }
+
+    private function getCurrencySymbol()
+    {
+        $this->openCart->load->model('setting/setting');
+        $this->openCart->load->model('localisation/currency');
+
+        $configCurrency = $this->openCart->model_setting_setting->getSettingValue('config_currency');
+        $currency = $this->openCart->model_localisation_currency->getCurrencyByCode($configCurrency);
+        return $currency['symbol_left'];
     }
 
 }

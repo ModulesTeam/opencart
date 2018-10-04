@@ -15,6 +15,7 @@ class RecurrencySubproductValueObjectFactory
         $recurrencySubproduct->setCycles($data->cycles);
         $recurrencySubproduct->setCycleType($data->cycleType);
         $recurrencySubproduct->setQuantity($data->quantity);
+        $recurrencySubproduct->setUnitPriceInCents($data->unit_price_in_cents);
 
         return $recurrencySubproduct;
     }

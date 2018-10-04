@@ -73,6 +73,7 @@ class Plans extends Recurrence
             $data = new \stdClass();
             $data->label = $product['name'];
             $data->value = $product['product_id'];
+            $data->price = number_format($product['price'], 2);
             if (is_file(DIR_IMAGE . $product['image'])) {
                 $data->thumb  = $this->openCart->model_tool_image->resize($product['image'], 40, 40);
             } else {

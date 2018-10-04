@@ -5,6 +5,7 @@ namespace Mundipagg\Aggregates\RecurrencyProduct;
 use Exception;
 use JsonSerializable;
 use Mundipagg\Aggregates\Template\RepetitionValueObject;
+use Mundipagg\Helper\Monetary as Monetary;
 
 class RecurrencySubproductValueObject implements JsonSerializable
 {
@@ -16,6 +17,8 @@ class RecurrencySubproductValueObject implements JsonSerializable
     protected $cycles;
     /** @var string */
     protected $cycleType;
+    /** @var int **/
+    protected $unitPriceInCents;
 
     /**
      * @return int
@@ -117,7 +120,27 @@ class RecurrencySubproductValueObject implements JsonSerializable
             'productId' => $this->productId,
             'cycles' => $this->cycles,
             'cycleType' => $this->cycleType,
-            'quantity' => $this->quantity
+            'quantity' => $this->quantity,
+            'unit_price_in_cents' => $this->unitPriceInCents
         ];
+    }
+
+    public function getUnitPriceInCents()
+    {
+        return $this->unitPriceInCents;
+    }
+
+    public function setUnitPriceInCents($price)
+    {
+        $monetary = new Monetary();
+        $unitPriceInCents = $monetary->monetaryToCents($price);
+
+        if ($unitPriceInCents <= 0) {
+            throw new Exception(
+                "Price must be greater than 0! $unitPriceInCents"
+            );
+        }
+        $this->unitPriceInCents = $unitPriceInCents;
+        return $this;
     }
 }

@@ -89,13 +89,14 @@ class Recurrence
             $subProducts = $this->createSubProducts($recurrencySubproductValueObjectFactory);
 
             //creating plan product
-            $recurrencyProduct = $recurrencyProductFactory->createFromJson(json_encode([
+            $json = json_encode([
                 "productId" => null,
                 "template" => $templateRoot,
                 "isSingle" => $isSingle,
                 'subProducts' => $subProducts,
                 'price' => floatval($this->openCart->request->post['price']) * 100
-            ]));
+            ]);
+            $recurrencyProduct = $recurrencyProductFactory->createFromJson($json);
             //@todo recurrencyProduct->setDisabled($opencartProductStatus);
 
             $this->openCart->load->model('catalog/product');
@@ -284,6 +285,7 @@ class Recurrence
                         'cycles' => $cycles,
                         'cycleType' => $mundipaggRecurrencyProducts['cycleType'][$index],
                         'quantity' => $mundipaggRecurrencyProducts['quantity'][$index],
+                        'unit_price_in_cents' => $mundipaggRecurrencyProducts['price'][$index]
                     ])
                 );
         }
