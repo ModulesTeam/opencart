@@ -5,11 +5,11 @@ use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencySubproductValueObject;
 use Mundipagg\Aggregates\Template\PlanStatusValueObject;
 use Mundipagg\Model\Order;
-use Mundipagg\Helper\AdminMenu as MundipaggHelperAdminMenu;
 use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Repositories\TemplateRepository;
 use Mundipagg\Model\Api\Plan as PlanApi;
+use Mundipagg\Helper\AdminMenu as MundipaggHelperAdminMenu;
 
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
@@ -332,6 +332,7 @@ class Events
             $productId = intval($this->openCart->request->get['product_id']);
 
             $planRepo = new RecurrencyProductRepository(new OpencartPlatformDatabaseDecorator($this->openCart->db));
+
             /** @var RecurrencyProductRoot $plan */
             $plan = $planRepo->getByProductId($productId);
             if ($plan !== null) {
@@ -347,7 +348,8 @@ class Events
                     'id' => [],
                     'name' => [],
                     'quantity' => [],
-                    'thumb' => []
+                    'thumb' => [],
+                    'price' => []
                 ];
                 $subProducts = $plan->getSubProducts();
 
@@ -359,6 +361,7 @@ class Events
                     $subProductsToSession['cycleType'][$index] = $subProduct->getCycleType();
                     $subProductsToSession['quantity'][$index] = $subProduct->getQuantity();
                     $subProductsToSession['id'][$index] = $subProduct->getProductId();
+                    $subProductsToSession['price'][$index] = $subProduct->getUnitPriceInCents() / 100;
 
                     $product = $this->openCart->model_catalog_product->getProduct(
                         $subProduct->getProductId()

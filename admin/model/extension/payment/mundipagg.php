@@ -155,7 +155,7 @@ class ModelExtensionPaymentMundipagg extends Model
             `quantity` INT NOT NULL,
             `cycles` INT NOT NULL,
             `cycle_type` CHAR NOT NULL,
-            `price_in_cents` INT NOT NULL,
+            `unit_price_in_cents` INT NOT NULL,
             PRIMARY KEY (`id`),
             INDEX `fk_recurrency_subproduct_recurrency_product1_idx` (`recurrency_product_id` ASC),
             CONSTRAINT `fk_recurrency_subproduct_recurrency_product1`

@@ -36,17 +36,22 @@ class RecurrencyProductRootFactory
             );
         }
         $recurrencyProduct->setProductId($data->productId);
-        $recurrencyProduct->setPrice($data->price);
         $recurrencyProduct->setTemplate(
             (new TemplateRootFactory())->createFromJson(json_encode($data->template))
         );
+
+        $planPriceInCents = 0;
 
         foreach ($data->subProducts as $subProduct) {
             $_subProduct = $recurrencySubProductValueObjectFactory->createFromJson(
                 json_encode($subProduct)
             );
             $recurrencyProduct->addSubproduct($_subProduct);
+            $planPriceInCents +=
+                $subProduct->unit_price_in_cents * $subProduct->quantity
+            ;
         }
+        $recurrencyProduct->setPrice($planPriceInCents);
 
         return $recurrencyProduct;
     }
@@ -76,6 +81,7 @@ class RecurrencyProductRootFactory
         $subQuantities = explode(',' ,$dbData['sub_quantity']);
         $subCycles = explode(',' ,$dbData['sub_cycles']);
         $subCycleTypes = explode(',' ,$dbData['sub_cycle_type']);
+        $subUnitPriceInCents = explode(',' ,$dbData['sub_unit_price_in_cents']);
 
         foreach ($subPproductIds as $index => $subProductId) {
             if(strlen($subProductId) < 1) {
@@ -87,6 +93,7 @@ class RecurrencyProductRootFactory
                 ->setQuantity($subQuantities[$index])
                 ->setCycles($subCycles[$index])
                 ->setCycleType($subCycleTypes[$index])
+                ->setUnitPriceInCents($subUnitPriceInCents[$index])
             );
         }
 

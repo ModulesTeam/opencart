@@ -143,7 +143,6 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
 
 OpencartRecurrencyCreationFormModel.prototype
     .addProductToPlan = function(productData) {
-
     var html = $('#mp-recurrence-product-row-template').html();
     html = html.replace(/\{product_id\}/g,productData.id);
     html = html.replace(/\{product_name\}/g,productData.name);
