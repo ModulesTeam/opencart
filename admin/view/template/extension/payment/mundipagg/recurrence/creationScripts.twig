@@ -22,9 +22,10 @@
 <script>
 
     var Mundipagg = new MundipaggLoader(OpencartMundipaggLoader,['Location']);
+    var mundipaggPlansCreationController = null;
 
     Mundipagg.load(function(){
-         var mundipaggPlansCreationController = new PlansCreationController(
+         mundipaggPlansCreationController = new PlansCreationController(
             Mundipagg,
             OpencartRecurrencyCreationFormModel
         );

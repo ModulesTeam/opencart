@@ -136,9 +136,15 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
                 thumb: ui.item.thumb
             });
             $('#mp-recurrence-product-search').val('');
+            this.setPlanPrice();
         }.bind(_self)
     };
     $('#mp-recurrence-product-search').autocomplete(autocompleteOptions);
+
+    $("#input-price")
+        .attr('readonly', 'readonly')
+        .attr('placeholder', 'O preço do plano é definido pela soma dos preços dos produtos incluídos nele');
+
 };
 
 OpencartRecurrencyCreationFormModel.prototype
@@ -317,3 +323,27 @@ OpencartRecurrencyCreationFormModel.prototype
     .getFormElement = function(templateSnapshotData) {
     return $('#form-product');
 };
+
+OpencartRecurrencyCreationFormModel.prototype.setPlanPrice = function() {
+
+    var planPrice = 0;
+
+    $('.mundipagg-recurrence-subproduct-price').each(function () {
+        parent = $(this).parent().parent().parent();
+        quantity = parent.find(".mundipagg-recurrence-subproduct-quantity").val();
+        planPrice += parseFloat($(this).val()) * parseInt(quantity);
+    });
+
+    planPrice = planPrice.toFixed(2);
+
+    $("#input-price").val(planPrice);
+    $(".plan-price").html(planPrice);
+
+    if (planPrice > 0) {
+        $(".total-plan-amount").show();
+    } else {
+        $(".total-plan-amount").hide();
+    }
+
+
+}

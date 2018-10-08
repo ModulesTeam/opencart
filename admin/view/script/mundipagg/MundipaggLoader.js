@@ -1,4 +1,4 @@
-var MundipaggLoader = function(loader,components) {
+var MundipaggLoader = function(loader, components) {
     this.loaderClass = loader;
     this.components = components;
     return this;
@@ -19,7 +19,7 @@ MundipaggLoader.prototype.load = function(callback) {
         try {
             this.loader['load' + component]();
         }catch(e) {
-            var error = "MundipaggLoader: loader method to '" +component+ "' not found!";
+            var error = "MundipaggLoader: loader method to '" + component + "' not found!";
             console.error();
             this.componentLoadStatus[component] = {
                 processed: true,
