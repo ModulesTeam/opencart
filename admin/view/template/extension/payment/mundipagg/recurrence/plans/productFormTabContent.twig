@@ -74,22 +74,22 @@
             {% if isUpdate == '1' %}
                 <span class="label label-default">{product_quantity}</span>
                 <input
-                        type="hidden"
-                        id="mundipagg-recurrence-products[quantity][]"
-                        name="mundipagg-recurrence-products[quantity][]"
-                        value="{product_quantity}"
+                    type="hidden"
+                    id="mundipagg-recurrence-products[quantity][]"
+                    name="mundipagg-recurrence-products[quantity][]"
+                    value="{product_quantity}"
                 />
             {% else %}
                 <input
-                        type="number"
-                        min='1'
-                        placeholder="Quantidade de Produto"
-                        value="{product_quantity}"
-                        id="mundipagg-recurrence-products[quantity][]"
-                        name="mundipagg-recurrence-products[quantity][]"
-                        class="form-control mundipagg-recurrence-subproduct-quantity"
-                        onkeyup="mundipaggPlansCreationController.setPlanPrice()"
-                        onchange="mundipaggPlansCreationController.setPlanPrice()"
+                    type="number"
+                    min='1'
+                    placeholder="Quantidade de Produto"
+                    value="{product_quantity}"
+                    id="mundipagg-recurrence-products[quantity][]"
+                    name="mundipagg-recurrence-products[quantity][]"
+                    class="form-control mundipagg-recurrence-subproduct-quantity"
+                    onkeyup="mundipaggPlansCreationController.setPlanPrice()"
+                    onchange="mundipaggPlansCreationController.setPlanPrice()"
                 >
             {% endif %}
         </td>
@@ -107,17 +107,17 @@
                 <div class="input-group">
                     <span class="input-group-addon currency-symbol">{{ currency_symbol }}</span>
                     <input
-                            type="number"
-                            min="0.00"
-                            max="999999999"
-                            step="0.01"
-                            placeholder="Preço do produto no plano"
-                            value="{product_price}"
-                            id="mundipagg-recurrence-products[price][]"
-                            name="mundipagg-recurrence-products[price][]"
-                            class="form-control mundipagg-recurrence-subproduct-price"
-                            onkeyup="toMonetary($(this)); mundipaggPlansCreationController.setPlanPrice()"
-                            onchange="toMonetary($(this)); mundipaggPlansCreationController.setPlanPrice()"
+                        type="number"
+                        min="0.00"
+                        max="999999999"
+                        step="0.01"
+                        placeholder="Preço do produto no plano"
+                        value="{product_price}"
+                        id="mundipagg-recurrence-products[price][]"
+                        name="mundipagg-recurrence-products[price][]"
+                        class="form-control mundipagg-recurrence-subproduct-price"
+                        onkeyup="toMonetary($(this)); mundipaggPlansCreationController.setPlanPrice()"
+                        onchange="toMonetary($(this)); mundipaggPlansCreationController.setPlanPrice()"
                     >
                 </div>
             {% endif %}
@@ -126,11 +126,11 @@
         {% if isUpdate == '0' %}
             <td>
                 <button
-                        type="button"
-                        title=""
-                        class="btn btn-danger"
-                        data-original-title="remove product"
-                        onclick='(function(element){$(element).parent().parent().remove()})(this); mundipaggPlansCreationController.setPlanPrice()'
+                    type="button"
+                    title=""
+                    class="btn btn-danger"
+                    data-original-title="remove product"
+                    onclick='(function(element){$(element).parent().parent().remove()})(this); mundipaggPlansCreationController.setPlanPrice()'
                 >
                     <i class="fa fa-trash"></i>
                     Remover Produto

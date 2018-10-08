@@ -9,5 +9,4 @@ function toMonetary(inputObj) {
         }
         inputObj.val(inputValue.toFixed(2));
     }, 2000);
-
 }

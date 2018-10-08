@@ -1,5 +1,4 @@
 <?php
-
 namespace Mundipagg\Helper;
 
 class Monetary

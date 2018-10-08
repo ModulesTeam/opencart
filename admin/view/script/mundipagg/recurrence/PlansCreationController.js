@@ -14,7 +14,6 @@ PlansCreationController.prototype.init = function() {
     }
     if (typeof MundipaggRecurrenceProducts !== "undefined") {
         MundipaggRecurrenceProducts.id.forEach(function(value,index){
-
             this.creationPageFormModel.addProductToPlan({
                 id: value,
                 name: MundipaggRecurrenceProducts.name[index],

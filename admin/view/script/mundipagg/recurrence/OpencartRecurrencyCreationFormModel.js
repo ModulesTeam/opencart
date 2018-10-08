@@ -325,7 +325,6 @@ OpencartRecurrencyCreationFormModel.prototype
 };
 
 OpencartRecurrencyCreationFormModel.prototype.setPlanPrice = function() {
-
     var planPrice = 0;
 
     $('.mundipagg-recurrence-subproduct-price').each(function () {
