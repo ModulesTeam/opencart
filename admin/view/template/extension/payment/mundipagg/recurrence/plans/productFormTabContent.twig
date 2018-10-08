@@ -30,9 +30,9 @@
             <thead>
             <tr>
                 <td class="text-left">Produto</td>
-                <td>Quantidade</td>
                 <td class="text-center">Ciclos</td>
-                <td class="text-center">Preço do produto dentro no plano</td>
+                <td>Quantidade</td>
+                <td class="text-center">Preço unitário do produto dentro no plano</td>
                 {% if isUpdate == '0' %}
                     <td></td>
                 {% endif %}
@@ -61,6 +61,15 @@
             <input type="hidden" id="mundipagg-recurrence-products[cycleType][]" name="mundipagg-recurrence-products[cycleType][]" value="{product_cycle_type}"/>
         </td>
 
+        <td>
+            {% if isUpdate == '1' %}
+                <span class="label label-default">{product_cycles}</span>
+                <input type="hidden" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" value="{product_cycles}"/>
+            {% else %}
+                <input type="number" min='1'  placeholder="Numero de Ciclos" value="{product_cycles}" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" class="form-control">
+            {% endif %}
+        </td>
+
         <td class="text-left">
             {% if isUpdate == '1' %}
                 <span class="label label-default">{product_quantity}</span>
@@ -82,15 +91,6 @@
                         onkeyup="mundipaggPlansCreationController.setPlanPrice()"
                         onchange="mundipaggPlansCreationController.setPlanPrice()"
                 >
-            {% endif %}
-        </td>
-
-        <td>
-            {% if isUpdate == '1' %}
-                <span class="label label-default">{product_cycles}</span>
-                <input type="hidden" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" value="{product_cycles}"/>
-            {% else %}
-                <input type="number" min='1'  placeholder="Numero de Ciclos" value="{product_cycles}" id="mundipagg-recurrence-products[cycles][]" name="mundipagg-recurrence-products[cycles][]" class="form-control">
             {% endif %}
         </td>
 

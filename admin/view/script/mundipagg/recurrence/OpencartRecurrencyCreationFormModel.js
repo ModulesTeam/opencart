@@ -344,6 +344,4 @@ OpencartRecurrencyCreationFormModel.prototype.setPlanPrice = function() {
     } else {
         $(".total-plan-amount").hide();
     }
-
-
 }
