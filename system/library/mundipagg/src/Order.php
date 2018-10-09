@@ -717,13 +717,16 @@ class Order
     private function createShippingRequest($orderData, $createAddressRequest, $cart)
     {
         if ($cart->hasShipping()) {
-            $shipping = array(
+            $shipping = [
                 'amountInCents' => number_format($cart->session->data['shipping_method']['cost'], 2, '', ''),
                 'description' => $cart->session->data['shipping_method']['title'],
                 'recipientName' => $orderData['shipping_firstname'] . " " . $orderData['shipping_lastname'],
                 'recipientPhone' => $orderData['telephone'],
-                'addressId' => null
-            );
+                'addressId' => null,
+                'maxDeliveryDate',
+                'estimatedDeliveryDate'
+
+            ];
 
             return new CreateShippingRequest(
                 $shipping['amountInCents'],
@@ -731,9 +734,13 @@ class Order
                 $shipping['recipientName'],
                 $shipping['recipientPhone'],
                 $shipping['addressId'],
-                $createAddressRequest
+                $createAddressRequest,
+                $shipping['maxDeliveryDate'],
+                $shipping['addreestimatedDeliveryDatessId']
             );
         }
+
+        return null;
     }
 
     /**
