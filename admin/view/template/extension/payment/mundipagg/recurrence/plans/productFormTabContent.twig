@@ -8,6 +8,7 @@
 <div class="tab-pane hidden tab-mundipagg-plan" id="tab-mundipagg-plan-products" >
     <div class="panel-heading">
         <h3>Adicionar produtos ao plano</h3>
+
     </div>
         <br>
     {% if isUpdate == '0' %}
@@ -29,19 +30,27 @@
             <thead>
             <tr>
                 <td class="text-left">Produto</td>
-                <td>Quantidade</td>
                 <td class="text-center">Ciclos</td>
+                <td>Quantidade</td>
+                <td class="text-center">Preço unitário do produto dentro no plano</td>
                 {% if isUpdate == '0' %}
                     <td></td>
                 {% endif %}
             </tr>
             </thead>
             <tbody id="mp-recurrence-product-table-body"></tbody>
+            <tfoot class="total-plan-amount" style="display: none;">
+                <tr>
+                    <td colspan="3" class="text-right"><b>Total:</b></td>
+                    <td><b>{{ currency_symbol }}<span class="plan-price"></span></b></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
 
 <script id="mp-recurrence-product-row-template" type="text/template">
+
     <tr>
         <td>
             <img src="{product_thumb}" alt="{product_name}" />
@@ -50,15 +59,6 @@
             <input type="hidden" id="mundipagg-recurrence-products[name][]" name="mundipagg-recurrence-products[name][]" value="{product_name}"/>
             <input type="hidden" id="mundipagg-recurrence-products[thumb][]" name="mundipagg-recurrence-products[thumb][]" value="{product_thumb}"/>
             <input type="hidden" id="mundipagg-recurrence-products[cycleType][]" name="mundipagg-recurrence-products[cycleType][]" value="{product_cycle_type}"/>
-        </td>
-
-        <td class="text-left">
-            {% if isUpdate == '1' %}
-                <span class="label label-default">{product_quantity}</span>
-                <input type="hidden" id="mundipagg-recurrence-products[quantity][]" name="mundipagg-recurrence-products[quantity][]" value="{product_quantity}"/>
-            {% else %}
-                <input type="number" min='1' placeholder="Quantidade de Produto" value="{product_quantity}" id="mundipagg-recurrence-products[quantity][]" name="mundipagg-recurrence-products[quantity][]" class="form-control">
-            {% endif %}
         </td>
 
         <td>
@@ -70,14 +70,67 @@
             {% endif %}
         </td>
 
+        <td class="text-left">
+            {% if isUpdate == '1' %}
+                <span class="label label-default">{product_quantity}</span>
+                <input
+                    type="hidden"
+                    id="mundipagg-recurrence-products[quantity][]"
+                    name="mundipagg-recurrence-products[quantity][]"
+                    value="{product_quantity}"
+                />
+            {% else %}
+                <input
+                    type="number"
+                    min='1'
+                    placeholder="Quantidade de Produto"
+                    value="{product_quantity}"
+                    id="mundipagg-recurrence-products[quantity][]"
+                    name="mundipagg-recurrence-products[quantity][]"
+                    class="form-control mundipagg-recurrence-subproduct-quantity"
+                    onkeyup="mundipaggPlansCreationController.setPlanPrice()"
+                    onchange="mundipaggPlansCreationController.setPlanPrice()"
+                >
+            {% endif %}
+        </td>
+
+        <td>
+            {% if isUpdate == '1' %}
+                <span class="label label-default">{product_price}</span>
+                <input
+                    type="hidden"
+                    id="mundipagg-recurrence-products[price][]"
+                    name="mundipagg-recurrence-products[price][]"
+                    value="{{ product_price }}"
+                />
+            {% else %}
+                <div class="input-group">
+                    <span class="input-group-addon currency-symbol">{{ currency_symbol }}</span>
+                    <input
+                        type="number"
+                        min="0.00"
+                        max="999999999"
+                        step="0.01"
+                        placeholder="Preço do produto no plano"
+                        value="{product_price}"
+                        id="mundipagg-recurrence-products[price][]"
+                        name="mundipagg-recurrence-products[price][]"
+                        class="form-control mundipagg-recurrence-subproduct-price"
+                        onkeyup="changeInputValueToMonetary($(this)); mundipaggPlansCreationController.setPlanPrice()"
+                        onchange="changeInputValueToMonetary($(this)); mundipaggPlansCreationController.setPlanPrice()"
+                    >
+                </div>
+            {% endif %}
+        </td>
+
         {% if isUpdate == '0' %}
             <td>
                 <button
-                        type="button"
-                        title=""
-                        class="btn btn-danger"
-                        data-original-title="remove product"
-                        onclick='(function(element){$(element).parent().parent().remove()})(this);'
+                    type="button"
+                    title=""
+                    class="btn btn-danger"
+                    data-original-title="remove product"
+                    onclick='(function(element){$(element).parent().parent().remove()})(this); mundipaggPlansCreationController.setPlanPrice()'
                 >
                     <i class="fa fa-trash"></i>
                     Remover Produto

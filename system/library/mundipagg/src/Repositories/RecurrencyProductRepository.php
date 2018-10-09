@@ -95,7 +95,8 @@ class RecurrencyProductRepository extends AbstractRep
             GROUP_CONCAT(s.product_id) as sub_product_id,
             GROUP_CONCAT(s.cycles) as sub_cycles,
             GROUP_CONCAT(s.cycle_type) as sub_cycle_type,
-            GROUP_CONCAT(s.quantity) as sub_quantity
+            GROUP_CONCAT(s.quantity) as sub_quantity,
+            GROUP_CONCAT(s.unit_price_in_cents) as sub_unit_price_in_cents
             FROM
             `" . $this->db->getTable('RECURRENCY_PRODUCT_TABLE') . "` as p
             LEFT JOIN `" . $this->db->getTable('RECURRENCY_SUBPRODUCT_TABLE') . "` as s
@@ -141,7 +142,8 @@ class RecurrencyProductRepository extends AbstractRep
                     `product_id`,
                     `quantity`,
                     `cycles`,
-                    `cycle_type`                                
+                    `cycle_type`,
+                    `unit_price_in_cents`                            
                 ) VALUES 
             ";
 
@@ -152,7 +154,8 @@ class RecurrencyProductRepository extends AbstractRep
                     {$subProduct->getProductId()},
                     {$subProduct->getQuantity()},
                     {$subProduct->getCycles()},
-                    '{$subProduct->getCycleType()}'
+                    '{$subProduct->getCycleType()}',
+                    '{$subProduct->getUnitPriceInCents()}'
                 ),";
             }
             $query = rtrim($query,',') . ';';
@@ -192,7 +195,8 @@ class RecurrencyProductRepository extends AbstractRep
             GROUP_CONCAT(s.product_id) as sub_product_id,
             GROUP_CONCAT(s.cycles) as sub_cycles,
             GROUP_CONCAT(s.cycle_type) as sub_cycle_type,
-            GROUP_CONCAT(s.quantity) as sub_quantity
+            GROUP_CONCAT(s.quantity) as sub_quantity,
+            GROUP_CONCAT(s.unit_price_in_cents) as sub_unit_price_in_cents
             FROM
             `" . $this->db->getTable('RECURRENCY_PRODUCT_TABLE') . "` as p
             LEFT JOIN `" . $this->db->getTable('RECURRENCY_SUBPRODUCT_TABLE') . "` as s
@@ -232,7 +236,8 @@ class RecurrencyProductRepository extends AbstractRep
             GROUP_CONCAT(s.product_id) as sub_product_id,
             GROUP_CONCAT(s.cycles) as sub_cycles,
             GROUP_CONCAT(s.cycle_type) as sub_cycle_type,
-            GROUP_CONCAT(s.quantity) as sub_quantity
+            GROUP_CONCAT(s.quantity) as sub_quantity,
+            GROUP_CONCAT(s.unit_price_in_cents) as sub_unit_price_in_cents
             FROM
             `" . $this->db->getTable('RECURRENCY_PRODUCT_TABLE') . "` as p
             LEFT JOIN `" . $this->db->getTable('RECURRENCY_SUBPRODUCT_TABLE') . "` as s

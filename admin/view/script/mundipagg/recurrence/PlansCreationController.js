@@ -3,6 +3,7 @@ var PlansCreationController = function (mundipaggRoot,formModelClass)
     this.mundipaggRoot = mundipaggRoot;
     this.creationPageFormModel = new formModelClass(this);
     this.templateSnapshot = null;
+    this.productList = [];
 };
 
 PlansCreationController.prototype.init = function() {
@@ -19,7 +20,8 @@ PlansCreationController.prototype.init = function() {
                 cycleType: MundipaggRecurrenceProducts.cycleType[index],
                 cycles: MundipaggRecurrenceProducts.cycles[index],
                 quantity: MundipaggRecurrenceProducts.quantity[index],
-                thumb: MundipaggRecurrenceProducts.thumb[index]
+                thumb: MundipaggRecurrenceProducts.thumb[index],
+                price: MundipaggRecurrenceProducts.price[index],
             });
         }.bind(this));
     }
@@ -102,4 +104,8 @@ function removeLoadingAnimation($obj) {
     $obj.creationPageFormModel
         .getTemplateSelectElement()
         .prop("disabled", false);
+};
+
+PlansCreationController.prototype.setPlanPrice = function () {
+    this.creationPageFormModel.setPlanPrice();
 }

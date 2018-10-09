@@ -79,7 +79,6 @@ class Plan
         $request->intervalCount         = $plan->getTemplate()->getRepetitions()[0]->getFrequency();
         $request->billingType           = $plan->getTemplate()->getDueAt()->getDueApiValue();
         $request->items                 = $this->getItemsFromTemplate($plan->getSubProducts());
-        $request->minimumPrice          = $plan->getPrice();
 
         $installments = $plan->getTemplate()->getTemplate()->getInstallments();
         foreach ($installments as $installment) {
@@ -148,8 +147,8 @@ class Plan
             $item['name'] = $product['name'];
             $item['quantity'] = $subProduct->getQuantity();
             $item['cycles'] = $subProduct->getCycles();
-            /** 0 price is for setting minimum price on the plan itself. */
-            $item['pricing_scheme'] = ['price' => 0];
+
+            $item['pricing_scheme'] = ['price' => $subProduct->getUnitPriceInCents()];
 
             $items[] = $item;
         }

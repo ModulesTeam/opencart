@@ -103,12 +103,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mundipagg/MundiAPI-PHP.git",
-                "reference": "0c41d0dddd0bebb7fd3c7111a2fe92ab9bdae92b"
+                "reference": "97c233af4ceef41a88d35233cdfe16f0b7d7de3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mundipagg/MundiAPI-PHP/zipball/0c41d0dddd0bebb7fd3c7111a2fe92ab9bdae92b",
-                "reference": "0c41d0dddd0bebb7fd3c7111a2fe92ab9bdae92b",
+                "url": "https://api.github.com/repos/mundipagg/MundiAPI-PHP/zipball/97c233af4ceef41a88d35233cdfe16f0b7d7de3f",
+                "reference": "97c233af4ceef41a88d35233cdfe16f0b7d7de3f",
                 "shasum": ""
             },
             "require": {
@@ -147,7 +147,7 @@
                 "api",
                 "sdk"
             ],
-            "time": "2018-07-19T19:35:33+00:00"
+            "time": "2018-08-29T20:39:13+00:00"
         }
     ],
     "packages-dev": [],

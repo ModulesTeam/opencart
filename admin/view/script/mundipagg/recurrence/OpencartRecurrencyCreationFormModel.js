@@ -132,12 +132,17 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
             _self.addProductToPlan({
                 name: ui.item.label,
                 id: ui.item.value,
+                price: ui.item.price,
                 thumb: ui.item.thumb
             });
             $('#mp-recurrence-product-search').val('');
+            this.setPlanPrice();
         }.bind(_self)
     };
     $('#mp-recurrence-product-search').autocomplete(autocompleteOptions);
+
+    $("#input-price").attr('readonly', 'readonly');
+
 };
 
 OpencartRecurrencyCreationFormModel.prototype
@@ -145,6 +150,7 @@ OpencartRecurrencyCreationFormModel.prototype
     var html = $('#mp-recurrence-product-row-template').html();
     html = html.replace(/\{product_id\}/g,productData.id);
     html = html.replace(/\{product_name\}/g,productData.name);
+    html = html.replace(/\{product_price\}/g, productData.price);
     html = html.replace(/\{product_thumb\}/g,productData.thumb);
     html = html.replace(
         /\{product_cycles\}/g,
@@ -315,3 +321,24 @@ OpencartRecurrencyCreationFormModel.prototype
     .getFormElement = function(templateSnapshotData) {
     return $('#form-product');
 };
+
+OpencartRecurrencyCreationFormModel.prototype.setPlanPrice = function() {
+    var planPrice = 0;
+
+    $('.mundipagg-recurrence-subproduct-price').each(function () {
+        parent = $(this).parent().parent().parent();
+        quantity = parent.find(".mundipagg-recurrence-subproduct-quantity").val();
+        planPrice += parseFloat($(this).val()) * parseInt(quantity);
+    });
+
+    planPrice = planPrice.toFixed(2);
+
+    $("#input-price").val(planPrice);
+    $(".plan-price").html(planPrice);
+
+    if (planPrice > 0) {
+        $(".total-plan-amount").show();
+    } else {
+        $(".total-plan-amount").hide();
+    }
+}
