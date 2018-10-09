@@ -1,12 +1,21 @@
 /**
  * @param inputObj jQuery object
  */
-function toMonetary(inputObj) {
+function changeInputValueToMonetary(inputObj) {
     setTimeout(function(){
-        var inputValue = parseFloat(inputObj.val());
+        inputValue = inputObj.val();
+
         if(inputValue >= 999999999){
             inputValue = 999999999;
         }
-        inputObj.val(inputValue.toFixed(2));
-    }, 2000);
+
+        value = toFloat(inputValue);
+
+        inputObj.val(value);
+    }, 1800);
+}
+
+function toFloat(value) {
+    amount = parseFloat(value);
+    return amount.toFixed(2);
 }

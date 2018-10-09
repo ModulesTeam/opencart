@@ -141,9 +141,7 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     };
     $('#mp-recurrence-product-search').autocomplete(autocompleteOptions);
 
-    $("#input-price")
-        .attr('readonly', 'readonly')
-        .attr('placeholder', 'O preço do plano é definido pela soma dos preços dos produtos incluídos nele');
+    $("#input-price").attr('readonly', 'readonly');
 
 };
 
