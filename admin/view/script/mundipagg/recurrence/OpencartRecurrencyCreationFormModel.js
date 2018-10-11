@@ -142,7 +142,6 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     $('#mp-recurrence-product-search').autocomplete(autocompleteOptions);
 
     $("#input-price").attr('readonly', 'readonly');
-
 };
 
 OpencartRecurrencyCreationFormModel.prototype
