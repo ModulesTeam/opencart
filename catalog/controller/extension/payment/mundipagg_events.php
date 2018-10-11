@@ -6,13 +6,12 @@ use MundiAPILib\MundiAPIClient;
 use MundiAPILib\Models\CreateCustomerRequest;
 use MundiAPILib\Models\CreateAddressRequest;
 use MundiAPILib\Models\UpdateCustomerRequest;
-use Mundipagg\Aggregates\Cart\CartRoot;
-use Mundipagg\Aggregates\Cart\ProductValueObject;
 use Mundipagg\Decorators\OpencartPlatformCartDecorator;
 use Mundipagg\Factories\CartRootFactory;
 use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Settings\CreditCard as CreditCardSettings;
 use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
+use Mundipagg\Settings\Recurrence;
 
 /**
  * ControllerExtensionPaymentMundipaggEvents deal with module events
@@ -396,6 +395,7 @@ class ControllerExtensionPaymentMundipaggEvents extends Controller
     {
         $isCartValid = true;
 
+
         $repository = new RecurrencyProductRepository(
           new OpencartPlatformDatabaseDecorator($this->db)
         );
@@ -411,7 +411,10 @@ class ControllerExtensionPaymentMundipaggEvents extends Controller
         }
 
         if (!$isCartValid) {
-            $this->session->data['error'] = 'Mensagem de conflito';
+            $settings = new Recurrence($this);
+            $conflictMessage = $settings->getCheckoutConflictMessage();
+
+            $this->session->data['error'] = $conflictMessage;
             $this->response->redirect($this->url->link('checkout/cart'));
         }
     }
