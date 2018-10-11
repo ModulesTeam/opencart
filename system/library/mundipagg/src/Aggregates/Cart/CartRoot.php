@@ -57,9 +57,8 @@ class CartRoot
             }
 
             if (
-                $cartProduct->getTemplateId() !== $product->getTemplateId() ||
-                $cartProduct->getTemplateId() < 1 ||
-                $product->getTemplateId() < 1
+                !$this->areMixed($cartProduct, $product) &&
+                !$this->hasSameTemplateId($cartProduct, $product)
             ) {
                 throw new Exception(
                     '
@@ -68,7 +67,39 @@ class CartRoot
                     '
                 );
             }
+
         }
+    }
+
+    protected function hasSameTemplateId(
+        ProductValueObject $firstProduct,
+        ProductValueObject $secondProduct
+    )
+    {
+        if (
+            $firstProduct->getTemplateId() !== $secondProduct->getTemplateId() ||
+            $firstProduct->getTemplateId() < 1 ||
+            $secondProduct->getTemplateId() < 1
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function areMixed(
+        ProductValueObject $firstProduct,
+        ProductValueObject $secondProduct
+    )
+    {
+        if (
+            !$firstProduct->getMixed() ||
+            !$secondProduct->getMixed()
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function verifyNormalConflicts(ProductValueObject $product)
