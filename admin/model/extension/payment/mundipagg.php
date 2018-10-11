@@ -210,11 +210,10 @@ class ModelExtensionPaymentMundipagg extends Model
         ";
         $this->db->query($dropSubscription);
     }
-    /**
-     * Install opencart event handlers
-     *
-     * @return void
-     */
+    /***
+     ** Install opencart event handlers
+     ** @return void
+     ***/
     private function installEvents()
     {
         //Add button to order list in admin
@@ -292,11 +291,17 @@ class ModelExtensionPaymentMundipagg extends Model
             'catalog/view/checkout/payment_method/after',
             'extension/payment/mundipagg/callEvents'
         );
+
+        //add add to cart interceptor
+        $this->model_setting_event->addEvent(
+            'payment_mundipagg_cart_rules',
+            'catalog/controller/checkout/checkout/before',
+            'extension/payment/mundipagg_events/recurrenceCartRules'
+        );
     }
 
     /***
      * Uninstall opencart event handlers
-     *
      * @return void
      */
     private function uninstallEvents()

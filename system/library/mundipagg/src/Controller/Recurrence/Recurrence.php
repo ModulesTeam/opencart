@@ -272,24 +272,27 @@ class Recurrence
 
     protected function createSubProducts($recurrencySubproductValueObjectFactory)
     {
-        $mundipaggRecurrencyProducts =
-            $this->openCart->request->post['mundipagg-recurrence-products'];
+        if (isset($this->openCart->request->post['mundipagg-recurrence-products'])) {
 
-        $subProducts = [];
+            $mundipaggRecurrencyProducts =
+                $this->openCart->request->post['mundipagg-recurrence-products'];
 
-        foreach ($mundipaggRecurrencyProducts['cycles'] as $index => $cycles) {
-            $subProducts[] =
-                $recurrencySubproductValueObjectFactory->createFromJson(
-                    json_encode([
-                        'productId' => $mundipaggRecurrencyProducts['id'][$index],
-                        'cycles' => $cycles,
-                        'cycleType' => $mundipaggRecurrencyProducts['cycleType'][$index],
-                        'quantity' => $mundipaggRecurrencyProducts['quantity'][$index],
-                        'unit_price_in_cents' => $mundipaggRecurrencyProducts['price'][$index]
-                    ])
-                );
+            $subProducts = [];
+
+            foreach ($mundipaggRecurrencyProducts['cycles'] as $index => $cycles) {
+                $subProducts[] =
+                    $recurrencySubproductValueObjectFactory->createFromJson(
+                        json_encode([
+                            'productId' => $mundipaggRecurrencyProducts['id'][$index],
+                            'cycles' => $cycles,
+                            'cycleType' => $mundipaggRecurrencyProducts['cycleType'][$index],
+                            'quantity' => $mundipaggRecurrencyProducts['quantity'][$index],
+                            'unit_price_in_cents' => $mundipaggRecurrencyProducts['price'][$index]
+                        ])
+                    );
+            }
+
+            return $subProducts;
         }
-
-        return $subProducts;
     }
 }
