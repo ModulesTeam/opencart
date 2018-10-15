@@ -547,7 +547,7 @@ class Events
             }
         }
 
-//there is a single item and it's a plan.
+        //there is a single item and it's a plan.
         if (count($plans) == 1 && count($items) == 1) {
 
             $data['payment_methods'] = array_filter(
@@ -563,11 +563,6 @@ class Events
         //@todo check cart conflict
     }
 
-    public function confirmEntry($data)
-    {
-        $a = 1;
-    }
-
     private function getCurrencySymbol()
     {
         $this->openCart->load->model('setting/setting');
@@ -577,5 +572,4 @@ class Events
         $currency = $this->openCart->model_localisation_currency->getCurrencyByCode($configCurrency);
         return $currency['symbol_left'];
     }
-
 }

@@ -142,7 +142,6 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     $('#mp-recurrence-product-search').autocomplete(autocompleteOptions);
 
     $("#input-price").attr('readonly', 'readonly');
-
 };
 
 OpencartRecurrencyCreationFormModel.prototype
@@ -150,8 +149,9 @@ OpencartRecurrencyCreationFormModel.prototype
     var html = $('#mp-recurrence-product-row-template').html();
     html = html.replace(/\{product_id\}/g,productData.id);
     html = html.replace(/\{product_name\}/g,productData.name);
-    html = html.replace(/\{product_price\}/g, productData.price);
+    html = html.replace(/\{product_price\}/g, productData.price.toFixed(2));
     html = html.replace(/\{product_thumb\}/g,productData.thumb);
+
     html = html.replace(
         /\{product_cycles\}/g,
         typeof productData.cycles !== 'undefined' ? productData.cycles : '1'

@@ -40,16 +40,20 @@ class RecurrencyProductRootFactory
             (new TemplateRootFactory())->createFromJson(json_encode($data->template))
         );
 
-        $planPriceInCents = 0;
+        $planPriceInCents = $data->price;
 
-        foreach ($data->subProducts as $subProduct) {
-            $_subProduct = $recurrencySubProductValueObjectFactory->createFromJson(
-                json_encode($subProduct)
-            );
-            $recurrencyProduct->addSubproduct($_subProduct);
-            $planPriceInCents +=
-                $subProduct->unit_price_in_cents * $subProduct->quantity
-            ;
+        if (!empty($data->subProducts)) {
+            $planPriceInCents = 0;
+
+            foreach ($data->subProducts as $subProduct) {
+                $_subProduct = $recurrencySubProductValueObjectFactory->createFromJson(
+                    json_encode($subProduct)
+                );
+                $recurrencyProduct->addSubproduct($_subProduct);
+                $planPriceInCents +=
+                    $subProduct->unit_price_in_cents * $subProduct->quantity
+                ;
+            }
         }
         $recurrencyProduct->setPrice($planPriceInCents);
 

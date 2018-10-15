@@ -99,7 +99,6 @@ function fillModalInformation(action, chargeData) {
 }
 
 function fillModalMessage(action, data) {
-    alert(data.msg);
     $(".loader").hide();
     $("#actionButton").removeAttr("disabled");
     //$("#msg").text(data.msg);

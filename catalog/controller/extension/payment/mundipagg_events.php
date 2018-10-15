@@ -6,8 +6,12 @@ use MundiAPILib\MundiAPIClient;
 use MundiAPILib\Models\CreateCustomerRequest;
 use MundiAPILib\Models\CreateAddressRequest;
 use MundiAPILib\Models\UpdateCustomerRequest;
-
+use Mundipagg\Decorators\OpencartPlatformCartDecorator;
+use Mundipagg\Factories\CartRootFactory;
+use Mundipagg\Repositories\RecurrencyProductRepository;
 use Mundipagg\Settings\CreditCard as CreditCardSettings;
+use Mundipagg\Repositories\Decorators\OpencartPlatformDatabaseDecorator;
+use Mundipagg\Settings\Recurrence;
 
 /**
  * ControllerExtensionPaymentMundipaggEvents deal with module events
@@ -317,7 +321,7 @@ class ControllerExtensionPaymentMundipaggEvents extends Controller
         if (count($boletoLinks) > 0) {
             $boletoLang = $this->language->get('boleto');
             $boletoLink = $boletoLinks[0]['link'];
-            $templateData['boleto_link_message'] = sprintf($boletoLang['click_to_follow'],$boletoLink);
+            $templateData['boleto_link_message'] = sprintf($boletoLang['click_to_follow'], $boletoLink);
             $templateData['boleto_link'] = $boletoLink;
         }
         unset($this->session->data['boleto_links']);
@@ -385,5 +389,32 @@ class ControllerExtensionPaymentMundipaggEvents extends Controller
         $templateData = array_merge($accountInfoLang,['charges' => $charges->rows]);
 
         return $templateData;
+    }
+
+    public function recurrenceCartRules()
+    {
+        $isCartValid = true;
+
+        $repository = new RecurrencyProductRepository(
+          new OpencartPlatformDatabaseDecorator($this->db)
+        );
+
+        $cartDecorator = new OpencartPlatformCartDecorator($this->cart);
+
+        $factory = new CartRootFactory($repository);
+
+        try {
+            $factory->createFromPlatformCart($cartDecorator);
+        } catch (Exception $e) {
+           $isCartValid = false;
+        }
+
+        if (!$isCartValid) {
+            $settings = new Recurrence($this);
+            $conflictMessage = $settings->getCheckoutConflictMessage();
+
+            $this->session->data['error'] = $conflictMessage;
+            $this->response->redirect($this->url->link('checkout/cart'));
+        }
     }
 }
