@@ -2,7 +2,6 @@
 
 namespace Mundipagg\Decorators;
 
-
 use Mundipagg\DTO\Product;
 
 class OpencartPlatformCartDecorator extends AbstractPlatformCartDecorator
@@ -17,7 +16,6 @@ class OpencartPlatformCartDecorator extends AbstractPlatformCartDecorator
     {
         $this->cart = $cart;
     }
-
 
     public function getProducts()
     {

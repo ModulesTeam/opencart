@@ -391,10 +391,9 @@ class ControllerExtensionPaymentMundipaggEvents extends Controller
         return $templateData;
     }
 
-    public function recurrenceCartRules(&$route)
+    public function recurrenceCartRules()
     {
         $isCartValid = true;
-
 
         $repository = new RecurrencyProductRepository(
           new OpencartPlatformDatabaseDecorator($this->db)

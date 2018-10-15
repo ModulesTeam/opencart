@@ -2,7 +2,6 @@
 
 namespace Mundipagg\DTO;
 
-
 class Product
 {
     protected $id;

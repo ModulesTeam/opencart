@@ -563,11 +563,6 @@ class Events
         //@todo check cart conflict
     }
 
-    public function confirmEntry($data)
-    {
-
-    }
-
     private function getCurrencySymbol()
     {
         $this->openCart->load->model('setting/setting');
@@ -577,6 +572,4 @@ class Events
         $currency = $this->openCart->model_localisation_currency->getCurrencyByCode($configCurrency);
         return $currency['symbol_left'];
     }
-
-
 }

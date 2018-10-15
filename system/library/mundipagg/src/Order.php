@@ -717,15 +717,22 @@ class Order
     private function createShippingRequest($orderData, $createAddressRequest, $cart)
     {
         if ($cart->hasShipping()) {
+
+            $shippingCost = number_format(
+                $cart->session->data['shipping_method']['cost'],
+                2,
+                '',
+                ''
+            );
+
             $shipping = [
-                'amountInCents' => number_format($cart->session->data['shipping_method']['cost'], 2, '', ''),
+                'amountInCents' => $shippingCost,
                 'description' => $cart->session->data['shipping_method']['title'],
                 'recipientName' => $orderData['shipping_firstname'] . " " . $orderData['shipping_lastname'],
                 'recipientPhone' => $orderData['telephone'],
                 'addressId' => null,
                 'maxDeliveryDate',
                 'estimatedDeliveryDate'
-
             ];
 
             return new CreateShippingRequest(

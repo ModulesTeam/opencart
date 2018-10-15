@@ -44,6 +44,7 @@ class RecurrencyProductRootFactory
 
         if (!empty($data->subProducts)) {
             $planPriceInCents = 0;
+
             foreach ($data->subProducts as $subProduct) {
                 $_subProduct = $recurrencySubProductValueObjectFactory->createFromJson(
                     json_encode($subProduct)

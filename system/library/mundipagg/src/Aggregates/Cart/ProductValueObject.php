@@ -2,9 +2,6 @@
 
 namespace Mundipagg\Aggregates\Cart;
 
-
-use phpDocumentor\Reflection\Types\Boolean;
-
 class ProductValueObject implements ValueObject
 {
     const NORMAL = 'N';

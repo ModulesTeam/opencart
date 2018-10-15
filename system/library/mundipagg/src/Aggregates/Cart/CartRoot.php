@@ -67,7 +67,6 @@ class CartRoot
                     '
                 );
             }
-
         }
     }
 
@@ -125,6 +124,5 @@ class CartRoot
                 );
             }
         }
-
     }
 }

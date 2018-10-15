@@ -2,7 +2,6 @@
 
 namespace Mundipagg\Factories;
 
-
 use Mundipagg\Aggregates\Cart\CartRoot;
 use Mundipagg\Aggregates\Cart\ProductValueObject;
 use Mundipagg\Decorators\AbstractPlatformCartDecorator;
