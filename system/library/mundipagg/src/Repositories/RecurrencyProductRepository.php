@@ -67,7 +67,7 @@ class RecurrencyProductRepository extends AbstractRep
                 `template_snapshot` = '" . (json_encode($recurrencyProduct->getTemplate())) . "',
                 `template_id` = ". ($templateId ? $templateId : 'NULL')  .",
                 `mundipagg_plan_id` = " . ($mundipaggPlanId ? "'$mundipaggPlanId'" : 'NULL') . ",
-                `mundipagg_plan_status` = " . $mundipaggPlanStatus . "
+                `mundipagg_plan_status` = " . $mundipaggPlanStatus . ",
                 `price` = " . $recurrencyProduct->getPrice() . "
             WHERE `id` = " . $recurrencyProduct->getId() . "
         ";
