@@ -2,6 +2,13 @@
     <form action="index.php?route=extension/payment/mundipagg/generateBoleto" method="post" data-mundicheckout-form>
         {%  set inputId = 5 %}
         {% include infoBoletoTemplate %}
+        <div class="row">
+            {% if isRecurrence %}
+                <div class="mundipaggCheckoutRecurrenceTab tab-content clearfix">
+                    {% include recurrenceTemplate %}
+                </div>
+            {% endif %}
+        </div>
         {% include submitBoletoTemplate %}
     </form>
 </div>

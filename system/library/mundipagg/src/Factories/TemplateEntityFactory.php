@@ -78,6 +78,11 @@ class TemplateEntityFactory
                 $installments = explode(",", $data->installments);
             }
 
+            $trial = 0;
+            if (!empty($data->trial)) {
+                $trial = $data->trial;
+            }
+
             $templateEntity = new TemplateEntity();
             $templateEntity
                 ->setName($data->name)
@@ -86,7 +91,7 @@ class TemplateEntityFactory
                 ->setAcceptBoleto($data->acceptBoleto)
                 ->setAcceptCreditCard($data->acceptCreditCard)
                 ->setAllowInstallments($data->allowInstallments)
-                ->setTrial($data->trial)
+                ->setTrial($trial)
                 ->addInstallments($installments)
             ;
 

@@ -67,8 +67,8 @@ class OpencartOrderInfo extends AbstractOrderInfo
                 $plans[] = $product;
             }
         }
-
-        if (count($plans) == 1 && count($items) == 1) {
+        //@todo verify when is normal
+        if (count($plans) >= 1 && count($items) >= 1) {
             return $plans[0];
         }
 

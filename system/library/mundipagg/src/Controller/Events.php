@@ -548,7 +548,8 @@ class Events
         }
 
         //there is a single item and it's a plan.
-        if (count($plans) == 1 && count($items) == 1) {
+        //@todo verify when is normal
+        if (count($plans) >= 1 && count($items) >= 1) {
 
             $data['payment_methods'] = array_filter(
                 $data['payment_methods'],

@@ -43,6 +43,7 @@ MundiPagg.Validator = function() {
                     'multi-buyer-city': {},
                     'multi-buyer-state': {},
                     'multi-buyer-country': {},
+                    'repetitions': {}
                 },
                 validationFunction: {
                     'number': callerObject.validateCardNumber,
@@ -61,6 +62,7 @@ MundiPagg.Validator = function() {
                     'multi_buyer_city': callerObject.validateMultiBuyerIssetAttrubute.bind(this, "cidade"),
                     'multi_buyer_state': callerObject.validateMultiBuyerIssetAttrubute.bind(this, "estado"),
                     'multi_buyer_country': callerObject.validateMultiBuyerIssetAttrubute.bind(this, "país"),
+                    'repetitions': callerObject.validateRepetitions
                 },
                 validationErrorType: {
                     'number': 'credit-card-number',
@@ -79,6 +81,7 @@ MundiPagg.Validator = function() {
                     'multi_buyer_city': 'multi-buyer-city',
                     'multi_buyer_state': 'multi-buyer-state',
                     'multi_buyer_country': 'multi-buyer-country',
+                    'repetitions': 'repetitions',
                 },
                 inputsToValidate: form.find('[data-mundipagg-validation-element]'),
                 ignoredForms: ignoredForms
@@ -273,6 +276,11 @@ MundiPagg.Validator = function() {
         validateInstallments: function (number) {
             var errorMsg = "Por favor, selecione as parcelas.";
             return number === '' ? errorMsg : undefined;
+        },
+
+        validateRepetitions: function (value) {
+            var errorMsg = 'Por favor selecione uma opção de recorrencia';
+            return value === '' ? errorMsg : undefined;
         }
     };
 };
@@ -327,6 +335,7 @@ MundiPagg.Form = function() {
                 'multi-buyer-city': 'multi-buyer-city-message',
                 'multi-buyer-state': 'multi-buyer-state-message',
                 'multi-buyer-country': 'multi-buyer-country-message',
+                'repetitions': 'repetitions-message',
             };
 
             Object.keys(errorIndexes).forEach(function(property){
@@ -526,7 +535,17 @@ $("#mundipaggCheckout").ready(function () {
     $(".mundipagg-saved-creditCard").on("change", function(){
         switchNewSaved($(this).val(), $(this).attr('inputId'));
         fillSavedCreditCardInstallments($(this));
-    })
+    });
+
+    $(".mundipagg-repetitions").on("change", function(){
+        var inputId = $(this).data('inputid');
+       $('#cardNumber-' + inputId).change();
+    });
+
+    $('.mundipagg-cardNumber').on("change", function(){
+        var obj = $(this).parent().find('span');
+        installments($(obj));
+    });
 
     $(".mundipagg-saved-creditCard").each(function(){
         fillSavedCreditCardInstallments($(this));
@@ -658,9 +677,11 @@ function getInstallments(brand, amount, inputId, newSaved) {
         //Hide
     } else {
 
+        var repetitions = $('#repetitions-' + inputId).val();
         url = "index.php?route=extension/payment/mundipagg/api/installments&";
         url += "brand=" + brand.toLowerCase();
         url += "&total=" + amount;
+        url += "&repetitions=" + repetitions;
 
         $.get(url)
         .done(function( data ) {

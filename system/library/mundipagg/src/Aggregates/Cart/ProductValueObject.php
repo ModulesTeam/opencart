@@ -14,6 +14,7 @@ class ProductValueObject implements ValueObject
 
     protected function __construct($type, $templateId, $mixed)
     {
+        $templateId = ($templateId != null) ? $templateId : 0;
         $this->setType($type);
         $this->setTemplateId($templateId);
         $this->setMixed($mixed);

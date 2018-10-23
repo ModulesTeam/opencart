@@ -4,6 +4,7 @@ var PlansCreationController = function (mundipaggRoot,formModelClass)
     this.creationPageFormModel = new formModelClass(this);
     this.templateSnapshot = null;
     this.productList = [];
+    this.templateRepetitions = [];
 };
 
 PlansCreationController.prototype.init = function() {
@@ -108,4 +109,33 @@ function removeLoadingAnimation($obj) {
 
 PlansCreationController.prototype.setPlanPrice = function () {
     this.creationPageFormModel.setPlanPrice();
-}
+};
+
+PlansCreationController.prototype.addTemplateRepetition = function (
+    cycles,
+    discountType,
+    discountValue,
+    frequency,
+    intervalType,
+    columnId
+) {
+    this.templateRepetitions.push({
+        cycles,
+        discountType,
+        discountValue,
+        frequency,
+        intervalType,
+        columnId
+    });
+};
+
+PlansCreationController.prototype.getTemplateRepetitions = function() {
+    return this.templateRepetitions;
+};
+
+PlansCreationController.prototype.removeTemplateRepetition = function (columnId) {
+    var columnId = columnId;
+    this.templateRepetitions = this.templateRepetitions.filter(function (item) {
+        return item.columnId != this;
+    }, columnId);
+};
