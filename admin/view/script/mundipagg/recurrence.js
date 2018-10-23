@@ -108,7 +108,6 @@ $(document).ready(function(e){
 
         var inputName = "intervals[" + currentNumber + "]";
 
-
         if (typeof mundipaggPlansCreationController != "undefined") {
             if (mundipaggPlansCreationController !== null) {
                 mundipaggPlansCreationController.addTemplateRepetition(
@@ -121,7 +120,6 @@ $(document).ready(function(e){
                 );
             }
         }
-
 
         newRow.append(makeCycleColumn(inputName, cycles));
         newRow.append(makeFrequencyColumn(inputName, frequency));

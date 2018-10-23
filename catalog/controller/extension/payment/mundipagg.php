@@ -146,15 +146,13 @@ class ControllerExtensionPaymentMundipagg extends Controller
                 ->getTemplate()->getTemplate()
                 ->isAcceptBoleto();
 
-
             //check if is a single
             // @todo verify is a single and recorrente to hability select of cicles
             if ($recurrenceProduct->isSingle()) {
                 $this->data['isRecurrence'] = true;
                 // @todo refactory to another class/method
-                $this->data['recurrenceSettings'] = $this->getSelectRepetitionsFormatted(
-                    $recurrenceProduct
-                );
+                $this->data['recurrenceSettings'] =
+                    $this->getSelectRepetitionsFormatted($recurrenceProduct);
             };
         }
 
@@ -208,9 +206,11 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $result = [];
         foreach ($repetitions as $repetition) {
             $option = $repetition->getCycles() . " cycles de ";
-            $option .= $repetition->getFrequency() . " " . $repetition->getIntervalTypeLabel() . " ";
-            if ($repetition->getDiscountValue() > 0) {
+            $option .= $repetition->getFrequency() .
+                " " .
+                $repetition->getIntervalTypeLabel() . " ";
 
+            if ($repetition->getDiscountValue() > 0) {
                 $discountSymbol = "";
                 $discountTypesArray = $repetition->getDiscountTypesArray();
                 array_walk($discountTypesArray,
@@ -220,9 +220,17 @@ class ControllerExtensionPaymentMundipagg extends Controller
                         }
                 });
 
-                $discount = " with discount: " . $repetition->getDiscountValue() . $discountSymbol;
-                if ($repetition->getDiscountType() == RepetitionValueObject::DISCOUNT_TYPE_FIXED) {
-                    $discount = " with discount: " . $discountSymbol . " " . $repetition->getDiscountValue();
+                $discount = " with discount: " .
+                    $repetition->getDiscountValue() .
+                    $discountSymbol;
+
+                if ($repetition->getDiscountType() ==
+                    RepetitionValueObject::DISCOUNT_TYPE_FIXED
+                ) {
+                    $discount = " with discount: " .
+                        $discountSymbol .
+                        " " .
+                        $repetition->getDiscountValue();
                 }
 
                 $option .= $discount;

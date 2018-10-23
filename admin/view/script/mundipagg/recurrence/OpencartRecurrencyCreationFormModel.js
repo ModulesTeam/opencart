@@ -102,7 +102,7 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
                 acceptCreditCard: $('#checkbox-creditcard').prop( "checked" ),
                 allowInstallments: $('#allow_installment').val() === '1' ? true : false,
                 description: $('#mp-recurrency-description').val(),
-                isSingle: isSingle,
+                isSingle,
                 name: $('#mp-recurrency-name').val(),
                 trial: $('#mp-recurrency-trial').val(),
                 installments: $('#installments').val()

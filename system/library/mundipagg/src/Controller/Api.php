@@ -78,17 +78,20 @@ class Api
         $recurrenceProduct = $orderInfoHelper->getRecurrenceProduct($this->openCart->cart);
 
         if ($recurrenceProduct !== null) {
-
             $allowedInstallments = $recurrenceProduct
                 ->getTemplate()->getTemplate()
                 ->getInstallments();
+
             array_walk($allowedInstallments, function(&$installment) {
                 $installment = $installment->getValue();
             });
 
             $repetition = json_decode(base64_decode($arguments['repetitions']));
             if (!empty($repetition)) {
-                $allowedInstallments = $this->filterInstallmentsFromRepetition($repetition, $allowedInstallments);
+                $allowedInstallments = $this->filterInstallmentsFromRepetition(
+                    $repetition,
+                    $allowedInstallments
+                );
             }
 
             $installments = array_filter(
