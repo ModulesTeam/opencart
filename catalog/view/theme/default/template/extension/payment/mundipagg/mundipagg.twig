@@ -13,7 +13,7 @@
             <li class="active mundipaggCheckoutTabs">
                 <a  href="#creditCardTab" data-toggle="tab">
                     <i class="fa fa-credit-card"></i>
-                    <p>{{ credit_card.payment_method_name }}</p>
+                    <p>{{ creditCardsPaymentTitle }}</p>
                 </a>
             </li>
         {% endif %}
@@ -21,7 +21,7 @@
             <li class="mundipaggCheckoutTabs">
                 <a href="#boletoTab" data-toggle="tab">
                     <i class="fa fa-file-text"></i>
-                    <p>{{ boleto.payment_method_name }}</p>
+                    <p>{{ boletoPaymentTitle }}</p>
                 </a>
             </li>
         {% endif %}
@@ -37,7 +37,7 @@
         <li class="mundipaggCheckoutTabs">
             <a href="#boletoCreditCardTab" data-toggle="tab">
                 <i class="fa fa-file-text"></i>
-                <p>Boleto + cartão de crédito</p>
+                <p>{{ boletoCreditCardPaymentTitle }}</p>
             </a>
         </li>
         {% endif %}

@@ -107,6 +107,7 @@ CREATE TABLE IF NOT EXISTS `oc_mundipagg_recurrency_product` (
             `mundipagg_plan_id` VARCHAR(45) NULL,
             `mundipagg_plan_status` VARCHAR(45) NULL,
             `is_single` TINYINT NOT NULL,
+            `price` INT NOT NULL DEFAULT 0,
             PRIMARY KEY (`id`),
             INDEX `fk_plan_template1_idx` (`template_id` ASC),
             CONSTRAINT `fk_plan_template1`
@@ -122,6 +123,7 @@ CREATE TABLE IF NOT EXISTS `oc_mundipagg_recurrency_subproduct` (
             `quantity` INT NOT NULL,
             `cycles` INT NOT NULL,
             `cycle_type` CHAR NOT NULL,
+            `unit_price_in_cents` INT NOT NULL,
             PRIMARY KEY (`id`),
             INDEX `fk_recurrency_subproduct_recurrency_product1_idx` (`recurrency_product_id` ASC),
             CONSTRAINT `fk_recurrency_subproduct_recurrency_product1`
@@ -172,7 +174,9 @@ INSERT INTO opencart.oc_event (code, `trigger`, action, status, sort_order) VALU
 ('payment_mundipagg_prepare_checkout_order_info', 'catalog/controller/checkout/success/before', 'extension/payment/mundipagg_events/prepareCheckoutOrderInfo', 1, 0),
 ('payment_mundipagg_add_product_plan_delete_middleware', 'admin/controller/catalog/product/delete/before', 'extension/payment/mundipagg/callEvents', 1, 90),
 ('payment_mundipagg_add_product_plan_index_middleware', 'admin/controller/catalog/product/before', 'extension/payment/mundipagg/callEvents', 1, 90),
-('payment_mundipagg_add_product_list_recurrency_filter', 'admin/view/catalog/product_list/before', 'extension/payment/mundipagg/callEvents', 1, 90);
+('payment_mundipagg_add_product_list_recurrency_filter', 'admin/view/catalog/product_list/before', 'extension/payment/mundipagg/callEvents', 1, 90),
+('payment_mundipagg_recurrence_product_checkout_handler', 'catalog/view/checkout/payment_method/after', 'extension/payment/mundipagg/callEvents', 1, 90),
+('payment_mundipagg_cart_rules', 'catalog/controller/checkout/checkout/before', 'extension/payment/mundipagg_events/recurrenceCartRules', 1, 0);
 
 INSERT INTO opencart.oc_extension (type, code) VALUES
 ('payment', 'mundipagg');

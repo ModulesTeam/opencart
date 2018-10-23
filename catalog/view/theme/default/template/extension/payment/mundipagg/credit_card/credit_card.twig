@@ -1,5 +1,12 @@
 <div class="newCreditcard creditCard-{{ inputId }}">
     <div class="row">
+        {% if isRecurrence %}
+            <div class="mundipaggCheckoutRecurrenceTab tab-content clearfix">
+                {% include recurrenceTemplate %}
+            </div>
+        {% endif %}
+    </div>
+    <div class="row">
         <div class="col-sm-12">
             <br>
             <div class="col-sm-3 clear-left-padding" style="padding-left: 0;">

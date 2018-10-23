@@ -407,11 +407,13 @@ class ControllerExtensionPaymentMundipaggEvents extends Controller
             $factory->createFromPlatformCart($cartDecorator);
         } catch (Exception $e) {
            $isCartValid = false;
+            $error = $e->getMessage();
         }
 
         if (!$isCartValid) {
             $settings = new Recurrence($this);
             $conflictMessage = $settings->getCheckoutConflictMessage();
+            $conflictMessage .= "<br />" . $error; //@todo refactory
 
             $this->session->data['error'] = $conflictMessage;
             $this->response->redirect($this->url->link('checkout/cart'));

@@ -8,6 +8,7 @@ require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
 use MundiAPILib\Models\GetSubscriptionResponse;
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
+use Mundipagg\Aggregates\Template\RepetitionValueObject;
 use Mundipagg\Controller\Api;
 use Mundipagg\Controller\SavedCreditCard;
 use Mundipagg\Controller\TwoCreditCards;
@@ -144,10 +145,22 @@ class ControllerExtensionPaymentMundipagg extends Controller
             $isBoletoEnabled =  $recurrenceProduct
                 ->getTemplate()->getTemplate()
                 ->isAcceptBoleto();
+
+
+            //check if is a single
+            // @todo verify is a single and recorrente to hability select of cicles
+            if ($recurrenceProduct->isSingle()) {
+                $this->data['isRecurrence'] = true;
+                // @todo refactory to another class/method
+                $this->data['recurrenceSettings'] = $this->getSelectRepetitionsFormatted(
+                    $recurrenceProduct
+                );
+            };
         }
 
         if ($isCreditCardEnabled) {
             $this->data = array_merge($this->data, $creditCardSettings->getCreditCardPageInfo());
+            $this->data['creditCardsPaymentTitle'] = $creditCardSettings->getPaymentTitle();
         }
 
         // check if payment with two credit cards is enabled
@@ -158,10 +171,12 @@ class ControllerExtensionPaymentMundipagg extends Controller
 
         if ($isBoletoEnabled) {
             $this->data = array_merge($this->data, $boletoSettings->getBoletoPageInfo());
+            $this->data['boletoPaymentTitle'] = $boletoSettings->getPaymentTitle();
         }
 
         if ($boletoCreditCardSettings->isEnabled() && !$isRecurrenceProduct) {
             $this->data = array_merge($this->data, $boletoCreditCardSettings->getBoletoCreditCardPageInfo());
+            $this->data['boletoCreditCardPaymentTitle'] = $boletoCreditCardSettings->getPaymentTitle();
         }
 
         $isSavedCreditCardEnabled = $creditCardSettings->isSavedCreditcardEnabled();
@@ -184,6 +199,41 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $this->loadPaymentTemplates();
 
         return $this->load->view('extension/payment/mundipagg/mundipagg', $this->data);
+    }
+
+    // @todo refactor code
+    protected function getSelectRepetitionsFormatted($recurrency)
+    {
+        $repetitions = $recurrency->getTemplate()->getRepetitions();
+        $result = [];
+        foreach ($repetitions as $repetition) {
+            $option = $repetition->getCycles() . " cycles de ";
+            $option .= $repetition->getFrequency() . " " . $repetition->getIntervalTypeLabel() . " ";
+            if ($repetition->getDiscountValue() > 0) {
+
+                $discountSymbol = "";
+                $discountTypesArray = $repetition->getDiscountTypesArray();
+                array_walk($discountTypesArray,
+                    function ($item) use (&$discountSymbol, $repetition) {
+                        if ($item['code'] == $repetition->getDiscountType()) {
+                            $discountSymbol = $item['name'];
+                        }
+                });
+
+                $discount = " with discount: " . $repetition->getDiscountValue() . $discountSymbol;
+                if ($repetition->getDiscountType() == RepetitionValueObject::DISCOUNT_TYPE_FIXED) {
+                    $discount = " with discount: " . $discountSymbol . " " . $repetition->getDiscountValue();
+                }
+
+                $option .= $discount;
+            }
+
+            $result[] = [
+                'option' => $option,
+                'config' => base64_encode(json_encode($repetition->toArray()))
+            ];
+        }
+        return $result;
     }
 
     private function getMultiBuyerFormData()
@@ -223,6 +273,7 @@ class ControllerExtensionPaymentMundipagg extends Controller
         $this->data['submitTemplate'] = $path . 'credit_card/submit.twig';
         $this->data['boletoCreditCardTemplate'] = $path . 'boleto_credit_card.twig';
         $this->data['multiBuyerFormTemplate'] = $path . 'multi_buyer_form.twig';
+        $this->data['recurrenceTemplate'] = $path . 'recurrenceTemplate.twig';
     }
 
     /**

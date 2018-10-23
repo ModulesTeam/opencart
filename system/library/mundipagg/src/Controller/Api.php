@@ -5,6 +5,7 @@ namespace Mundipagg\Controller;
 require_once DIR_SYSTEM . 'library/mundipagg/vendor/autoload.php';
 
 use Mundipagg\Aggregates\RecurrencyProduct\RecurrencyProductRoot;
+use Mundipagg\Aggregates\Template\RepetitionValueObject;
 use Mundipagg\Enum\WebHookEnum;
 use Mundipagg\Helper\OpencartOrderInfo;
 use Mundipagg\Log;
@@ -77,12 +78,19 @@ class Api
         $recurrenceProduct = $orderInfoHelper->getRecurrenceProduct($this->openCart->cart);
 
         if ($recurrenceProduct !== null) {
+
             $allowedInstallments = $recurrenceProduct
                 ->getTemplate()->getTemplate()
                 ->getInstallments();
             array_walk($allowedInstallments, function(&$installment) {
                 $installment = $installment->getValue();
             });
+
+            $repetition = json_decode(base64_decode($arguments['repetitions']));
+            if (!empty($repetition)) {
+                $allowedInstallments = $this->filterInstallmentsFromRepetition($repetition, $allowedInstallments);
+            }
+
             $installments = array_filter(
                 $installments,
                 function($installment) use (
@@ -97,6 +105,38 @@ class Api
             'status_code' => 200,
             'payload' => $installments
         ];
+    }
+
+    protected function filterInstallmentsFromRepetition($repetition, $allowedInstallments)
+    {
+        $selectedRepetition = $this->getInstallmentsFromRepetition($repetition);
+        $installments = array_filter(
+            $allowedInstallments,
+            function($installment) use (
+                $selectedRepetition
+            ) {
+                return in_array($installment, $selectedRepetition);
+            }
+        );
+
+        return $installments;
+    }
+
+    protected function getInstallmentsFromRepetition($repetition)
+    {
+        if ($repetition->intervalType == RepetitionValueObject::INTERVAL_TYPE_WEEKLY) {
+            return [1];
+        }
+
+        if ($repetition->intervalType == RepetitionValueObject::INTERVAL_TYPE_MONTHLY) {
+            return range(1, $repetition->frequency);
+        }
+
+        if ($repetition->intervalType == RepetitionValueObject::INTERVAL_TYPE_YEARLY) {
+            return range(1, 12);
+        }
+
+        return null;
     }
 
     private function getCountries()

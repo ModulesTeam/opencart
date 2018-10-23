@@ -21,7 +21,7 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
         baseUrl + '?' +
         splitData.join("&") +
         "&action=save&mundipagg_" +
-        recurrenceType.replace('s', '')
+        recurrenceType.replace(/s$/g, '')
     ;
 
     $('#form-product').attr('action', finalUrl);
@@ -76,26 +76,33 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
 
     //add handler for mp-add-plan-template-button click
     $('#mp-add-plan-template-button').on('click',function(event){
+
+        var isSingle = $("#recurrence-type").val() == "single" ? true : false;
+
+        var repetitions = this.formController.getTemplateRepetitions();
+
+        if (!isSingle) {
+            repetitions = [{
+                cycles: $('#mp-recurrency-cycles').val(),
+                discountType: null,
+                discountValue: null,
+                frequency: $('#frequency').val(),
+                intervalType: $('#interval').val()
+            }];
+        }
+
         var templateSnapshot = {
             dueAt: {
                 type: $('#expiry_type').val(),
                 value: $('#expiry_date').val()
             },
-            repetitions: [
-                {
-                    cycles: $('#mp-recurrency-cycles').val(),
-                    discountType: null,
-                    discountValue: null,
-                    frequency: $('#frequency').val(),
-                    intervalType: $('#interval').val()
-                }
-            ],
+            repetitions: repetitions,
             template: {
                 acceptBoleto: $('#checkbox-boleto').prop( "checked" ),
                 acceptCreditCard: $('#checkbox-creditcard').prop( "checked" ),
                 allowInstallments: $('#allow_installment').val() === '1' ? true : false,
                 description: $('#mp-recurrency-description').val(),
-                isSingle: false,
+                isSingle: isSingle,
                 name: $('#mp-recurrency-name').val(),
                 trial: $('#mp-recurrency-trial').val(),
                 installments: $('#installments').val()
@@ -141,15 +148,20 @@ OpencartRecurrencyCreationFormModel.prototype.init = function() {
     };
     $('#mp-recurrence-product-search').autocomplete(autocompleteOptions);
 
-    $("#input-price").attr('readonly', 'readonly');
+    if (recurrenceType == "plans") {
+        $("#input-price").attr('readonly', 'readonly');
+    }
 };
 
 OpencartRecurrencyCreationFormModel.prototype
     .addProductToPlan = function(productData) {
+
+    var price = parseFloat(productData.price);
+
     var html = $('#mp-recurrence-product-row-template').html();
     html = html.replace(/\{product_id\}/g,productData.id);
     html = html.replace(/\{product_name\}/g,productData.name);
-    html = html.replace(/\{product_price\}/g, productData.price.toFixed(2));
+    html = html.replace(/\{product_price\}/g, price.toFixed(2));
     html = html.replace(/\{product_thumb\}/g,productData.thumb);
 
     html = html.replace(
@@ -226,12 +238,19 @@ OpencartRecurrencyCreationFormModel.prototype
 OpencartRecurrencyCreationFormModel.prototype
     .updateTemplateSnapshotDetailPanel = function(templateSnapshotData) {
 
+
+    this.formController.templateRepetitions = templateSnapshotData.repetitions;
+
     var configContainer = $("#mp-recurrence-plan-config-row-container");
     var html = $('#mp-recurrence-plan-config-row-template').html();
 
     html = html.replace(/\{plan_name\}/g,(function(templateSnapshotData){
         var retn = templateSnapshotData.template.name;
-        retn += ' <span class="label label-primary">plan</span>';
+
+        var type = templateSnapshotData.template.isSingle ? "single" : "plan";
+        var typeClass = templateSnapshotData.template.isSingle ? "success" : "primary";
+
+        retn += ' <span class="label label-' + typeClass + '">' + type + '</span>';
         if (templateSnapshotData.template.trial > 0) {
             retn += ' <span class="label label-warning">' +
                 templateSnapshotData.template.trial +

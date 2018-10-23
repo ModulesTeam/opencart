@@ -1,10 +1,18 @@
 function removeRow(e) {
-    $(e).parent().parent().remove();
+    var column = $(e).parent().parent();
+    if (typeof mundipaggPlansCreationController != "undefined") {
+        if (mundipaggPlansCreationController !== null) {
+            mundipaggPlansCreationController.removeTemplateRepetition(
+                column.data('column-id')
+            );
+        }
+    }
+    column.remove();
     return false;
 }
 
-function makeInput(inputName, type, value){
-    return '<input type="hidden" name="' + inputName + "[" + type + ']" value="' + value + '"/>'
+function makeInput(inputName, type, value, id = ''){
+    return '<input type="hidden" name="' + inputName + "[" + type + ']" value="' + value + '" id="' + id + '"/>'
 }
 
 function makeSpan(text) {
@@ -32,7 +40,7 @@ function makeCycleColumn(inputName, cycle)
     }
 
     newCol.append(makeSpan(cycle + name));
-    newCol.append(makeInput(inputName, "cycles", cycle));
+    newCol.append(makeInput(inputName, "cycles", cycle, 'mp-recurrency-cycles'));
     return newCol;
 }
 
@@ -87,7 +95,8 @@ $(document).ready(function(e){
 
         var table = $('.table-interval');
         var currentNumber = table.data('number') + 1;
-        var newRow = $("<tr>");
+        var columnId = Date.now();
+        var newRow = $("<tr data-column-id='" + columnId + "'>");
         var currentFrequency = $(this).parents('.frequency:first');
 
         var cycles = $("#cycles").val();
@@ -98,6 +107,21 @@ $(document).ready(function(e){
         var type_discount = currentFrequency.find('#discountType').val();
 
         var inputName = "intervals[" + currentNumber + "]";
+
+
+        if (typeof mundipaggPlansCreationController != "undefined") {
+            if (mundipaggPlansCreationController !== null) {
+                mundipaggPlansCreationController.addTemplateRepetition(
+                    cycles,
+                    type_discount,
+                    discount,
+                    frequency,
+                    interval,
+                    columnId
+                );
+            }
+        }
+
 
         newRow.append(makeCycleColumn(inputName, cycles));
         newRow.append(makeFrequencyColumn(inputName, frequency));

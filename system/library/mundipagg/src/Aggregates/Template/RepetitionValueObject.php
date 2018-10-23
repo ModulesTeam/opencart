@@ -213,4 +213,15 @@ class RepetitionValueObject
 
         return $this;
     }
+
+    public function toArray()
+    {
+        return [
+            'cycles' => $this->getCycles(),
+            'frequency' => $this->getFrequency(),
+            'intervalType' => $this->getIntervalType(),
+            'discountValue' => $this->getDiscountValue(),
+            'discountType' => $this->getDiscountType()
+        ];
+    }
 }

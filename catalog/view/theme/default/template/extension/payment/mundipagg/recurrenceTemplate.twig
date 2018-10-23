@@ -1,0 +1,18 @@
+
+<div class=" col-sm-5">
+    <label for="repetitions-{{ inputId }}">Recurrence Options</label>
+    <select
+            class="form-control mundipagg-repetitions"
+            name="repetitions-{{ inputId }}"
+            id="repetitions-{{ inputId }}"
+            data-inputid="{{ inputId }}"
+            data-mundipagg-validation-element="repetitions-{{ inputId }}"
+            required
+    >
+        <option value="">Select cycle</option>
+
+        {% for repetition in recurrenceSettings %}
+        <option value='{{ repetition.config }}'>{{ repetition.option }}</option>
+        {% endfor %}
+    </select>
+</div>
